@@ -18,6 +18,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Entity(name = "users")
 public class User implements UserDetails {
 
     @Id
@@ -46,6 +47,13 @@ public class User implements UserDetails {
 
     @Column(name = "created_at")
     private LocalDateTime createdAt = LocalDateTime.now();
+
+    public User(String email, String password, String firstName, String lastName) {
+        this.email = email;
+        this.password = password;
+        this.firstName = firstName;
+        this.lastName = lastName;
+    }
 
     // UserDetails implementation
     @Override
@@ -77,7 +85,6 @@ public class User implements UserDetails {
     public boolean isEnabled() {
         return enabled;
     }
-
 
     public enum Role {
         EMPLOYEE, ADMIN, MANAGER
