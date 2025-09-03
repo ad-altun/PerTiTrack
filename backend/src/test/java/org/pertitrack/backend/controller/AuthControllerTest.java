@@ -100,5 +100,22 @@ class AuthControllerTest {
         )));
     }
 
+    @Test
+    void logoutUser_returnSuccessMessage() {
+        // Arrange
+        MessageResponse expectedResponse = new MessageResponse("User logged out successfully!");
+        when(authService.logoutUser())
+                .thenReturn(ResponseEntity.ok(expectedResponse));
 
+        // Act
+        ResponseEntity<?> result = authController.logoutUser();
+
+        // assert
+        assertNotNull(result);
+        assertEquals(HttpStatus.OK, result.getStatusCode());
+        assertEquals(expectedResponse, result.getBody());
+
+        // verify service was called
+        verify(authService).logoutUser();
+    }
 }

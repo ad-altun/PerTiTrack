@@ -18,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
@@ -25,8 +26,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class AuthServiceTest {
@@ -70,12 +70,11 @@ class AuthServiceTest {
         loginRequest.setPassword("password000");
     }
 
+    //                    authenticateUser Tests
+    //                    -----------------------
     @Test
     void authenticateUser_returnsUserSpecificJWTResponse() {
         // Arrange
-//        UsernamePasswordAuthenticationToken expectedAuthToken =
-//                new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword());
-
         // Mock authentication manager to return successful authentication
         when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
                 .thenReturn(authentication);
@@ -115,6 +114,9 @@ class AuthServiceTest {
         verify(authentication).getPrincipal();
     }
 
+    //                    registerUser Tests
+    //                    -----------------------
+
     @Test
     void registerUser_withValidData_returnsSuccessMessage() {
         // Arrange
@@ -153,4 +155,59 @@ class AuthServiceTest {
                         user.isEnabled()
         ));
     }
+
+    @Test
+    void registerUser_withExistingEmail_returnsBadRequest() {
+        // Arrange
+        SignupRequest signupRequest = new SignupRequest();
+        signupRequest.setEmail("existing@test.com");
+        signupRequest.setPassword("password000");
+        signupRequest.setFirstName("Test");
+        signupRequest.setLastName("User");
+
+        when(userRepository.existsByEmail(
+                signupRequest.getEmail())).thenReturn(true);
+
+        // Act
+        ResponseEntity<?> response = authService.registerUser(signupRequest);
+
+        // assert
+        assertNotNull(response);
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertInstanceOf(MessageResponse.class, response.getBody());
+
+        MessageResponse messageResponse = (MessageResponse) response.getBody();
+        assertEquals("Error: Email is already in use!", messageResponse.getMessage());
+
+        // verify that save was never called
+        verify(userRepository, never()).save(any(User.class));
+        verify(passwordEncoder, never()).encode(anyString());
+    }
+
+    //                    logoutUser Tests
+    //                    -----------------------
+    @Test
+    void logoutUser_returnsSuccessMessage() {
+        // Arrange
+        // Mock SecurityContextHolder static methods
+        try (var mockedSecurityContextHolder =
+                     mockStatic(SecurityContextHolder.class)) {
+
+            // Act
+            ResponseEntity<?> response = authService.logoutUser();
+
+            // Assert
+            assertNotNull(response);
+            assertEquals(HttpStatus.OK, response.getStatusCode());
+            assertInstanceOf(MessageResponse.class, response.getBody());
+
+            MessageResponse messageResponse = (MessageResponse) response.getBody();
+            assertEquals("User logged out successfully!", messageResponse.getMessage());
+
+            // Verify that SecurityContextHolder.clearContext() was called
+            mockedSecurityContextHolder.verify(SecurityContextHolder::clearContext);
+        }
+    }
+
+
 }

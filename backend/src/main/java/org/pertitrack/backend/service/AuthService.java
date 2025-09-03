@@ -77,4 +77,11 @@ public class AuthService {
 
         return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
     }
+
+    public ResponseEntity<MessageResponse> logoutUser() {
+        // clear the security context
+        SecurityContextHolder.clearContext();
+
+        return ResponseEntity.ok(new MessageResponse("User logged out successfully!"));
+    }
 }
