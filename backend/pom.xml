@@ -28,7 +28,7 @@
     </scm>
     <properties>
         <java.version>21</java.version>
-        <!--        <sonar.organization>ad-altun</sonar.organization>-->
+        <sonar.organization>ad-altun</sonar.organization>
     </properties>
     <dependencies>
         <dependency>
