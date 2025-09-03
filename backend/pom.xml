@@ -28,7 +28,7 @@
     </scm>
     <properties>
         <java.version>21</java.version>
-        <!--        <sonar.organization>ad-altun</sonar.organization>-->
+        <sonar.organization>ad-altun</sonar.organization>
     </properties>
     <dependencies>
         <dependency>
@@ -108,6 +108,11 @@
     <build>
         <finalName>app</finalName>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.5.3</version>
+            </plugin>
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
