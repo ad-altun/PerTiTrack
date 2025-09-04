@@ -64,7 +64,7 @@ class AuthControllerTest {
         when(authService.authenticateUser(any(LoginRequest.class))).thenReturn(ResponseEntity.ok(expectedResponse));
 
         // Act
-        ResponseEntity<?> result = authController.authenticateUser(loginRequest);
+        ResponseEntity<JwtResponse> result = authController.authenticateUser(loginRequest);
 
         // Assert
         assertNotNull(result);
@@ -84,7 +84,7 @@ class AuthControllerTest {
         when(authService.registerUser(any(SignupRequest.class))).thenReturn(ResponseEntity.ok(expectedResponse));
 
         // act
-        ResponseEntity<?> result = authController.registerUser(signupRequest);
+        ResponseEntity<MessageResponse> result = authController.registerUser(signupRequest);
 
         // assert
         assertNotNull(result);
@@ -108,7 +108,7 @@ class AuthControllerTest {
                 .thenReturn(ResponseEntity.ok(expectedResponse));
 
         // Act
-        ResponseEntity<?> result = authController.logoutUser();
+        ResponseEntity<MessageResponse> result = authController.logoutUser();
 
         // assert
         assertNotNull(result);
