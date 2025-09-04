@@ -1,6 +1,5 @@
 package org.pertitrack.backend.service;
 
-import jakarta.validation.Valid;
 import org.pertitrack.backend.dto.JwtResponse;
 import org.pertitrack.backend.dto.LoginRequest;
 import org.pertitrack.backend.dto.MessageResponse;
@@ -16,8 +15,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -76,5 +73,12 @@ public class AuthService {
         userRepository.save(user);
 
         return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
+    }
+
+    public ResponseEntity<MessageResponse> logoutUser() {
+        // clear the security context
+        SecurityContextHolder.clearContext();
+
+        return ResponseEntity.ok(new MessageResponse("User logged out successfully!"));
     }
 }
