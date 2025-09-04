@@ -1,4 +1,4 @@
-import {z} from 'zod';
+import { z } from 'zod';
 
 // login validation schema
 export const loginSchema = z.object({
@@ -38,7 +38,7 @@ export const registerSchema = z.object({
         .max(50, 'Last name cannot exceed 50 characters'),
 }).refine(data => data.password === data.confirmPassword, {
     message: "Password don't match",
-    path: ["confirmPassword"],
+    path: [ "confirmPassword" ],
 });
 
 // API response schemas for runtime validation
