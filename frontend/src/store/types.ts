@@ -1,4 +1,5 @@
 import type { User } from "../types/authType";
+import { store } from "./index.ts";
 
 export interface AuthState {
     user: User | null;
@@ -7,3 +8,6 @@ export interface AuthState {
     isLoading: boolean;
     error: string | null;
 }
+
+export type RootState = ReturnType<typeof store.getState>;
+export type AppDispatch = typeof store.dispatch;
