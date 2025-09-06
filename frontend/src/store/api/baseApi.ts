@@ -5,7 +5,8 @@ import {
     fetchBaseQuery,
     type FetchBaseQueryError
 } from "@reduxjs/toolkit/query/react";
-import type { RootState } from "../types.ts";
+import type { RootState } from "../../types/authType.ts";
+
 
 // base query with auth headers
 const baseQuery = fetchBaseQuery({

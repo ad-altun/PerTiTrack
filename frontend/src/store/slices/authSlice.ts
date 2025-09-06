@@ -8,8 +8,7 @@ import {
     validateStoredTokens,
 } from "../../services/authService.ts";
 import { authApi } from "../api/authApi.ts";
-import type { AuthState } from "../types.ts";
-import type { JwtResponse, User } from '../../types/authType.ts';
+import type { AuthState, JwtResponse, User } from '../../types/authType.ts';
 import { userSchema } from "../../schemas/authSchemas.ts";
 
 // load initial state with token validation
