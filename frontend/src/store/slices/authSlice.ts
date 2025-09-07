@@ -8,8 +8,8 @@ import {
     validateStoredTokens,
 } from "../../services/authService.ts";
 import { authApi } from "../api/authApi.ts";
-import type { AuthState, JwtResponse, User } from '../../types/authType.ts';
-import { userSchema } from "../../schemas/authSchemas.ts";
+import type { AuthState, JwtResponse, User } from '../../types/authTypes.ts';
+import { userSchema } from "../../validation/authSchemas.ts";
 
 // load initial state with token validation
 const getInitialState = (): AuthState => {
@@ -169,13 +169,13 @@ const authSlice = createSlice({
             ( state, action ) => {
                 const jwtResponse = action.payload;
                 state.token = jwtResponse.token;
-                state.user = {
+                state.user = userSchema.parse({
                     id: jwtResponse.id,
                     email: jwtResponse.email,
                     firstName: jwtResponse.firstName,
                     lastName: jwtResponse.lastName,
                     roles: jwtResponse.roles,
-                };
+                });
                 // state.isAuthenticated = false;
                 state.isAuthenticated = true;
 

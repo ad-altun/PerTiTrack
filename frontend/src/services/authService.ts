@@ -4,18 +4,18 @@ import type {
     JwtResponse,
     MessageResponse,
     User
-} from '../types/authType.ts';
+} from '../types/authTypes.ts';
 
 import type {
     LoginFormData,
     RegisterFormData,
-} from '../schemas/authSchemas.ts';
+} from '../validation/authSchemas.ts';
 
 import {
     jwtResponseSchema,
     messageResponseSchema,
     userSchema
-} from "../schemas/authSchemas.ts";
+} from "../validation/authSchemas.ts";
 
 // const authService = () => {
 

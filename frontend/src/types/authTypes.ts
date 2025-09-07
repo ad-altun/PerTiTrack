@@ -1,5 +1,3 @@
-import { store } from "../store";
-
 export interface LoginRequest {
     email: string;
     password: string;
@@ -41,6 +39,3 @@ export interface AuthState {
     isLoading: boolean;
     error: string | null;
 }
-
-export type RootState = ReturnType<typeof store.getState>;
-export type AppDispatch = typeof store.dispatch;

@@ -1,5 +1,5 @@
 import axios, { AxiosError } from 'axios';
-import { apiErrorSchema, type ApiError } from '../schemas/authSchemas';
+import { apiErrorSchema, type ApiError } from '../validation/authSchemas';
 
 const API_BASE_URL = '/api';
 

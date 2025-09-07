@@ -5,7 +5,7 @@ import {
     type MessageResponse,
     messageResponseSchema, type RegisterFormData,
     userSchema, type User
-} from "../../schemas/authSchemas.ts";
+} from "../../validation/authSchemas.ts";
 
 // transform and validate API response
 const transformJwtResponse = ( response: unknown ): JwtResponse => {
