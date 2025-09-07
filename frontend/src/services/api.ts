@@ -1,17 +1,7 @@
 import axios, { AxiosError } from 'axios';
-import { z } from 'zod';
+import { apiErrorSchema, type ApiError } from '../validation/authSchemas';
 
 const API_BASE_URL = '/api';
-
-// API Error schema for error handling
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const apiErrorSchema = z.object({
-    message: z.string(),
-    status: z.number().optional(),
-    errors: z.array(z.string()).optional(),
-});
-
-export type ApiError = z.infer<typeof apiErrorSchema>;
 
 // create axios instance
 const api = axios.create({
@@ -37,7 +27,7 @@ api.interceptors.request.use(
 // add response interceptor to handle token expiration
 api.interceptors.response.use(
     response => response,
-    ( error: AxiosError ) => {
+    async ( error: AxiosError ) => {
         const apiError: ApiError = {
             message: 'An unexpected error occurred',
             status: error.response?.status,
@@ -52,7 +42,9 @@ api.interceptors.response.use(
             apiError.message = 'Network error. Please check your connection.';
         }
 
-        return Promise.reject(error);
+        // validate error with Zod before returning
+        const validatedError = apiErrorSchema.parse(apiError);
+        return Promise.reject(validatedError);
     }
 );
 

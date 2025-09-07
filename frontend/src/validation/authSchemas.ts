@@ -41,7 +41,33 @@ export const registerSchema = z.object({
     path: [ "confirmPassword" ],
 });
 
-// API response schemas for runtime validation
+// forgot password validation schema
+// export const forgotPasswordSchema = z.object({
+//     email: z
+//         .email('Please enter a valid email address')
+//         .min(1, 'Email is required')
+// });
+
+// reset password validation schema
+// export const resetPasswordSchema = z.object({
+//     newPassword: z
+//         .string()
+//         .min(1, 'New password is required')
+//         .min(8, 'Password must be at least 8 characters long')
+//         .max(128, 'Password must not exceed 128 characters')
+//         .regex(
+//             /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
+//             'Password must contain at least one lowercase letter, one uppercase letter, and one number'
+//         ),
+//     confirmNewPassword: z
+//         .string()
+//         .min(1, 'Please confirm your new password'),
+// }).refine(( data ) => data.newPassword === data.confirmNewPassword, {
+//     message: "Passwords don't match",
+//     path: [ "confirmNewPassword" ],
+// });
+
+// API (backend) response schemas for runtime validation
 export const jwtResponseSchema = z.object({
     token: z.string(),
     type: z.string().default('Bearer'),
@@ -64,20 +90,29 @@ export const userSchema = z.object({
     roles: z.array(z.string()),
 });
 
+// API Error schema for error handling
+export const apiErrorSchema = z.object({
+    message: z.string(),
+    status: z.number().optional(),
+    errors: z.array(z.string()).optional(),
+});
+
+// auth state schema for storage validation
+export const authStateSchema = z.object({
+    user: userSchema.nullable(),
+    token: z.string().nullable(),
+    isAuthenticated: z.boolean(),
+});
+
 // Type inference from schema
 export type LoginFormData = z.infer<typeof loginSchema>;
 export type RegisterFormData = z.infer<typeof registerSchema>;
+// export type ForgotPasswordFormData = z.infer<typeof forgotPasswordSchema>;
+// export type ResetPasswordFormData = z.infer<typeof resetPasswordSchema>;
 export type JwtResponse = z.infer<typeof jwtResponseSchema>;
 export type MessageResponse = z.infer<typeof messageResponseSchema>;
 export type User = z.infer<typeof userSchema>;
-
-
-
-
-
-
-
-
-
+export type ApiError = z.infer<typeof apiErrorSchema>;
+// export type StoredAuthState = z.infer<typeof authStateSchema>;
 
 
