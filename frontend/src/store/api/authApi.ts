@@ -1,11 +1,10 @@
 import { baseApi } from "./baseApi.ts";
-import {
-    type JwtResponse,
-    jwtResponseSchema, type LoginFormData,
-    type MessageResponse,
-    messageResponseSchema, type RegisterFormData,
-    userSchema, type User
+import type {
+    ForgotPasswordFormData, JwtResponse, LoginFormData, MessageResponse,
+    RegisterFormData, ResetPasswordFormData, User
 } from "../../validation/authSchemas.ts";
+import { jwtResponseSchema, messageResponseSchema, userSchema } from "../../validation/authSchemas.ts";
+
 
 // transform and validate API response
 const transformJwtResponse = ( response: unknown ): JwtResponse => {
@@ -44,7 +43,7 @@ export const authApi = baseApi.injectEndpoints({
         // authentication endpoints
         login: builder.mutation<JwtResponse, LoginFormData>({
             query: ( credentials ) => ( {
-                url: 'auth/signin',
+                url: '/signin',
                 method: 'POST',
                 body: credentials,
             } ),
@@ -53,12 +52,13 @@ export const authApi = baseApi.injectEndpoints({
         }),
 
         // register endpoint
+        // register: builder.mutation<JwtResponse, RegisterRequest>({
         register: builder.mutation<MessageResponse, RegisterFormData>({
             query: ( userData ) => {
                 // remove confirmPassword before sending to API
                 const { confirmPassword, ...apiUserData } = userData;
                 return {
-                    url: 'auth/signup',
+                    url: '/signup',
                     method: 'POST',
                     body: apiUserData,
                 };
@@ -67,53 +67,100 @@ export const authApi = baseApi.injectEndpoints({
             invalidatesTags: [ 'Auth' ],
         }),
 
-        // add refresh token endpoint
-        refreshToken: builder.mutation<JwtResponse, void>({
-            query: () => ( {
-                url: '/auth/refresh',
-                method: 'Post',
-            } ),
-            transformResponse: transformJwtResponse,
-            invalidatesTags: [ 'Auth', 'User' ]
+        // get current user profile
+        // getMe: builder.query<JwtResponse, void>({
+        getMe: builder.query<User, void>({
+            query: () => '/me',
+            transformResponse: transformUserResponse,
+            providesTags: [ 'User' ],
         }),
 
+
         // forgot password request endpoint
-        // (backend api is missing, will be added later)
-        // forgotPassword: builder.mutation<MessageResponse, { email: string }>({
-        //     query: ( emailData ) => ( {
-        //         url: 'forgot-password',
-        //         method: 'POST',
-        //         body: emailData,
-        //     } ),
-        // }),
+        // (backend api is still missing)
+        forgotPassword: builder.mutation<MessageResponse, ForgotPasswordFormData>({
+            query: ( emailData ) => ( {
+                url: 'forgot-password',
+                method: 'POST',
+                body: emailData,
+            } ),
+        }),
 
         // reset password request endpoint
-        // (backend api is missing, will be added later)
-        // resetPassword: builder.mutation<MessageResponse, { token: string; newPassword: string }>({
-        //     query: ( resetData ) => ( {
-        //         url: 'reset-password',
-        //         method: 'POST',
-        //         body: resetData,
-        //     } ),
-        // }),
+        // (backend api is still missing)
+        resetPassword: builder.mutation<MessageResponse, ResetPasswordFormData>({
+            query: ( resetData ) => ( {
+                url: 'reset-password',
+                method: 'POST',
+                body: resetData,
+            } ),
+        }),
 
         // logout request endpoint
         // (backend api is missing, will be added later)
         logout: builder.mutation<MessageResponse, void>({
             query: () => ( {
-                url: '/auth/logout',
+                url: '/logout',
                 method: 'POST',
             } ),
             transformResponse: transformMessageResponse,
             invalidatesTags: [ 'Auth', 'User' ],
         }),
 
-        // get current user profile
-        getCurrentUser: builder.query<User, void>({
-            query: () => '/auth/me',
-            transformResponse: transformUserResponse,
-            providesTags: [ 'User' ],
+
+        // Check if user is authenticated
+        checkAuth: builder.query<{ isAuthenticated: boolean; token: string | null }, void>({
+            queryFn: () => {
+                try {
+                    const authData = localStorage.getItem('auth') || sessionStorage.getItem('auth');
+                    if ( authData ) {
+                        const parsed = JSON.parse(authData);
+
+                        // Check token expiration
+                        if ( parsed.token ) {
+                            try {
+                                const payload = JSON.parse(atob(parsed.token.split('.')[ 1 ]));
+                                const currentTime = Date.now() / 1000;
+
+                                if ( payload.exp > currentTime ) {
+                                    return {
+                                        data: {
+                                            isAuthenticated: true,
+                                            token: parsed.token
+                                        }
+                                    };
+                                } else {
+                                    // Token expired, clear storage
+                                    localStorage.removeItem('auth');
+                                    sessionStorage.removeItem('auth');
+                                    localStorage.removeItem('rememberMe');
+                                }
+                            }
+                            catch ( error ) {
+                                console.error('Error checking token expiration:', error);
+                            }
+                        }
+                    }
+
+                    return { data: { isAuthenticated: false, token: null } };
+                }
+                catch ( error ) {
+                    return { error: { status: 500, data: 'Error checking auth status' } };
+                }
+            },
+            providesTags: [ 'Auth' ],
         }),
+
+        // add refresh token endpoint
+        // refreshToken: builder.mutation<JwtResponse, void>({
+        //     query: () => ( {
+        //         url: '/refresh',
+        //         method: 'Post',
+        //     } ),
+        //     transformResponse: transformJwtResponse,
+        //     invalidatesTags: [ 'Auth', 'User' ]
+        // }),
+
     } ),
 });
 
@@ -121,9 +168,9 @@ export const authApi = baseApi.injectEndpoints({
 export const {
     useLoginMutation,
     useRegisterMutation,
-    // useForgotPasswordMutation,
-    // useResetPasswordMutation,
-    useRefreshTokenMutation,
+    useForgotPasswordMutation,
+    useResetPasswordMutation,
+    // useRefreshTokenMutation,
     useLogoutMutation,
-    useGetCurrentUserQuery,
+    useGetMeQuery,
 } = authApi;

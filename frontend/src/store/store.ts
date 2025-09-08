@@ -1,15 +1,11 @@
 import { configureStore } from "@reduxjs/toolkit";
-import { baseApi } from "./api/baseApi.ts";
 import { setupListeners } from "@reduxjs/toolkit/query/react";
-import { authReducer } from "./slices/authSlice.ts";
+import { authApi } from "./api/authApi.ts";
 
 export const store = configureStore({
     reducer: {
-        // auth slice reducer
-        auth: authReducer,
-
-        // API slice reducer
-        [ baseApi.reducerPath ]: baseApi.reducer,
+        // API slice reducer (RTK Query)
+        [ authApi.reducerPath ]: authApi.reducer,
     },
     // api middleware enables caching, invalidation, polling, ...
     middleware: ( getDefaultMiddleware ) =>
@@ -18,7 +14,7 @@ export const store = configureStore({
                 // ignore these action types
                 ignoredActions: [ 'persist/PERSIST', 'persist/REHYDRATE' ],
             },
-        }).concat(baseApi.middleware),
+        }).concat(authApi.middleware),
 });
 
 // enable listener behavior for the store (for automatic fetching)
