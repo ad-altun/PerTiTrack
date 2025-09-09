@@ -11,6 +11,7 @@
 backend/mvnw
 backend/mvnw.cmd
 backend/.mvn
+/backend/src/main/resources/static/
 
 # Frontend
 /frontend/node_modules
