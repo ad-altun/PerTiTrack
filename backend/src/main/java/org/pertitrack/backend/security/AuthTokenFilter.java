@@ -36,12 +36,14 @@ public class AuthTokenFilter extends OncePerRequestFilter {
         try {
             String jwt = parseJwt(request);
             logger.info("=== AuthTokenFilter Processing ===");
-            logger.info("Request URI: {}", new Throwable(request.getRequestURI()));
-            logger.info("JWT Token: {}", new Throwable(jwt != null ? "Present (" + jwt.substring(0, 20) + "...)" : "Missing"));
+            logger.info("Request URI: '" + request.getRequestURI() + "'");
+            logger.info("JWT Token: '" + (jwt != null ?
+                    "Present ('" + jwt.substring(0, Math.min(20, jwt.length())) + "'...)" :
+                    "Missing"));
 
             if (jwt != null && jwtUtils.validateJwtToken(jwt)) {
                 String username = jwtUtils.getUserNameFromJwtToken(jwt);
-                logger.info("Username '{}' extracted from JWT", new Throwable(username));
+                logger.info("Username '" + username + " 'extracted from JWT");
 
                 if (username != null) {
                     UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
@@ -50,13 +52,13 @@ public class AuthTokenFilter extends OncePerRequestFilter {
                     authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
                     SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-                    logger.info("Successfully set authentication for user: {}", new Throwable(username));
+                    logger.info("Successfully set authentication for user: '" + username + "'");
                 } else {
                     logger.warn("JWT validation failed or token missing");
                 }
             }
         } catch (Exception e) {
-            logger.error("Cannot set user authentication: {}", new Throwable(e.getMessage()));
+            logger.error("Cannot set user authentication: '" + e.getMessage() + "'");
         }
 
         filterChain.doFilter(request, response);
@@ -64,7 +66,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 
     private String parseJwt(HttpServletRequest request) {
         String headerAuth = request.getHeader("Authorization");
-        logger.info("Authorization header: {}", new Throwable(headerAuth));
+        logger.info("Authorization header: '" + headerAuth + "'");
 
         if (StringUtils.hasText(headerAuth) && headerAuth.startsWith("Bearer ")) {
             return headerAuth.substring(7);
