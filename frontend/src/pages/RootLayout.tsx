@@ -1,20 +1,18 @@
 import { Navigate, Outlet } from "react-router-dom";
-import ProtectedRoute from "../routes/ProtectedRoute.tsx";
+import { useIsAuthenticated } from "../store/hook.ts";
 
 
 export default function RootLayout() {
 
-    const isAuthenticated = false;
+    const isAuthenticated = useIsAuthenticated();
 
     if ( !isAuthenticated ) {
-        return <Navigate to="/signin" replace/>;
+        return <Navigate to="/auth/signin" replace/>;
     }
 
     return (
         <div>
-            <ProtectedRoute>
-                <Outlet/>
-            </ProtectedRoute>
+            <Outlet/>
         </div>
     );
 };

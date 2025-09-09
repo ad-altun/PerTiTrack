@@ -1,18 +1,18 @@
 import * as React from "react";
-import { checkAuth } from "../utils/auth";
 import { Navigate } from "react-router-dom";
+import { useIsAuthenticated } from "../store/hook.ts";
 
 interface ProtectedRouteProps {
     children: React.ReactNode;
 }
 
 export default function ProtectedRoute( { children }: ProtectedRouteProps ) {
-    const { isAuthenticated } = checkAuth();
+    const isAuthenticated = useIsAuthenticated();
 
     if ( !isAuthenticated ) {
-        return <Navigate to="/signin" replace/>;
+        return <Navigate to="/auth/signin" replace/>;
     }
 
-    return children;
+    return <>{ children }</>;
 
 };
