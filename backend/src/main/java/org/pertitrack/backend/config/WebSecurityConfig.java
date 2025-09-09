@@ -27,14 +27,11 @@ import java.util.List;
 @EnableWebSecurity
 public class WebSecurityConfig {
 
+    private final UserDetailsServiceImpl userDetailsService;
+    private final AuthEntryPointJwt unauthorizedHandler;
+    private final AuthTokenFilter authenticationJwtTokenFilter;
     @Value("${app.allowed-origins}")
     private List<String> allowedOrigins;
-
-    private final UserDetailsServiceImpl userDetailsService;
-
-    private final AuthEntryPointJwt unauthorizedHandler;
-
-    private final AuthTokenFilter authenticationJwtTokenFilter;
 
 
     public WebSecurityConfig(UserDetailsServiceImpl userDetailsService,
@@ -55,7 +52,7 @@ public class WebSecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth ->
                         auth.requestMatchers("/auth/**", "/api/auth/**").permitAll()
-                                .requestMatchers("/", "/index.html", "/assets/**").permitAll()
+                                .requestMatchers("/", "/index.html", "/assets/**", "/favicon.svg").permitAll()
                                 .anyRequest().authenticated()
                 )
                 .userDetailsService(userDetailsService)
