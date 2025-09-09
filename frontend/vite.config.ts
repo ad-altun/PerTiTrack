@@ -8,7 +8,7 @@ export default defineConfig({
         proxy: {
             '/api': {
                 target: 'http://localhost:8080',
-                // optional-> changeOrigin: true
+                changeOrigin: true,
             }
         }
     },
@@ -32,12 +32,8 @@ export default defineConfig({
                     'mui-core': [ '@mui/material', '@emotion/react', '@emotion/styled' ],
                     'mui-icons': [ '@mui/icons-material' ],
 
-                    // HTTP & Utilities
-                    // 'http': [ 'axios' ],
-
                     // Date/Time (if you add these)
                     // 'date': [ 'date-fns', 'dayjs', 'moment' ], // whichever you use
-
 
                     // Other utilities (if you add these)
                     // 'utils': [ 'lodash', 'uuid', 'classnames' ]
