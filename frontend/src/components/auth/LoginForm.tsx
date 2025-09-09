@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import type { LoginFormData } from "../../validation/authSchemas.ts";
@@ -6,12 +7,15 @@ import { loginSchema } from "../../validation/authSchemas.ts";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Alert, Box, Button, CircularProgress, Container, Paper, TextField, Typography } from "@mui/material";
 import { useLoginMutation } from "../../store/api/authApi.ts";
-import { useEffect } from "react";
+import { setCredentials } from "../../store/slices/authSlice.ts";
+import { useAppDispatch } from "../../store/hook.ts";
 
 
 export default function LoginForm(): React.JSX.Element {
     const navigate = useNavigate();
     const [ loginMutation, { isLoading, error, isSuccess } ] = useLoginMutation();
+
+    const dispatch = useAppDispatch();
 
     const {
         register,
@@ -27,17 +31,20 @@ export default function LoginForm(): React.JSX.Element {
 
     const onSubmit = async ( data: LoginFormData ) => {
         try {
-            await loginMutation({
+            const result = await loginMutation({
                 email: data.email,
                 password: data.password,
             }).unwrap();
 
-            // navigate to dashboard - storage is handled in the API
+            // navigate to dashboard
             // navigate('/dashboard');
+
+            // Store credentials
+            dispatch(setCredentials(result));
         }
-        catch ( error ) {
+        catch (error) {
             console.error('Login failed: ', error);
-            // Error is automatically handled by RTK Query
+            // RTK Query automatically handles error
         }
     };
 
@@ -95,7 +102,7 @@ export default function LoginForm(): React.JSX.Element {
                         </Button>
 
                         <Box sx={ { textAlign: 'center' } }>
-                            <Link to="/forgot-password" style={ { textDecoration: 'none' } }>
+                            <Link to="/auth/forgot-password" style={ { textDecoration: 'none' } }>
                                 <Typography variant="body2" sx={ { mt: 2 } } color={ "primary" }>
                                     Forgot your password?
                                 </Typography>
@@ -103,7 +110,7 @@ export default function LoginForm(): React.JSX.Element {
 
                             <Typography variant={ "body2" } sx={ { mt: 2 } }>
                                 Don't have an account?{ ' ' }
-                                <Link to="/register" style={ { textDecoration: 'none' } }>
+                                <Link to="/auth/register" style={ { textDecoration: 'none' } }>
                                     <Typography component={ "span" } variant="body2" color={ "primary" }>
                                         Sign Up
                                     </Typography>

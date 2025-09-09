@@ -2,8 +2,7 @@ import { Alert, Box, Button, Container, Grid, Paper, TextField, Typography } fro
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useRegisterMutation } from "../../store/api/authApi.ts";
-import { type RegisterFormData } from "../../validation/authSchemas.ts";
-import { registerSchema } from "../../validation/authSchemas.ts";
+import { type RegisterFormData, registerSchema } from "../../validation/authSchemas.ts";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -43,7 +42,7 @@ export default function RegisterForm() {
 
             // navigate to login page after successful registration
             setTimeout(() => {
-                navigate('/signin');
+                navigate('/auth/signin');
             }, 2000);
         }
         catch {
@@ -173,7 +172,7 @@ export default function RegisterForm() {
                         <Box sx={ { textAlign: 'center' } }>
                             <Typography variant="body2">
                                 Already have an account?{ ' ' }
-                                <Link to="/signin" style={ { textDecoration: 'none' } }>
+                                <Link to="/auth/signin" style={ { textDecoration: 'none' } }>
                                     <Typography component={ "span" } variant="body2" color={ "primary" }>
                                         Sign In
                                     </Typography>

@@ -32,7 +32,7 @@ export default function ForgotPasswordForm() {
             setSuccessMessage(result.message || 'Password reset email sent.');
             reset();
         }
-        catch ( error ) {
+        catch (error) {
             // const errorMessage = error?.data?.message || error?.message || 'An error occurred during forgot password';
             const errorMessage = 'An error occurred during forgot password';
             setErrorMessage(errorMessage);
@@ -92,7 +92,7 @@ export default function ForgotPasswordForm() {
                         </Button>
 
                         <Box sx={ { textAlign: 'center' } }>
-                            <Link to="/signin" style={ { textDecoration: 'none' } }>
+                            <Link to="/auth/signin" style={ { textDecoration: 'none' } }>
                                 <Button startIcon={ <ArrowBackIcon/> } variant="text" color="primary">
                                     Back to Sign In
                                 </Button>
