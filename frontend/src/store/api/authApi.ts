@@ -1,7 +1,12 @@
 import { baseApi } from "./baseApi.ts";
 import type {
-    ForgotPasswordFormData, JwtResponse, LoginFormData, MessageResponse,
-    RegisterFormData, ResetPasswordFormData, User
+    ForgotPasswordFormData,
+    JwtResponse,
+    LoginFormData,
+    MessageResponse,
+    RegisterFormData,
+    ResetPasswordFormData,
+    User
 } from "../../validation/authSchemas.ts";
 import { jwtResponseSchema, messageResponseSchema, userSchema } from "../../validation/authSchemas.ts";
 
@@ -11,7 +16,7 @@ const transformJwtResponse = ( response: unknown ): JwtResponse => {
     try {
         return jwtResponseSchema.parse(response);
     }
-    catch ( error ) {
+    catch (error) {
         console.error('Invalid JWT response: ', error);
         throw new Error('Invalid response format from server');
     }
@@ -21,7 +26,7 @@ const transformMessageResponse = ( response: unknown ): MessageResponse => {
     try {
         return messageResponseSchema.parse(response);
     }
-    catch ( error ) {
+    catch (error) {
         console.error('Invalid message response: ', error);
         throw new Error('Invalid response format from server');
     }
@@ -31,7 +36,7 @@ const transformUserResponse = ( response: unknown ): User => {
     try {
         return userSchema.parse(response);
     }
-    catch ( error ) {
+    catch (error) {
         console.error("Invalid user response. ", error);
         throw new Error('Invalid user data from server');
     }
@@ -133,10 +138,9 @@ export const authApi = baseApi.injectEndpoints({
                                     // Token expired, clear storage
                                     localStorage.removeItem('auth');
                                     sessionStorage.removeItem('auth');
-                                    localStorage.removeItem('rememberMe');
                                 }
                             }
-                            catch ( error ) {
+                            catch (error) {
                                 console.error('Error checking token expiration:', error);
                             }
                         }
@@ -144,7 +148,7 @@ export const authApi = baseApi.injectEndpoints({
 
                     return { data: { isAuthenticated: false, token: null } };
                 }
-                catch ( error ) {
+                catch (error) {
                     return { error: { status: 500, data: 'Error checking auth status' } };
                 }
             },
