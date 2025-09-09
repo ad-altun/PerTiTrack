@@ -1,4 +1,3 @@
-import { baseApi } from "./baseApi.ts";
 import type {
     ForgotPasswordFormData,
     JwtResponse,
@@ -9,6 +8,9 @@ import type {
     User
 } from "../../validation/authSchemas.ts";
 import { jwtResponseSchema, messageResponseSchema, userSchema } from "../../validation/authSchemas.ts";
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import type { RootState } from "../store.ts";
+import { STORAGE_KEYS } from "../../constants/storage";
 
 
 // transform and validate API response
@@ -43,12 +45,29 @@ const transformUserResponse = ( response: unknown ): User => {
 };
 
 // Auth API Slice with endpoints
-export const authApi = baseApi.injectEndpoints({
+export const authApi = createApi({
+    reducerPath: 'authApi',
+    baseQuery: fetchBaseQuery({
+        baseUrl: '/api',
+        prepareHeaders: ( headers, { getState } ) => {
+
+            // Get token from Redux state
+            const token = ( getState() as RootState ).auth?.token;
+
+            if ( token ) {
+                headers.set('authorization', `Bearer ${ token }`);
+            }
+
+            headers.set('content-type', 'application/json');
+            return headers;
+        },
+    }),
+    tagTypes: [ 'User', 'Auth' ],
     endpoints: ( builder ) => ( {
         // authentication endpoints
         login: builder.mutation<JwtResponse, LoginFormData>({
             query: ( credentials ) => ( {
-                url: '/signin',
+                url: '/auth/signin',
                 method: 'POST',
                 body: credentials,
             } ),
@@ -63,7 +82,7 @@ export const authApi = baseApi.injectEndpoints({
                 // remove confirmPassword before sending to API
                 const { confirmPassword, ...apiUserData } = userData;
                 return {
-                    url: '/signup',
+                    url: '/auth/signup',
                     method: 'POST',
                     body: apiUserData,
                 };
@@ -74,18 +93,18 @@ export const authApi = baseApi.injectEndpoints({
 
         // get current user profile
         // getMe: builder.query<JwtResponse, void>({
-        getMe: builder.query<User, void>({
-            query: () => '/me',
-            transformResponse: transformUserResponse,
-            providesTags: [ 'User' ],
-        }),
+        // getMe: builder.query<User, void>({
+        //     query: () => '/me',
+        //     transformResponse: transformUserResponse,
+        //     providesTags: [ 'User' ],
+        // }),
 
 
         // forgot password request endpoint
         // (backend api is still missing)
         forgotPassword: builder.mutation<MessageResponse, ForgotPasswordFormData>({
             query: ( emailData ) => ( {
-                url: 'forgot-password',
+                url: '/auth/forgot-password',
                 method: 'POST',
                 body: emailData,
             } ),
@@ -95,7 +114,7 @@ export const authApi = baseApi.injectEndpoints({
         // (backend api is still missing)
         resetPassword: builder.mutation<MessageResponse, ResetPasswordFormData>({
             query: ( resetData ) => ( {
-                url: 'reset-password',
+                url: '/auth/reset-password',
                 method: 'POST',
                 body: resetData,
             } ),
@@ -105,7 +124,7 @@ export const authApi = baseApi.injectEndpoints({
         // (backend api is missing, will be added later)
         logout: builder.mutation<MessageResponse, void>({
             query: () => ( {
-                url: '/logout',
+                url: '/auth/logout',
                 method: 'POST',
             } ),
             transformResponse: transformMessageResponse,
@@ -117,7 +136,8 @@ export const authApi = baseApi.injectEndpoints({
         checkAuth: builder.query<{ isAuthenticated: boolean; token: string | null }, void>({
             queryFn: () => {
                 try {
-                    const authData = localStorage.getItem('auth') || sessionStorage.getItem('auth');
+                    const authData = localStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN) || sessionStorage.getItem(
+                        STORAGE_KEYS.ACCESS_TOKEN);
                     if ( authData ) {
                         const parsed = JSON.parse(authData);
 
@@ -136,8 +156,8 @@ export const authApi = baseApi.injectEndpoints({
                                     };
                                 } else {
                                     // Token expired, clear storage
-                                    localStorage.removeItem('auth');
-                                    sessionStorage.removeItem('auth');
+                                    localStorage.removeItem(STORAGE_KEYS.ACCESS_TOKEN);
+                                    sessionStorage.removeItem(STORAGE_KEYS.ACCESS_TOKEN);
                                 }
                             }
                             catch (error) {
@@ -176,5 +196,5 @@ export const {
     useResetPasswordMutation,
     // useRefreshTokenMutation,
     useLogoutMutation,
-    useGetMeQuery,
+    // useGetMeQuery,
 } = authApi;
