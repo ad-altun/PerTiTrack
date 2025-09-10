@@ -1,213 +1,105 @@
-import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import {
-    clearAuthData,
-    getCurrentUser,
-    getToken,
-    isAuthenticated,
-    setAuthData,
-    validateStoredTokens,
-} from "../../services/authService.ts";
-import { authApi } from "../api/authApi.ts";
-import type { AuthState, JwtResponse, User } from '../../types/authTypes.ts';
-import { userSchema } from "../../validation/authSchemas.ts";
+import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
+import type { JwtResponse } from '../../validation/authSchemas.ts';
+import { STORAGE_KEYS } from '../../constants/storage';
 
-// load initial state with token validation
+interface AuthState {
+    token: string | null;
+    user: {
+        id: number;
+        email: string;
+        firstName: string;
+        lastName: string;
+        roles: string[];
+    } | null;
+    isAuthenticated: boolean;
+    isLoading: boolean;
+}
+
+// Initialize from localStorage
 const getInitialState = (): AuthState => {
     try {
-        const isValid = validateStoredTokens();
-        if ( !isValid ) {
-            // the loadıng and error need to be assıgned properly
-            return {
-                user: null,
-                token: null,
-                isAuthenticated: false,
-                isLoading: false,
-                error: null
-            };
-        }
+        const token = localStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN
+        );
+        const userStr = localStorage.getItem(STORAGE_KEYS.USER);
+        const user = userStr ? JSON.parse(userStr) : null;
+
         return {
-            user: getCurrentUser(),
-            token: getToken(),
-            isAuthenticated: isAuthenticated(),
+            token,
+            user,
+            isAuthenticated: !!token && !!user,
             isLoading: false,
-            error: null
         };
     }
-    catch ( error ) {
-        console.error('Failed to initialize auth state:', error);
+    catch (error) {
+        // If localStorage is corrupted, clear it
+        localStorage.removeItem(STORAGE_KEYS.ACCESS_TOKEN);
+        localStorage.removeItem(STORAGE_KEYS.USER);
         return {
-            user: null,
             token: null,
+            user: null,
             isAuthenticated: false,
             isLoading: false,
-            error: null
         };
     }
 };
 
-// const initialState = getInitialState();
-
-// implementing Auth Slice with RTK Query
 const authSlice = createSlice({
     name: 'auth',
     initialState: getInitialState(),
     reducers: {
-        loginStart: ( state ) => {
-            state.isLoading = true;
-            state.error = null;
-        },
-
-        // loginSuccess: (state,
-        // action: PayloadAction<{ authData: JwtResponse }>) => {
-        //     const { authData } = action.payload;
-        //
-        //     state.user = userSchema.parse({
-        //         id: authData.id,
-        //         email: authData.email,
-        //         firstName: authData.firstName,
-        //         lastName: authData.lastName,
-        //         roles: authData.roles,
-        //     });
-        //     state.token = authData.token;
-        //     state.isAuthenticated = true;
-        //     state.isLoading = false;
-        //     state.error = null;
-        //     // state.rememberMe = rememberMe;
-        //
-        // },
-
-        logout: ( state ) => {
-            clearAuthData();
-            state.user = null;
-            state.token = null;
-            state.isAuthenticated = false;
-            state.isLoading = false;
-            state.error = null;
-        },
+        // Set credentials from successful login
         setCredentials: ( state, action: PayloadAction<JwtResponse> ) => {
             const { token, id, email, firstName, lastName, roles } = action.payload;
 
             state.token = token;
             state.user = { id, email, firstName, lastName, roles };
             state.isAuthenticated = true;
+            state.isLoading = false;
 
-            // store in localStorage with validation
-            setAuthData(action.payload);
+            // Persist to localStorage
+            localStorage.setItem(STORAGE_KEYS.ACCESS_TOKEN, token);
+            localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify({ id, email, firstName, lastName, roles }));
         },
+
+        // Clear credentials on logout
         clearCredentials: ( state ) => {
-            state.user = null;
+
             state.token = null;
+            state.user = null;
             state.isAuthenticated = false;
-            clearAuthData();
-        },
-        refreshAuthState: ( state ) => {
-            const isValid = refreshAuthState();
-            if ( !isValid ) {
-                state.user = null;
-                state.token = null;
-                state.isAuthenticated = false;
-                state.isLoading = false;
-                state.error = null;
-            } else {
-                state.user = getCurrentUser();
-                state.token = getToken();
-                state.isAuthenticated = true;
-                state.isLoading = false;
-                state.error = null;
-            }
+            state.isLoading = false;
+
+            // Clear localStorage
+            localStorage.removeItem(STORAGE_KEYS.ACCESS_TOKEN);
+            localStorage.removeItem(STORAGE_KEYS.USER);
+
         },
 
-        updateUser: ( state, action: PayloadAction<Partial<User>> ) => {
+        // Set loading state
+        setLoading: ( state, action: PayloadAction<boolean> ) => {
+            state.isLoading = action.payload;
+        },
+
+        // Update user profile (without new token)
+        updateUser: ( state, action: PayloadAction<Partial<AuthState['user']>> ) => {
             if ( state.user ) {
-                const updated = { ...state.user, ...action.payload };
-                state.user = userSchema.parse(updated);
-
-                // update localstorage
-                localStorage.setItem('key', JSON.stringify(state.user));
+                state.user = { ...state.user, ...action.payload };
+                localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(state.user));
             }
         },
     },
+
+    // Handle RTK Query actions
     extraReducers: ( builder ) => {
-        // listen to login success from rtk query
-        builder.addMatcher(
-            authApi.endpoints.login.matchFulfilled,
-            ( state, action ) => {
-                const jwtResponse = action.payload;
-                state.user = userSchema.parse({
-                    id: jwtResponse.id,
-                    email: jwtResponse.email,
-                    firstName: jwtResponse.firstName,
-                    lastName: jwtResponse.lastName,
-                    roles: jwtResponse.roles,
-                });
-                state.token = jwtResponse.token;
-                state.isAuthenticated = true;
-                state.isLoading = false;
-                state.error = null;
-
-                // store in localStorage
-                setAuthData(jwtResponse);
-            }
-        );
-
-        // listen to auth failures
-        builder.addMatcher(
-            authApi.endpoints.login.matchRejected,
-            // ( state, action: PayloadAction<string> ) => {
-            ( state ) => {
-                state.user = null;
-                state.token = null;
-                state.isAuthenticated = false;
-                state.isLoading = false;
-                // state.error = action.payload;
-            }
-        );
-
-        // listen to refresh token success
-        builder.addMatcher(
-            authApi.endpoints.refreshToken.matchFulfilled,
-            ( state, action ) => {
-                const jwtResponse = action.payload;
-                state.token = jwtResponse.token;
-                state.user = userSchema.parse({
-                    id: jwtResponse.id,
-                    email: jwtResponse.email,
-                    firstName: jwtResponse.firstName,
-                    lastName: jwtResponse.lastName,
-                    roles: jwtResponse.roles,
-                });
-                // state.isAuthenticated = false;
-                state.isAuthenticated = true;
-
-                // store in localStorage
-                setAuthData(jwtResponse);
-            }
-        );
-
-        // listen to logout success
-        builder.addMatcher(
-            authApi.endpoints.logout.matchFulfilled,
-            ( state ) => {
-                state.token = null;
-                state.user = null;
-                state.isAuthenticated = false;
-                state.isLoading = false;
-                state.error = null;
-
-                clearAuthData();
-            }
-        );
-
+        // Later RTK Query actions, e.g. auto-logout on 401 responses
     },
 });
 
 export const {
-    loginStart,
-    logout,
     setCredentials,
     clearCredentials,
-    refreshAuthState,
+    setLoading,
     updateUser
 } = authSlice.actions;
 
-export const authReducer = authSlice.reducer;
+export default authSlice.reducer;

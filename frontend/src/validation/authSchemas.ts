@@ -41,32 +41,6 @@ export const registerSchema = z.object({
     path: [ "confirmPassword" ],
 });
 
-// forgot password validation schema
-// export const forgotPasswordSchema = z.object({
-//     email: z
-//         .email('Please enter a valid email address')
-//         .min(1, 'Email is required')
-// });
-
-// reset password validation schema
-// export const resetPasswordSchema = z.object({
-//     newPassword: z
-//         .string()
-//         .min(1, 'New password is required')
-//         .min(8, 'Password must be at least 8 characters long')
-//         .max(128, 'Password must not exceed 128 characters')
-//         .regex(
-//             /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
-//             'Password must contain at least one lowercase letter, one uppercase letter, and one number'
-//         ),
-//     confirmNewPassword: z
-//         .string()
-//         .min(1, 'Please confirm your new password'),
-// }).refine(( data ) => data.newPassword === data.confirmNewPassword, {
-//     message: "Passwords don't match",
-//     path: [ "confirmNewPassword" ],
-// });
-
 // API (backend) response schemas for runtime validation
 export const jwtResponseSchema = z.object({
     token: z.string(),
@@ -76,6 +50,28 @@ export const jwtResponseSchema = z.object({
     firstName: z.string(),
     lastName: z.string(),
     roles: z.array(z.string()),
+});
+
+// forgot/reset password
+export const forgotPasswordSchema = z.object({
+    email: z
+        .email('Please enter a valid email address')
+        .min(1, 'Email is required'),
+});
+
+export const resetPasswordSchema = z.object({
+    token: z.string().min(1, 'Token is required')
+        .max(100, 'Token cannot exceed 100 characters'),
+    password: z
+        .string()
+        .min(6, 'Password must be at least 6 characters')
+        .regex(
+            /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
+            'Password must contain at least one uppercase letter, one lowercase letter, and one number'
+        ),
+    confirmPassword: z
+        .string()
+        .min(1, 'Please confirm your password'),
 });
 
 export const messageResponseSchema = z.object({
@@ -107,8 +103,8 @@ export const authStateSchema = z.object({
 // Type inference from schema
 export type LoginFormData = z.infer<typeof loginSchema>;
 export type RegisterFormData = z.infer<typeof registerSchema>;
-// export type ForgotPasswordFormData = z.infer<typeof forgotPasswordSchema>;
-// export type ResetPasswordFormData = z.infer<typeof resetPasswordSchema>;
+export type ForgotPasswordFormData = z.infer<typeof forgotPasswordSchema>;
+export type ResetPasswordFormData = z.infer<typeof resetPasswordSchema>;
 export type JwtResponse = z.infer<typeof jwtResponseSchema>;
 export type MessageResponse = z.infer<typeof messageResponseSchema>;
 export type User = z.infer<typeof userSchema>;
