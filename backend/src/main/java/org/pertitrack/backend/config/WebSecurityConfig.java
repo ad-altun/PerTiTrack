@@ -29,9 +29,6 @@ public class WebSecurityConfig {
     private final UserDetailsServiceImpl userDetailsService;
     private final AuthEntryPointJwt unauthorizedHandler;
     private final AuthTokenFilter authenticationJwtTokenFilter;
-//    @Value("${app.allowed-origins}")
-//    private List<String> allowedOrigins;
-
 
     public WebSecurityConfig(UserDetailsServiceImpl userDetailsService,
                              AuthEntryPointJwt unauthorizedHandler,

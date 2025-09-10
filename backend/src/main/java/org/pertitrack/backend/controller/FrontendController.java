@@ -1,11 +1,12 @@
 package org.pertitrack.backend.controller;
 
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 @Controller
 public class FrontendController {
-    @RequestMapping(value = {
+    @GetMapping(value = {
             "/",
             "/auth/**",
             "/auth/{path:[^.]*}",
@@ -13,8 +14,7 @@ public class FrontendController {
             "/users/{path:[^.]*}",
             "/settings/{path:[^.]*}",
     })
-    public String forward() {
+    public String forward(@PathVariable(required = false) String path) {
         return "forward:/index.html";
     }
-
 }
