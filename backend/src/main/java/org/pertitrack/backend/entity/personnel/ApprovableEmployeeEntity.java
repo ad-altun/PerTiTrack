@@ -1,6 +1,7 @@
 package org.pertitrack.backend.entity.personnel;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.pertitrack.backend.entity.BaseEntity;
@@ -10,7 +11,12 @@ import java.time.LocalDateTime;
 @MappedSuperclass
 @Data
 @EqualsAndHashCode(callSuper = true)
-public abstract class ApproverEntity extends BaseEntity {
+public abstract class ApprovableEmployeeEntity extends BaseEntity {
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "employee_id", nullable = false)
+    @NotNull
+    private Employee employee;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "approved_by")

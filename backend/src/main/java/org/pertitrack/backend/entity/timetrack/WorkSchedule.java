@@ -6,7 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import org.pertitrack.backend.entity.personnel.Employee;
 import org.pertitrack.backend.entity.personnel.EmployeeOwnedEntity;
 
 import java.io.Serial;
@@ -29,11 +28,6 @@ public class WorkSchedule extends EmployeeOwnedEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "employee_id", nullable = false)
-    @NotNull
-    private Employee employee;
 
     @Column(name = "day_of_week", nullable = false)
     @NotNull

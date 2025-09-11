@@ -7,10 +7,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.pertitrack.backend.entity.personnel.ApproverEntity;
-import org.pertitrack.backend.entity.personnel.Employee;
 
 import java.io.Serial;
-import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -21,7 +19,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-public class TimeRecord extends ApproverEntity implements Serializable {
+public class TimeRecord extends ApproverEntity {
 
     @Serial
     private static final long serialVersionUID = 1L;
@@ -29,11 +27,6 @@ public class TimeRecord extends ApproverEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "employee_id", nullable = false)
-    @NotNull
-    private Employee employee;
 
     @Column(name = "record_date", nullable = false)
     @NotNull
