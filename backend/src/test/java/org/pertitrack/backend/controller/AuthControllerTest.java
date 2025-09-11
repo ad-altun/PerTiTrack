@@ -15,8 +15,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
+import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.verify;
@@ -54,7 +56,8 @@ class AuthControllerTest {
         // Arrange
         JwtResponse expectedResponse = new JwtResponse(
                 "test.jwt.token",
-                1L,
+                UUID.fromString("550e8400-e29b-41d4-a716-446655440000"),
+//                UUID.randomUUID(),
                 "test@example.com",
                 "Test",
                 "User",

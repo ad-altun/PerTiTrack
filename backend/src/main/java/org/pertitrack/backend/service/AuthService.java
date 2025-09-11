@@ -4,7 +4,7 @@ import org.pertitrack.backend.dto.JwtResponse;
 import org.pertitrack.backend.dto.LoginRequest;
 import org.pertitrack.backend.dto.MessageResponse;
 import org.pertitrack.backend.dto.SignupRequest;
-import org.pertitrack.backend.entity.User;
+import org.pertitrack.backend.entity.auth.User;
 import org.pertitrack.backend.repository.UserRepository;
 import org.pertitrack.backend.security.JwtUtils;
 import org.springframework.http.ResponseEntity;
