@@ -10,7 +10,7 @@ import org.pertitrack.backend.dto.JwtResponse;
 import org.pertitrack.backend.dto.LoginRequest;
 import org.pertitrack.backend.dto.MessageResponse;
 import org.pertitrack.backend.dto.SignupRequest;
-import org.pertitrack.backend.entity.User;
+import org.pertitrack.backend.entity.auth.User;
 import org.pertitrack.backend.repository.UserRepository;
 import org.pertitrack.backend.security.JwtUtils;
 import org.springframework.http.HttpStatus;
@@ -22,6 +22,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -56,7 +57,7 @@ class AuthServiceTest {
     void setup() {
         // Create test user with EMPLOYEE role, which is default
         testUser = new User();
-        testUser.setId(1L);
+        testUser.setId(UUID.fromString("550e8400-e29b-41d4-a716-446655440000"));
         testUser.setEmail("test@test.com");
         testUser.setPassword("encodedPassword000");
         testUser.setFirstName("Patrick");

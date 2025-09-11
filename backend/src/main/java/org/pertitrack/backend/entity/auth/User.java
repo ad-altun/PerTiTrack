@@ -1,51 +1,60 @@
-package org.pertitrack.backend.entity;
+package org.pertitrack.backend.entity.auth;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.io.Serial;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 
+@Entity
+@Table(name = "users", schema = "auth")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity(name = "users")
+@EqualsAndHashCode(callSuper = false)  // Just this
+@ToString(exclude = {"password"})
 public class User implements UserDetails {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Serial
+    private static final long serialVersionUID = 1L;
 
-    @Column(unique = true)
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
+
+    @Column(unique = true, nullable = false)
     @Email
     @NotBlank
     private String email;
 
     @NotBlank
-    @Size(min = 6)
-    private String password;
-
-    @NotBlank
+    @Column(name = "first_name", nullable = false)
     private String firstName;
 
     @NotBlank
+    @Column(name = "last_name", nullable = false)
     private String lastName;
+
+    @NotBlank
+    @Column(name = "password_hash", nullable = false)
+    private String password;
 
     @Enumerated(EnumType.STRING)
     private Role role = Role.EMPLOYEE;
 
     private boolean enabled = true;
 
-    @Column(name = "created_at")
+    @CreationTimestamp
+    @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
     public User(String email, String password, String firstName, String lastName) {
@@ -84,6 +93,12 @@ public class User implements UserDetails {
     @Override
     public boolean isEnabled() {
         return enabled;
+    }
+
+    // get full name method
+    @Transient
+    public String getFullName() {
+        return firstName + " " + lastName;
     }
 
     public enum Role {
