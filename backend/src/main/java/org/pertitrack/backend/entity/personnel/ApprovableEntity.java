@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @MappedSuperclass
 @Data
 @EqualsAndHashCode(callSuper = true)
-public abstract class ApproverEntity extends BaseEntity {
+public abstract class ApprovableEntity extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "approved_by")

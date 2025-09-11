@@ -6,7 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import org.pertitrack.backend.entity.personnel.ApproverEntity;
+import org.pertitrack.backend.entity.personnel.ApprovableEntity;
 import org.pertitrack.backend.entity.personnel.Employee;
 
 import java.io.Serial;
@@ -21,7 +21,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-public class Absence extends ApproverEntity implements Serializable {
+public class Absence extends ApprovableEntity implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;

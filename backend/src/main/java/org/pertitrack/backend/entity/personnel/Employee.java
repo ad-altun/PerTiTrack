@@ -3,16 +3,9 @@ package org.pertitrack.backend.entity.personnel;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
+import org.pertitrack.backend.entity.BaseEntity;
 import org.pertitrack.backend.entity.auth.User;
-import org.pertitrack.backend.entity.timetrack.Absence;
-import org.pertitrack.backend.entity.timetrack.TimeRecord;
-import org.pertitrack.backend.entity.timetrack.WorkSchedule;
 
-import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -20,9 +13,8 @@ import java.util.UUID;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(callSuper = false, exclude = {"timeRecords", "absences", "workSchedules"})
-@ToString(exclude = { "timeRecords", "absences", "workSchedules"})
-public class Employee {
+@EqualsAndHashCode(callSuper = true)
+public class Employee extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -46,23 +38,6 @@ public class Employee {
 
     @Column(name = "is_active")
     private Boolean isActive = true;
-
-    @CreationTimestamp
-    @Column(name = "created_at", updatable = false)
-    private LocalDateTime createdAt;
-
-    @UpdateTimestamp
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
-
-    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL)
-    private Set<TimeRecord> timeRecords = new HashSet<>();
-
-    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL)
-    private Set<Absence> absences = new HashSet<>();
-
-    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL)
-    private Set<WorkSchedule> workSchedules = new HashSet<>();
 
     // Computed property
     @Transient

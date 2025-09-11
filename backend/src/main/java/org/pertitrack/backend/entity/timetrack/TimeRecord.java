@@ -6,7 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import org.pertitrack.backend.entity.personnel.ApproverEntity;
+import org.pertitrack.backend.entity.personnel.ApprovableEntity;
 
 import java.io.Serial;
 import java.time.LocalDate;
@@ -19,7 +19,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-public class TimeRecord extends ApproverEntity {
+public class TimeRecord extends ApprovableEntity {
 
     @Serial
     private static final long serialVersionUID = 1L;
