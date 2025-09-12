@@ -5,7 +5,7 @@ import { STORAGE_KEYS } from '../../constants/storage';
 interface AuthState {
     token: string | null;
     user: {
-        id: number;
+        id: string;
         email: string;
         firstName: string;
         lastName: string;
