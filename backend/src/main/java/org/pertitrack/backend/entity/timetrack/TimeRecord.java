@@ -24,7 +24,6 @@ public class TimeRecord extends ApprovableEntity {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
     @Column(name = "record_date", nullable = false)

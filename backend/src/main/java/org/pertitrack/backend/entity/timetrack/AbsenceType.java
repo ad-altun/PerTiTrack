@@ -24,7 +24,6 @@ public class AbsenceType implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
     @Column(nullable = false, length = 100)

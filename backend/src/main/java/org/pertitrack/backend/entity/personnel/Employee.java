@@ -18,7 +18,6 @@ import org.pertitrack.backend.entity.auth.User;
 public class Employee extends BaseEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
     @OneToOne(fetch = FetchType.LAZY)
@@ -48,7 +47,7 @@ public class Employee extends BaseEntity {
     // Computed property
 
     @Transient
-    public String setFullName(String fullName) {
+    public void setFullName(String fullName) {
         String[] names = fullName.split(" ");
         if (names.length == 2) {
             this.firstName = names[0];
@@ -61,7 +60,6 @@ public class Employee extends BaseEntity {
             this.lastName =  names[2];
         }
 
-        return fullName;
     }
 
 }
