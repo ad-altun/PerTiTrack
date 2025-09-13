@@ -1,11 +1,13 @@
 package org.pertitrack.backend.service;
 
+import org.pertitrack.backend.dto.UserRoleDto;
 import org.pertitrack.backend.entity.auth.UserRole;
 import org.pertitrack.backend.repository.UserRoleRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -18,26 +20,40 @@ public class UserRoleService {
         this.userRoleRepository = userRoleRepository;
     }
 
+    private UserRoleDto toDto(UserRole role) {
+        return new UserRoleDto(
+                role.getId(),
+                role.getName(),
+                role.getDescription(),
+                role.getPermissions(),
+                role.getCreatedAt()
+        );
+    }
+
     // Get all user roles
     // @return list of all user roles
     @Transactional(readOnly = true)
-    public List<UserRole> getAllUserRoles() {
-        return userRoleRepository.findAllByOrderByName();
+    public List<UserRoleDto> getAllUserRoles() {
+        return userRoleRepository.findAllByOrderByName()
+                .stream().map(this::toDto)
+                .toList();
     }
 
     // get a user role by @param = id
     // @return the user role if found
     @Transactional(readOnly = true)
-    public UserRole getRoleById(UUID id) {
-        return userRoleRepository.findById(id).orElse(null);
+    public Optional<UserRoleDto> getRoleById(UUID id) {
+        return userRoleRepository.findById(id).map(this::toDto);
     }
 
     // find roles by permission
     // @param permission: permission to search for role
     // @return list of roles containing the permission
     @Transactional(readOnly = true)
-    public List<UserRole> getRolesByPermission(String permission) {
-        return userRoleRepository.findUserRoleByPermissionsContainsIgnoreCase(permission);
+    public List<UserRoleDto> getRolesByPermission(String permission) {
+        return userRoleRepository.findUserRoleByPermissionsContainsIgnoreCase(permission)
+                .stream().map(this::toDto)
+                .toList();
     }
 
 
