@@ -7,7 +7,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.Collection;
-import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -19,7 +18,7 @@ class UserTest {
     @BeforeEach
     void setUp() {
         user = new User();
-        user.setId(UUID.fromString("550e8400-e29b-41d4-a716-446655440000"));
+        user.setId("550e8400-e29b-41d4-a716-446655440000");
         user.setEmail("test@test.com");
         user.setPassword("password123");
         user.setFirstName("John");

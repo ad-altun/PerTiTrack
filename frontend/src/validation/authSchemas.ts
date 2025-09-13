@@ -45,7 +45,7 @@ export const registerSchema = z.object({
 export const jwtResponseSchema = z.object({
     token: z.string(),
     type: z.string().default('Bearer'),
-    id: z.uuid(),
+    id: z.string(),
     email: z.email(),
     firstName: z.string(),
     lastName: z.string(),
@@ -79,7 +79,7 @@ export const messageResponseSchema = z.object({
 });
 
 export const userSchema = z.object({
-    id: z.uuid(),
+    id: z.string(),
     email: z.email(),
     firstName: z.string(),
     lastName: z.string(),

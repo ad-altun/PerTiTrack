@@ -16,7 +16,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
-import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -58,8 +57,7 @@ class AuthControllerTest {
         // Arrange
         JwtResponse expectedResponse = new JwtResponse(
                 "test.jwt.token",
-                UUID.fromString("550e8400-e29b-41d4-a716-446655440000"),
-//                UUID.randomUUID(),
+                ("550e8400-e29b-41d4-a716-446655440000"),
                 "test@example.com",
                 "Test",
                 "User",

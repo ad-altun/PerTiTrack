@@ -12,7 +12,6 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.UUID;
 
 @Entity
 @Table(name = "work_schedules", schema = "timetrack")
@@ -27,7 +26,7 @@ public class WorkSchedule extends EmployeeOwnedEntity implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    private String id;
 
     @Column(name = "day_of_week", nullable = false)
     @NotNull

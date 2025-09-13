@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 // Base UserRole schema for API responses
 export const userRoleSchema = z.object({
-    id: z.uuid('Invalid UUID format'),
+    id: z.string('Invalid UUID format'),
     name: z.string().min(1, 'Role name is required'),
     description: z.string().nullable(),
     permissions: z.string().nullable(),
@@ -49,8 +49,8 @@ export const roleExistsSchema = z.object({
 
 // Schema for role assignment (when linking roles to users)
 export const roleAssignmentSchema = z.object({
-    userId: z.uuid('Invalid user UUID format'),
-    roleId: z.uuid('Invalid role UUID format'),
+    userId: z.string('Invalid user UUID format'),
+    roleId: z.string('Invalid role UUID format'),
 });
 
 // Predefined permission categories schema
