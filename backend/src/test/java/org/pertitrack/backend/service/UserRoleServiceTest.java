@@ -93,6 +93,7 @@ class UserRoleServiceTest {
         Optional<UserRoleDto> result = userRoleService.getRoleById(testRole.getId());
 
         // assert
+        assert(result.isPresent());
         assert(result.get().getId().equals(testRole.getId()));
         assert(result.get().getName().equals(testRole.getName()));
         assert(result.get().getDescription().equals(testRole.getDescription()));

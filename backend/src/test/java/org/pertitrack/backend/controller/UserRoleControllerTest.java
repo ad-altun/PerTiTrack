@@ -1,6 +1,5 @@
 package org.pertitrack.backend.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
@@ -47,9 +46,6 @@ class UserRoleControllerTest {
 
     @MockitoBean
     private UserDetailsServiceImpl userDetailsService;
-
-    @Autowired
-    private ObjectMapper objectMapper;
 
     @Test
 //    @WithMockUser(username = "testuser", roles = {"ADMIN"})
