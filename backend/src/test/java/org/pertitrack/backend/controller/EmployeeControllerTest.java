@@ -128,7 +128,7 @@ class EmployeeControllerTest {
         // Arrange
         String employeeId = "non-existent-id";
         when(employeeService.getEmployeeById(employeeId))
-                .thenThrow(new EmployeeNotFoundException(employeeId, "Employee not found: "));
+                .thenThrow(new EmployeeNotFoundException("Employee not found: ", employeeId));
 
         // Act & Assert
         EmployeeNotFoundException exception = assertThrows(
