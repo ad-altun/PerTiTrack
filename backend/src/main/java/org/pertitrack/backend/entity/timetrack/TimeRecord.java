@@ -6,7 +6,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.pertitrack.backend.entity.personnel.ApprovableEntity;
+import org.pertitrack.backend.entity.personnel.Employee;
 
 import java.io.Serial;
 import java.time.LocalDate;
@@ -25,6 +28,11 @@ public class TimeRecord extends ApprovableEntity {
 
     @Id
     private String id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "employee_id", nullable = false)
+    @NotNull
+    private Employee employee;
 
     @Column(name = "record_date", nullable = false)
     @NotNull
@@ -48,6 +56,21 @@ public class TimeRecord extends ApprovableEntity {
 
     @Column(name = "is_manual")
     private Boolean isManual = false;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "approved_by")
+    private Employee approvedBy;
+
+    @Column(name = "approved_at")
+    private LocalDateTime approvedAt;
+
+    @CreationTimestamp
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
 
     public enum RecordType {
         CLOCK_IN, CLOCK_OUT, BREAK_START, BREAK_END

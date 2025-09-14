@@ -6,7 +6,7 @@ import lombok.Getter;
 public class EmployeeNotFoundException extends RuntimeException {
     private final String id;
 
-    public EmployeeNotFoundException(String id, String message) {
+    public EmployeeNotFoundException(String message, String id) {
         super(message + id);
         this.id = id;
     }
