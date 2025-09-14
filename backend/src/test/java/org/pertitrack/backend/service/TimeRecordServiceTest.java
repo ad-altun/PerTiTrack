@@ -6,7 +6,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.pertitrack.backend.dto.TimeRecordApprovalRequest;
 import org.pertitrack.backend.dto.TimeRecordRequest;
 import org.pertitrack.backend.dto.TimeRecordResponse;
 import org.pertitrack.backend.dto.TimeRecordUpdateRequest;
@@ -25,13 +24,8 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 @ActiveProfiles("test")
@@ -55,7 +49,7 @@ class TimeRecordServiceTest {
     private TimeRecordRequest testRequest;
     private TimeRecordResponse testResponse;
     private TimeRecordUpdateRequest testUpdateRequest;
-    private TimeRecordApprovalRequest testApprovalRequest;
+//    private TimeRecordApprovalRequest testApprovalRequest;
 
     @BeforeEach
     void setUp() {
