@@ -51,7 +51,7 @@ class UserRoleControllerTest {
 //    @WithMockUser(username = "testuser", roles = {"ADMIN"})
     void testGetAllRoles() throws Exception {
         UserRoleDto role = new UserRoleDto(
-                UUID.randomUUID(), "ADMIN", "Admin role", "[\"READ\",\"WRITE\"]", LocalDateTime.now()
+                UUID.randomUUID().toString(), "ADMIN", "Admin role", "[\"READ\",\"WRITE\"]", LocalDateTime.now()
         );
 
         Mockito.when(userRoleService.getAllUserRoles()).thenReturn(List.of(role));
@@ -64,7 +64,7 @@ class UserRoleControllerTest {
 
     @Test
     void testGetRoleById() throws Exception {
-        UUID id = UUID.randomUUID();
+        String id = UUID.randomUUID().toString();
         UserRoleDto role = new UserRoleDto(id, "USER", "User role", "[\"READ\"]", LocalDateTime.now());
 
         Mockito.when(userRoleService.getRoleById(id)).thenReturn(Optional.of(role));
@@ -76,8 +76,8 @@ class UserRoleControllerTest {
 
     @Test
     void testGetRolesByPermission() throws Exception {
-        UserRoleDto role1 = new UserRoleDto(UUID.randomUUID(), "USER", "User role", "[\"READ\"]", LocalDateTime.now());
-        UserRoleDto role2 = new UserRoleDto(UUID.randomUUID(), "ADMIN", "Admin role", "[\"READ\",\"WRITE\"]", LocalDateTime.now());
+        UserRoleDto role1 = new UserRoleDto(UUID.randomUUID().toString(), "USER", "User role", "[\"READ\"]", LocalDateTime.now());
+        UserRoleDto role2 = new UserRoleDto(UUID.randomUUID().toString(), "ADMIN", "Admin role", "[\"READ\",\"WRITE\"]", LocalDateTime.now());
 
         Mockito.when(userRoleService.getRolesByPermission("READ")).thenReturn(List.of(role1, role2));
 

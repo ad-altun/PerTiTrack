@@ -1,0 +1,108 @@
+-- Migration to convert UUID columns to VARCHAR(255) to match JPA entity changes
+-- This migration handles the conversion from UUID to String type
+
+-- Step 1: Drop all foreign key constraints that reference UUID columns
+ALTER TABLE auth.user_sessions DROP CONSTRAINT IF EXISTS user_sessions_user_id_fkey;
+ALTER TABLE personnel.employees DROP CONSTRAINT IF EXISTS employees_user_id_fkey;
+ALTER TABLE timetrack.absences DROP CONSTRAINT IF EXISTS absences_employee_id_fkey;
+ALTER TABLE timetrack.absences DROP CONSTRAINT IF EXISTS absences_absence_type_id_fkey;
+ALTER TABLE timetrack.absences DROP CONSTRAINT IF EXISTS absences_approved_by_fkey;
+ALTER TABLE timetrack.time_records DROP CONSTRAINT IF EXISTS time_records_employee_id_fkey;
+ALTER TABLE timetrack.time_records DROP CONSTRAINT IF EXISTS time_records_approved_by_fkey;
+ALTER TABLE timetrack.work_schedules DROP CONSTRAINT IF EXISTS work_schedules_employee_id_fkey;
+
+-- Step 2: Convert all ID columns and their references
+-- Convert auth schema tables
+ALTER TABLE auth.users ALTER COLUMN id SET DATA TYPE VARCHAR(255) USING id::text;
+ALTER TABLE auth.user_roles ALTER COLUMN id SET DATA TYPE VARCHAR(255) USING id::text;
+ALTER TABLE auth.user_sessions ALTER COLUMN id SET DATA TYPE VARCHAR(255) USING id::text;
+ALTER TABLE auth.user_sessions ALTER COLUMN user_id SET DATA TYPE VARCHAR(255) USING user_id::text;
+
+-- Convert personnel schema tables
+ALTER TABLE personnel.employees ALTER COLUMN id SET DATA TYPE VARCHAR(255) USING id::text;
+ALTER TABLE personnel.employees ALTER COLUMN user_id SET DATA TYPE VARCHAR(255) USING user_id::text;
+
+-- Convert timetrack schema tables
+ALTER TABLE timetrack.absence_types ALTER COLUMN id SET DATA TYPE VARCHAR(255) USING id::text;
+ALTER TABLE timetrack.absences ALTER COLUMN id SET DATA TYPE VARCHAR(255) USING id::text;
+ALTER TABLE timetrack.absences ALTER COLUMN employee_id SET DATA TYPE VARCHAR(255) USING employee_id::text;
+ALTER TABLE timetrack.absences ALTER COLUMN absence_type_id SET DATA TYPE VARCHAR(255) USING absence_type_id::text;
+ALTER TABLE timetrack.absences ALTER COLUMN approved_by SET DATA TYPE VARCHAR(255) USING approved_by::text;
+
+ALTER TABLE timetrack.time_records ALTER COLUMN id SET DATA TYPE VARCHAR(255) USING id::text;
+ALTER TABLE timetrack.time_records ALTER COLUMN employee_id SET DATA TYPE VARCHAR(255) USING employee_id::text;
+ALTER TABLE timetrack.time_records ALTER COLUMN approved_by SET DATA TYPE VARCHAR(255) USING approved_by::text;
+
+ALTER TABLE timetrack.work_schedules ALTER COLUMN id SET DATA TYPE VARCHAR(255) USING id::text;
+ALTER TABLE timetrack.work_schedules ALTER COLUMN employee_id SET DATA TYPE VARCHAR(255) USING employee_id::text;
+
+-- Step 3: Recreate foreign key constraints with new VARCHAR types
+ALTER TABLE auth.user_sessions
+    ADD CONSTRAINT user_sessions_user_id_fkey
+        FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE;
+
+ALTER TABLE personnel.employees
+    ADD CONSTRAINT employees_user_id_fkey
+        FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE SET NULL;
+
+ALTER TABLE timetrack.absences
+    ADD CONSTRAINT absences_employee_id_fkey
+        FOREIGN KEY (employee_id) REFERENCES personnel.employees(id) ON DELETE CASCADE;
+
+ALTER TABLE timetrack.absences
+    ADD CONSTRAINT absences_absence_type_id_fkey
+        FOREIGN KEY (absence_type_id) REFERENCES timetrack.absence_types(id) ON DELETE RESTRICT;
+
+ALTER TABLE timetrack.absences
+    ADD CONSTRAINT absences_approved_by_fkey
+        FOREIGN KEY (approved_by) REFERENCES personnel.employees(id) ON DELETE SET NULL;
+
+ALTER TABLE timetrack.time_records
+    ADD CONSTRAINT time_records_employee_id_fkey
+        FOREIGN KEY (employee_id) REFERENCES personnel.employees(id) ON DELETE CASCADE;
+
+ALTER TABLE timetrack.time_records
+    ADD CONSTRAINT time_records_approved_by_fkey
+        FOREIGN KEY (approved_by) REFERENCES personnel.employees(id) ON DELETE SET NULL;
+
+ALTER TABLE timetrack.work_schedules
+    ADD CONSTRAINT work_schedules_employee_id_fkey
+        FOREIGN KEY (employee_id) REFERENCES personnel.employees(id) ON DELETE CASCADE;
+
+-- Update function parameter types to match new VARCHAR(255) type
+DROP FUNCTION IF EXISTS get_current_work_schedule(UUID, DATE);
+
+CREATE OR REPLACE FUNCTION get_current_work_schedule(emp_id VARCHAR(255), schedule_date DATE DEFAULT CURRENT_DATE)
+RETURNS TABLE (
+    schedule_id VARCHAR(255),
+    day_of_week INTEGER,
+    start_time TIME,
+    end_time TIME,
+    break_duration_minutes INTEGER,
+    is_working_day BOOLEAN
+) AS $$
+BEGIN
+RETURN QUERY
+SELECT
+    ws.id,
+    ws.day_of_week,
+    ws.start_time,
+    ws.end_time,
+    ws.break_duration_minutes,
+    ws.is_working_day
+FROM timetrack.work_schedules ws
+WHERE ws.employee_id = emp_id
+  AND ws.is_active = true
+  AND ws.effective_from <= schedule_date
+  AND ws.effective_until >= schedule_date
+ORDER BY ws.effective_from DESC;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Update function comment
+COMMENT ON FUNCTION get_current_work_schedule(VARCHAR(255), DATE) IS 'Returns the current active work schedule for an employee on a given date';
+
+-- Add comment for this migration
+COMMENT ON SCHEMA auth IS 'Authentication schema - IDs converted from UUID to VARCHAR(255)';
+COMMENT ON SCHEMA personnel IS 'Personnel schema - IDs converted from UUID to VARCHAR(255)';
+COMMENT ON SCHEMA timetrack IS 'Time tracking schema - IDs converted from UUID to VARCHAR(255)';

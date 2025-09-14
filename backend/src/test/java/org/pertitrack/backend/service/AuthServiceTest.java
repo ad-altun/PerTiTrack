@@ -23,7 +23,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
-import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -59,7 +58,7 @@ class AuthServiceTest {
     void setup() {
         // Create test user with EMPLOYEE role, which is default
         testUser = new User();
-        testUser.setId(UUID.fromString("550e8400-e29b-41d4-a716-446655440000"));
+        testUser.setId("550e8400-e29b-41d4-a716-446655440000");
         testUser.setEmail("test@test.com");
         testUser.setPassword("encodedPassword000");
         testUser.setFirstName("Patrick");

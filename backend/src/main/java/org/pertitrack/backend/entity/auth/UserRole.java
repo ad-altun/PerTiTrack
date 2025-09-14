@@ -2,11 +2,12 @@ package org.pertitrack.backend.entity.auth;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Entity
 @Table(name = "user_roles", schema = "auth")
@@ -16,8 +17,7 @@ import java.util.UUID;
 public class UserRole {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    private String id;
 
     @Column(unique = true, nullable = false, length = 50)
     @NotBlank

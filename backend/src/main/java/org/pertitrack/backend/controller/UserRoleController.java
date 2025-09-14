@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/user-roles")
@@ -34,7 +33,7 @@ public class UserRoleController {
     // @return the user role if found
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('MANAGER')")
-    public ResponseEntity<UserRoleDto> getRoleById(@PathVariable UUID id) {
+    public ResponseEntity<UserRoleDto> getRoleById(@PathVariable String id) {
 
         return userRoleService.getRoleById(id)
                 .map(ResponseEntity::ok)

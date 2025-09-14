@@ -9,7 +9,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -21,7 +20,7 @@ class ApprovableEmployeeEntityTest {
     @EqualsAndHashCode(callSuper = true)
     @Data
     private static class TestApprovableEmployeeEntity extends ApprovableEmployeeEntity {
-        private UUID id;
+        private String id;
     }
 
     private TestApprovableEmployeeEntity entity;
@@ -34,14 +33,14 @@ class ApprovableEmployeeEntityTest {
 
         // Create test employee (the owner) with proper UUID
         employee = new Employee();
-        employee.setId(UUID.fromString("550e8400-e29b-41d4-a716-446655440000"));
+        employee.setId("550e8400-e29b-41d4-a716-446655440000");
         employee.setEmployeeNumber("EMP001");
         employee.setFirstName("John");
         employee.setLastName("Doe");
 
         // Create test approver with different UUID
         approver = new Employee();
-        approver.setId(UUID.fromString("550e8400-e29b-41d4-a716-446655440001"));
+        approver.setId("550e8400-e29b-41d4-a716-446655440001");
         approver.setEmployeeNumber("MGR001");
         approver.setFirstName("Jane");
         approver.setLastName("Manager");

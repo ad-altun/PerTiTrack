@@ -36,7 +36,7 @@ class UserRoleServiceTest {
     @BeforeEach
     void setUp() {
         testRole = new UserRole();
-        testRole.setId(UUID.fromString("550e8400-e29b-41d4-a716-446655440000"));
+        testRole.setId("550e8400-e29b-41d4-a716-446655440000");
         testRole.setName("ADMIN");
         testRole.setDescription("System administrator");
         testRole.setPermissions("[\"USER_MANAGEMENT\", \"ROLE_MANAGEMENT\"]");
@@ -44,8 +44,8 @@ class UserRoleServiceTest {
 
         testRoles = Arrays.asList(
                 testRole,
-                new UserRole(UUID.randomUUID(), "MANAGER", "Manager role", "[\"EMPLOYEE_MANAGEMENT\"]", LocalDateTime.now()),
-                new UserRole(UUID.randomUUID(), "EMPLOYEE", "Employee role", "[\"TIME_TRACKING\"]", LocalDateTime.now())
+                new UserRole(UUID.randomUUID().toString(), "MANAGER", "Manager role", "[\"EMPLOYEE_MANAGEMENT\"]", LocalDateTime.now()),
+                new UserRole(UUID.randomUUID().toString(), "EMPLOYEE", "Employee role", "[\"TIME_TRACKING\"]", LocalDateTime.now())
         );
     }
 

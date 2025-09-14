@@ -2,11 +2,12 @@ package org.pertitrack.backend.entity.personnel;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import org.pertitrack.backend.entity.BaseEntity;
 import org.pertitrack.backend.entity.auth.User;
-
-import java.util.UUID;
 
 @Entity
 @Table(name = "employees", schema = "personnel")
@@ -17,8 +18,7 @@ import java.util.UUID;
 public class Employee extends BaseEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    private String id;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", unique = true)
@@ -43,6 +43,23 @@ public class Employee extends BaseEntity {
     @Transient
     public String getFullName() {
         return firstName + " " + lastName;
+    }
+    // Computed property
+
+    @Transient
+    public void setFullName(String fullName) {
+        String[] names = fullName.split(" ");
+        if (names.length == 2) {
+            this.firstName = names[0];
+            this.lastName = names[1];
+        } else if (names.length == 1) {
+            this.firstName = names[0];
+            this.lastName = "";
+        } else if (names.length > 2) {
+            this.firstName = names[0] + " " + names[1];
+            this.lastName =  names[2];
+        }
+
     }
 
 }

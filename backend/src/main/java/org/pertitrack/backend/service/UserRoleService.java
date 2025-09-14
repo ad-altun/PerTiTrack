@@ -8,16 +8,17 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 @Transactional
 public class UserRoleService {
 
     private final UserRoleRepository userRoleRepository;
+    private final IdService idService;
 
-    public UserRoleService(UserRoleRepository userRoleRepository) {
+    public UserRoleService(UserRoleRepository userRoleRepository, IdService idService) {
         this.userRoleRepository = userRoleRepository;
+        this.idService = idService;
     }
 
     private UserRoleDto toDto(UserRole role) {
@@ -42,7 +43,7 @@ public class UserRoleService {
     // get a user role by @param = id
     // @return the user role if found
     @Transactional(readOnly = true)
-    public Optional<UserRoleDto> getRoleById(UUID id) {
+    public Optional<UserRoleDto> getRoleById(String id) {
         return userRoleRepository.findById(id).map(this::toDto);
     }
 
