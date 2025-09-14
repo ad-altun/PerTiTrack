@@ -1,48 +1,22 @@
 CREATE SCHEMA IF NOT EXISTS timetrack;
 
--- Create time_records table
-CREATE TABLE IF NOT EXISTS timetrack.time_records
-(
-    id
-    UUID
-    PRIMARY
-    KEY
-    DEFAULT
-    gen_random_uuid
-(
-),
-    employee_id UUID NOT NULL REFERENCES personnel.employees
-(
-    id
-) ON DELETE CASCADE,
+-- Create time_records table with String IDs
+CREATE TABLE IF NOT EXISTS timetrack.time_records (
+                                                      id VARCHAR(36) PRIMARY KEY DEFAULT gen_random_uuid()::text,
+    employee_id VARCHAR(36) NOT NULL REFERENCES personnel.employees(id) ON DELETE CASCADE,
     record_date DATE NOT NULL,
-    record_time TIMESTAMP
-  WITHOUT TIME ZONE NOT NULL,
-    record_type VARCHAR
-(
-    20
-) NOT NULL,
-    location_type VARCHAR
-(
-    20
-) NOT NULL DEFAULT 'OFFICE',
+    record_time TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+    record_type VARCHAR(20) NOT NULL,
+    location_type VARCHAR(20) NOT NULL DEFAULT 'OFFICE',
     notes TEXT,
     is_manual BOOLEAN NOT NULL DEFAULT false,
-    -- Fields from ApprovableEntity (assumed based on parent class)
-    approved_by UUID REFERENCES personnel.employees
-(
-    id
-)
-  ON DELETE SET NULL,
-    approved_at TIMESTAMP
-  WITHOUT TIME ZONE,
-    created_at TIMESTAMP
-  WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP
-  WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
+    approved_by VARCHAR(36) REFERENCES personnel.employees(id) ON DELETE SET NULL,
+    approved_at TIMESTAMP WITHOUT TIME ZONE,
+    created_at TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
     );
 
--- Add check constraints for enum values
+-- Add constraints
 ALTER TABLE timetrack.time_records
     ADD CONSTRAINT check_record_type
         CHECK (record_type IN ('CLOCK_IN', 'CLOCK_OUT', 'BREAK_START', 'BREAK_END'));
@@ -51,12 +25,11 @@ ALTER TABLE timetrack.time_records
     ADD CONSTRAINT check_location_type
         CHECK (location_type IN ('OFFICE', 'HOME', 'BUSINESS_TRIP', 'CLIENT_SITE'));
 
--- Add business logic constraints
 ALTER TABLE timetrack.time_records
     ADD CONSTRAINT check_record_date_not_future
         CHECK (record_date <= CURRENT_DATE);
 
--- Create indexes for better performance
+-- Create indexes
 CREATE INDEX IF NOT EXISTS idx_time_records_employee_id ON timetrack.time_records(employee_id);
 CREATE INDEX IF NOT EXISTS idx_time_records_record_date ON timetrack.time_records(record_date);
 CREATE INDEX IF NOT EXISTS idx_time_records_record_time ON timetrack.time_records(record_time);
@@ -73,10 +46,10 @@ CREATE INDEX IF NOT EXISTS idx_time_records_date_type ON timetrack.time_records(
 
 -- Create trigger to automatically update updated_at
 CREATE TRIGGER update_time_records_updated_at
-    BEFORE UPDATE
-    ON timetrack.time_records
+    BEFORE UPDATE ON timetrack.time_records
     FOR EACH ROW
     EXECUTE FUNCTION update_updated_at_column();
+
 
 -- (validation check will be implemented in the service layer)
 -- Create function to validate time record sequences

@@ -1,32 +1,33 @@
 
 CREATE SCHEMA IF NOT EXISTS timetrack;
 
--- Create absence_types table
-CREATE TABLE IF NOT EXISTS timetrack.absence_types
-(
-    id                       UUID PRIMARY KEY            DEFAULT gen_random_uuid(),
-    name                     VARCHAR(100)       NOT NULL,
-    code                     VARCHAR(20) UNIQUE NOT NULL,
-    description              TEXT,
-    requires_approval        BOOLEAN            NOT NULL DEFAULT false,
-    affects_vacation_balance BOOLEAN            NOT NULL DEFAULT false,
-    is_paid                  BOOLEAN            NOT NULL DEFAULT true,
-    color_code               VARCHAR(7),
-    is_active                BOOLEAN            NOT NULL DEFAULT true,
-    created_at               TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
-);
+-- Create absence_types table with String IDs
+CREATE TABLE IF NOT EXISTS timetrack.absence_types (
+                                                       id VARCHAR(36) PRIMARY KEY DEFAULT gen_random_uuid()::text,
+    name VARCHAR(100) NOT NULL,
+    code VARCHAR(20) UNIQUE NOT NULL,
+    description TEXT,
+    requires_approval BOOLEAN NOT NULL DEFAULT false,
+    affects_vacation_balance BOOLEAN NOT NULL DEFAULT false,
+    is_paid BOOLEAN NOT NULL DEFAULT true,
+    color_code VARCHAR(7),
+    is_active BOOLEAN NOT NULL DEFAULT true,
+    created_at TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
+    );
 
--- Add check constraint for color code format (hex color)
+-- Add constraints
 ALTER TABLE timetrack.absence_types
     ADD CONSTRAINT check_color_code_format
         CHECK (color_code IS NULL OR color_code ~ '^#[0-9A-Fa-f]{6}$');
 
--- Create indexes for better performance
+-- Create indexes
 CREATE INDEX IF NOT EXISTS idx_absence_types_code ON timetrack.absence_types (code);
 CREATE INDEX IF NOT EXISTS idx_absence_types_name ON timetrack.absence_types (name);
 CREATE INDEX IF NOT EXISTS idx_absence_types_is_active ON timetrack.absence_types (is_active);
-CREATE INDEX IF NOT EXISTS idx_absence_types_requires_approval ON timetrack.absence_types (requires_approval);
-CREATE INDEX IF NOT EXISTS idx_absence_types_created_at ON timetrack.absence_types (created_at);
+
+-- -- Create indexes for better performance
+-- CREATE INDEX IF NOT EXISTS idx_absence_types_requires_approval ON timetrack.absence_types (requires_approval);
+-- CREATE INDEX IF NOT EXISTS idx_absence_types_created_at ON timetrack.absence_types (created_at);
 
 -- Insert default absence types
 INSERT INTO timetrack.absence_types (id, name, code, description, requires_approval, affects_vacation_balance, is_paid,

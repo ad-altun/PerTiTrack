@@ -1,29 +1,27 @@
 CREATE SCHEMA IF NOT EXISTS auth;
 
--- Create user_sessions table
+-- Create user_sessions table with String IDs
 CREATE TABLE IF NOT EXISTS auth.user_sessions (
-                                    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-                                    user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
-                                    refresh_token VARCHAR(512) UNIQUE NOT NULL,
-                                    expires_at TIMESTAMP WITHOUT TIME ZONE NOT NULL,
-                                    created_at TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
-);
+                                                  id VARCHAR(36) PRIMARY KEY DEFAULT gen_random_uuid()::text,
+    user_id VARCHAR(36) NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    refresh_token VARCHAR(512) UNIQUE NOT NULL,
+    expires_at TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+    created_at TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
+    );
 
--- Create indexes for better performance
+-- Create indexes
 CREATE INDEX IF NOT EXISTS idx_user_sessions_user_id ON auth.user_sessions(user_id);
 CREATE INDEX IF NOT EXISTS idx_user_sessions_refresh_token ON auth.user_sessions(refresh_token);
 CREATE INDEX IF NOT EXISTS idx_user_sessions_expires_at ON auth.user_sessions(expires_at);
 CREATE INDEX IF NOT EXISTS idx_user_sessions_created_at ON auth.user_sessions(created_at);
 
--- Create function to clean up expired sessions
+-- Cleanup function
 CREATE OR REPLACE FUNCTION cleanup_expired_sessions()
 RETURNS INTEGER AS $$
 DECLARE
 deleted_count INTEGER;
 BEGIN
-DELETE FROM auth.user_sessions
-WHERE expires_at < CURRENT_TIMESTAMP;
-
+DELETE FROM auth.user_sessions WHERE expires_at < CURRENT_TIMESTAMP;
 GET DIAGNOSTICS deleted_count = ROW_COUNT;
 RETURN deleted_count;
 END;

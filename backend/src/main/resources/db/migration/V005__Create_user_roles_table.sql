@@ -2,7 +2,7 @@ CREATE SCHEMA IF NOT EXISTS auth;
 
 -- Create user_roles table
 CREATE TABLE IF NOT EXISTS auth.user_roles (
-                                 id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+                                 id VARCHAR(36) PRIMARY KEY DEFAULT gen_random_uuid()::text,
                                  name VARCHAR(50) UNIQUE NOT NULL,
                                  description TEXT,
                                  permissions JSONB,
@@ -16,9 +16,9 @@ CREATE INDEX IF NOT EXISTS idx_user_roles_permissions ON auth.user_roles USING G
 
 -- Insert default roles
 INSERT INTO auth.user_roles (id, name, description, permissions) VALUES
-                                                                 (gen_random_uuid(),'ADMIN', 'System administrator with full access', '["USER_MANAGEMENT", "ROLE_MANAGEMENT", "SYSTEM_CONFIG", "REPORTS", "AUDIT"]'),
-                                                                 (gen_random_uuid(),'MANAGER', 'Department manager with employee oversight', '["EMPLOYEE_MANAGEMENT", "TIME_APPROVAL", "REPORTS", "DEPARTMENT_VIEW"]'),
-                                                                 (gen_random_uuid(),'EMPLOYEE', 'Standard employee with basic access', '["TIME_TRACKING", "PROFILE_VIEW", "ABSENCE_REQUEST"]');
+                                                                 (gen_random_uuid()::text,'ADMIN', 'System administrator with full access', '["USER_MANAGEMENT", "ROLE_MANAGEMENT", "SYSTEM_CONFIG", "REPORTS", "AUDIT"]'),
+                                                                 (gen_random_uuid()::text,'MANAGER', 'Department manager with employee oversight', '["EMPLOYEE_MANAGEMENT", "TIME_APPROVAL", "REPORTS", "DEPARTMENT_VIEW"]'),
+                                                                 (gen_random_uuid()::text,'EMPLOYEE', 'Standard employee with basic access', '["TIME_TRACKING", "PROFILE_VIEW", "ABSENCE_REQUEST"]');
 
 -- Add comments for documentation
 COMMENT ON TABLE auth.user_roles IS 'User roles for role-based access control';

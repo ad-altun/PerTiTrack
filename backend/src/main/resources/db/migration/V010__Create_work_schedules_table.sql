@@ -1,23 +1,23 @@
 
 CREATE SCHEMA IF NOT EXISTS timetrack;
 
--- Create work_schedules table
+-- Create work_schedules table with String IDs
 CREATE TABLE IF NOT EXISTS timetrack.work_schedules (
-                                          id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-                                          employee_id UUID NOT NULL REFERENCES personnel.employees(id) ON DELETE CASCADE,
-                                          day_of_week INTEGER NOT NULL,
-                                          start_time TIME,
-                                          end_time TIME,
-                                          break_duration_minutes INTEGER NOT NULL DEFAULT 60,
-                                          is_working_day BOOLEAN NOT NULL DEFAULT true,
-                                          effective_from DATE NOT NULL,
-                                          effective_until DATE NOT NULL,
-                                          is_active BOOLEAN NOT NULL DEFAULT true,
-                                          created_at TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                                          updated_at TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
-);
+                                                        id VARCHAR(36) PRIMARY KEY DEFAULT gen_random_uuid()::text,
+    employee_id VARCHAR(36) NOT NULL REFERENCES personnel.employees(id) ON DELETE CASCADE,
+    day_of_week INTEGER NOT NULL,
+    start_time TIME,
+    end_time TIME,
+    break_duration_minutes INTEGER NOT NULL DEFAULT 60,
+    is_working_day BOOLEAN NOT NULL DEFAULT true,
+    effective_from DATE NOT NULL,
+    effective_until DATE NOT NULL,
+    is_active BOOLEAN NOT NULL DEFAULT true,
+    created_at TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
+    );
 
--- Add check constraints for business logic
+-- Add constraints
 ALTER TABLE timetrack.work_schedules
     ADD CONSTRAINT check_day_of_week
         CHECK (day_of_week >= 1 AND day_of_week <= 7);
@@ -28,21 +28,19 @@ ALTER TABLE timetrack.work_schedules
 
 ALTER TABLE timetrack.work_schedules
     ADD CONSTRAINT check_working_day_times
-        CHECK (
-            (is_working_day = false) OR
-            (is_working_day = true AND start_time IS NOT NULL AND end_time IS NOT NULL AND end_time > start_time)
-            );
+        CHECK ((is_working_day = false) OR
+               (is_working_day = true AND start_time IS NOT NULL AND end_time IS NOT NULL AND end_time > start_time));
 
 ALTER TABLE timetrack.work_schedules
     ADD CONSTRAINT check_break_duration
         CHECK (break_duration_minutes >= 0 AND break_duration_minutes <= 480);
 
--- Add constraint to prevent overlapping schedules for same employee/day
+-- Create unique constraint
 CREATE UNIQUE INDEX idx_work_schedules_no_overlap
     ON timetrack.work_schedules (employee_id, day_of_week, effective_from, effective_until)
     WHERE is_active = true;
 
--- Create indexes for better performance
+-- Create indexes
 CREATE INDEX IF NOT EXISTS idx_work_schedules_employee_id ON timetrack.work_schedules(employee_id);
 CREATE INDEX IF NOT EXISTS idx_work_schedules_day_of_week ON timetrack.work_schedules(day_of_week);
 CREATE INDEX IF NOT EXISTS idx_work_schedules_effective_from ON timetrack.work_schedules(effective_from);
@@ -61,10 +59,10 @@ CREATE TRIGGER update_work_schedules_updated_at
     FOR EACH ROW
     EXECUTE FUNCTION update_updated_at_column();
 
--- Create function to get current schedule for employee
-CREATE OR REPLACE FUNCTION get_current_work_schedule(emp_id UUID, schedule_date DATE DEFAULT CURRENT_DATE)
+-- Create function with String ID parameter
+CREATE OR REPLACE FUNCTION get_current_work_schedule(emp_id VARCHAR(36), schedule_date DATE DEFAULT CURRENT_DATE)
 RETURNS TABLE (
-    schedule_id UUID,
+    schedule_id VARCHAR(36),
     day_of_week INTEGER,
     start_time TIME,
     end_time TIME,
@@ -142,5 +140,5 @@ COMMENT ON COLUMN timetrack.work_schedules.effective_until IS 'Date when this sc
 COMMENT ON COLUMN timetrack.work_schedules.is_active IS 'Whether this schedule is currently active';
 COMMENT ON COLUMN timetrack.work_schedules.created_at IS 'Timestamp when the schedule was created';
 COMMENT ON COLUMN timetrack.work_schedules.updated_at IS 'Timestamp when the schedule was last updated';
-COMMENT ON FUNCTION get_current_work_schedule(UUID, DATE) IS 'Returns the current active work schedule for an employee on a given date';
+-- COMMENT ON FUNCTION get_current_work_schedule(UUID, DATE) IS 'Returns the current active work schedule for an employee on a given date';
 

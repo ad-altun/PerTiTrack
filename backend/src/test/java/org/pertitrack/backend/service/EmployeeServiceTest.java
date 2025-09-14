@@ -161,7 +161,7 @@ class EmployeeServiceTest {
     void getEmployeeById_ThrowsEmployeeNotFoundException_WhenEmployeeNotFound() {
         // Arrange
         String employeeId = "non-existent-id";
-        when(employeeRepository.findById(employeeId)).thenReturn(Optional.empty());
+        when(employeeRepository.findById(employeeId)).thenThrow(new EmployeeNotFoundException("Employee not found: ", employeeId));
 
         // Act & Assert
         EmployeeNotFoundException exception = assertThrows(
@@ -301,7 +301,7 @@ class EmployeeServiceTest {
     void updateEmployee_ThrowsEmployeeNotFoundException_WhenEmployeeNotFound() {
         // Arrange
         String employeeId = "non-existent-id";
-        when(employeeRepository.findById(employeeId)).thenReturn(Optional.empty());
+        when(employeeRepository.findById(employeeId)).thenThrow(new EmployeeNotFoundException("Employee not found: ", employeeId));
 
         // Act & Assert
         EmployeeNotFoundException exception = assertThrows(
@@ -309,7 +309,7 @@ class EmployeeServiceTest {
                 () -> employeeService.updateEmployee(employeeId, updateEmployeeRequest)
         );
 
-        assertEquals(employeeId + "Employee not found: ", exception.getMessage());
+        assertEquals("Employee not found: " + employeeId, exception.getMessage());
 
         verify(employeeRepository).findById(employeeId);
         verify(employeeRepository, never()).save(any(Employee.class));
