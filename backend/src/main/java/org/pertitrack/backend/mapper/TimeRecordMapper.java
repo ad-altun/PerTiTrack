@@ -59,16 +59,16 @@ public class TimeRecordMapper {
         Boolean isManual = entity.getIsManual() != null ? entity.getIsManual() : Boolean.FALSE;
 
         // entity.isApproved() might be primitive boolean; wrap to Boolean
-        Boolean isApproved = Boolean.valueOf(entity.isApproved());
+//        Boolean isApproved = Boolean.valueOf(entity.isApproved());
 
-        String approvedById = null;
-        String approvedByFirstName = null;
-        String approvedByLastName = null;
-        if (entity.getApprovedBy() != null) {
-            approvedById = entity.getApprovedBy().getId();
-            approvedByFirstName = entity.getApprovedBy().getFirstName();
-            approvedByLastName = entity.getApprovedBy().getLastName();
-        }
+//        String approvedById = null;
+//        String approvedByFirstName = null;
+//        String approvedByLastName = null;
+//        if (entity.getApprovedBy() != null) {
+//            approvedById = entity.getApprovedBy().getId();
+//            approvedByFirstName = entity.getApprovedBy().getFirstName();
+//            approvedByLastName = entity.getApprovedBy().getLastName();
+//        }
 
         LocalDateTime approvedAt = entity.getApprovedAt();
         LocalDateTime createdAt = entity.getCreatedAt();
@@ -84,7 +84,7 @@ public class TimeRecordMapper {
         return new TimeRecordResponse(
                 id, employeeId, employeeFirstName, employeeLastName,
                 recordDate, recordTime, recordType, locationType, notes,
-                isManual, isApproved, createdAt, updatedAt
+                isManual, createdAt, updatedAt
         );
     }
 

@@ -18,7 +18,7 @@ public record TimeRecordResponse(
         TimeRecord.LocationType locationType,
         String notes,
         Boolean isManual,
-        Boolean isApproved,
+//        Boolean isApproved,
         LocalDateTime createdAt,
         LocalDateTime updatedAt
 ) {

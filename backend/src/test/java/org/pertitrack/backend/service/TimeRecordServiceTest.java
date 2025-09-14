@@ -105,7 +105,7 @@ class TimeRecordServiceTest {
                 TimeRecord.LocationType.OFFICE,
                 "Morning clock in",
                 false,
-                false,
+//                false,
                 LocalDateTime.of(2024, 1, 15, 9, 0, 5),
                 LocalDateTime.of(2024, 1, 15, 9, 0, 5)
            );

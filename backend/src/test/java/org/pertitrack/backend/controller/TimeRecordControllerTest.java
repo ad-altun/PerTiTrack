@@ -281,7 +281,7 @@ class TimeRecordControllerTest {
                 TimeRecord.LocationType.OFFICE,
                 "Test notes",
                 false,
-                false,
+//                false,
                 LocalDateTime.of(2024, 1, 15, 9, 0),
                 LocalDateTime.of(2024, 1, 15, 9, 0)
         );
