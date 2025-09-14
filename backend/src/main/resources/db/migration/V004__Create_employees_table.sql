@@ -1,25 +1,25 @@
 CREATE SCHEMA IF NOT EXISTS personnel;
 
--- Create employees table
+-- Create employees table with String IDs
 CREATE TABLE IF NOT EXISTS personnel.employees (
-                                     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-                                     user_id UUID UNIQUE REFERENCES auth.users(id) ON DELETE SET NULL,
-                                     employee_number VARCHAR(255) UNIQUE NOT NULL,
-                                     first_name VARCHAR(255) NOT NULL,
-                                     last_name VARCHAR(255) NOT NULL,
-                                     is_active BOOLEAN NOT NULL DEFAULT true,
-                                     created_at TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                                     updated_at TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
-);
+                                                   id VARCHAR(36) PRIMARY KEY DEFAULT gen_random_uuid()::text,
+    user_id VARCHAR(36) UNIQUE REFERENCES auth.users(id) ON DELETE SET NULL,
+    employee_number VARCHAR(255) UNIQUE NOT NULL,
+    first_name VARCHAR(255) NOT NULL,
+    last_name VARCHAR(255) NOT NULL,
+    is_active BOOLEAN NOT NULL DEFAULT true,
+    created_at TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
+    );
 
--- Create indexes for better performance
+-- Create indexes
 CREATE INDEX IF NOT EXISTS idx_employees_user_id ON personnel.employees(user_id);
 CREATE INDEX IF NOT EXISTS idx_employees_employee_number ON personnel.employees(employee_number);
 CREATE INDEX IF NOT EXISTS idx_employees_is_active ON personnel.employees(is_active);
 CREATE INDEX IF NOT EXISTS idx_employees_created_at ON personnel.employees(created_at);
 CREATE INDEX IF NOT EXISTS idx_employees_full_name ON personnel.employees(first_name, last_name);
 
--- Create function to update updated_at timestamp
+-- Create updated_at trigger
 CREATE OR REPLACE FUNCTION update_updated_at_column()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -28,7 +28,6 @@ RETURN NEW;
 END;
 $$ language 'plpgsql';
 
--- Create trigger to automatically update updated_at
 CREATE TRIGGER update_employees_updated_at
     BEFORE UPDATE ON personnel.employees
     FOR EACH ROW
