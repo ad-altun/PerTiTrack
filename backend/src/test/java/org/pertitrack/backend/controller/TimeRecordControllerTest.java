@@ -95,7 +95,7 @@ class TimeRecordControllerTest {
         // Given
         String timeRecordId = "999";
         when(timeRecordService.getTimeRecordById(timeRecordId))
-                .thenThrow(new TimeRecordNotFoundException("Time record not found", timeRecordId));
+                .thenThrow(new TimeRecordNotFoundException("Time record not found: ", timeRecordId));
 
         // When & Then
         mockMvc.perform(get("/api/timetrack/time-records/{id}", timeRecordId))
@@ -169,7 +169,7 @@ class TimeRecordControllerTest {
                 false
         );
         when(timeRecordService.createTimeRecord(any(TimeRecordRequest.class)))
-                .thenThrow(new EmployeeNotFoundException("Employee not found", "invalid-emp"));
+                .thenThrow(new EmployeeNotFoundException("Employee not found: ", "invalid-emp"));
 
         // When & Then
         mockMvc.perform(post("/api/timetrack/time-records")
@@ -224,7 +224,7 @@ class TimeRecordControllerTest {
                 true
         );
         when(timeRecordService.updateTimeRecord(eq(timeRecordId), any(TimeRecordUpdateRequest.class)))
-                .thenThrow(new TimeRecordNotFoundException("Time record not found", timeRecordId));
+                .thenThrow(new TimeRecordNotFoundException("Time record not found: ", timeRecordId));
 
         // When & Then
         mockMvc.perform(put("/api/timetrack/time-records/{id}", timeRecordId)
@@ -258,7 +258,7 @@ class TimeRecordControllerTest {
     void deleteTimeRecord_WithInvalidId_ShouldReturnNotFound() throws Exception {
         // Given
         String timeRecordId = "999";
-        doThrow(new TimeRecordNotFoundException("Time record not found", timeRecordId))
+        doThrow(new TimeRecordNotFoundException("Time record not found: ", timeRecordId))
                 .when(timeRecordService).deleteTimeRecord(timeRecordId);
 
         // When & Then
