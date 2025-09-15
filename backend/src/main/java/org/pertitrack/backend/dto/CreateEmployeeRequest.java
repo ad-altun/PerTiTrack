@@ -1,14 +1,13 @@
 package org.pertitrack.backend.dto;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
-import lombok.Data;
+import jakarta.validation.constraints.*;
+import lombok.*;
 
 @Data
 public class CreateEmployeeRequest {
 
-    @NotBlank
-    @Size(max = 20)
+    @NotBlank(message = "Employee number is required")
+    @Pattern(regexp = "^[0-9]{4}$", message = "Employee number must be exactly 4 digits")
     private String employeeNumber;
 
     @NotBlank

@@ -61,7 +61,6 @@ class EmployeeControllerTest {
 
         // Setup update request
         updateEmployeeRequest = new UpdateEmployeeRequest();
-        updateEmployeeRequest.setEmployeeNumber("EMP001-UPDATED");
         updateEmployeeRequest.setFirstName("John Updated");
         updateEmployeeRequest.setLastName("Doe Updated");
         updateEmployeeRequest.setActive(false);
@@ -153,7 +152,7 @@ class EmployeeControllerTest {
 
         // Assert
         assertNotNull(response);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
         assertNotNull(response.getBody());
         assertEquals(testEmployeeDto, response.getBody());
 
@@ -328,7 +327,7 @@ class EmployeeControllerTest {
 
         // Assert
         assertNotNull(response);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
         assertEquals(createdEmployee, response.getBody());
         verify(employeeService).createEmployee(minimalRequest);
     }

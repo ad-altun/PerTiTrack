@@ -1,10 +1,12 @@
 package org.pertitrack.backend.repository;
 
-import org.pertitrack.backend.entity.timetrack.TimeRecord;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.pertitrack.backend.entity.timetrack.*;
+import org.springframework.data.jpa.repository.*;
+import org.springframework.stereotype.*;
 
-import java.util.List;
+import java.util.*;
 
+@Repository
 public interface TimeRecordRepository extends JpaRepository<TimeRecord, String> {
 
     List<TimeRecord> findByEmployeeId(String employeeId);

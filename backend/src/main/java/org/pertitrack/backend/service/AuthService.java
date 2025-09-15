@@ -1,35 +1,39 @@
 package org.pertitrack.backend.service;
 
-import org.pertitrack.backend.dto.JwtResponse;
-import org.pertitrack.backend.dto.LoginRequest;
-import org.pertitrack.backend.dto.MessageResponse;
-import org.pertitrack.backend.dto.SignupRequest;
-import org.pertitrack.backend.entity.auth.User;
-import org.pertitrack.backend.repository.UserRepository;
-import org.pertitrack.backend.security.JwtUtils;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
+import org.pertitrack.backend.dto.*;
+import org.pertitrack.backend.entity.auth.*;
+import org.pertitrack.backend.exceptions.*;
+import org.pertitrack.backend.repository.*;
+import org.pertitrack.backend.security.*;
+import org.springframework.http.*;
+import org.springframework.security.authentication.*;
+import org.springframework.security.core.*;
+import org.springframework.security.core.context.*;
+import org.springframework.security.crypto.password.*;
+import org.springframework.stereotype.*;
+import org.springframework.transaction.annotation.*;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.*;
+import java.util.stream.*;
 
 @Service
 public class AuthService {
 
     private final AuthenticationManager authenticationManager;
     private final UserRepository userRepository;
+    private final EmployeeService employeeService;
     private final PasswordEncoder encoder;
     private final JwtUtils jwtUtils;
 
-    public AuthService(AuthenticationManager authenticationManager, UserRepository userRepository, PasswordEncoder encoder, JwtUtils jwtUtils) {
+    public AuthService(
+            AuthenticationManager authenticationManager,
+            UserRepository userRepository,
+            EmployeeService employeeService,
+            PasswordEncoder encoder,
+            JwtUtils jwtUtils) {
         this.authenticationManager = authenticationManager;
         this.userRepository = userRepository;
+        this.employeeService = employeeService;
         this.encoder = encoder;
         this.jwtUtils = jwtUtils;
     }
@@ -57,6 +61,7 @@ public class AuthService {
         ));
     }
 
+    @Transactional
     public ResponseEntity<MessageResponse> registerUser(SignupRequest signUpRequest) {
         if (userRepository.existsByEmail(signUpRequest.getEmail())) {
             return ResponseEntity
@@ -70,7 +75,19 @@ public class AuthService {
                 signUpRequest.getFirstName(),
                 signUpRequest.getLastName());
 
-        userRepository.save(user);
+        User newUser = userRepository.save(user);
+
+        // Automatically create employee for the new user
+        try {
+            employeeService.createEmployeeForNewUser(newUser);
+        } catch (Exception e) {
+            // If employee creation fails, still return success for user creation
+            // but also log the error for debugging
+            throw new EmployeeCreationFailedException(
+                    "Failed to create employee for user ",
+                    newUser.getEmail(),
+                    e.getMessage() );
+        }
 
         return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
     }

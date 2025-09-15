@@ -11,6 +11,7 @@ import org.pertitrack.backend.dto.LoginRequest;
 import org.pertitrack.backend.dto.MessageResponse;
 import org.pertitrack.backend.dto.SignupRequest;
 import org.pertitrack.backend.entity.auth.User;
+import org.pertitrack.backend.exceptions.*;
 import org.pertitrack.backend.repository.UserRepository;
 import org.pertitrack.backend.security.JwtUtils;
 import org.springframework.http.HttpStatus;
@@ -48,11 +49,15 @@ class AuthServiceTest {
     @Mock
     private Authentication authentication;
 
+    @Mock
+    private EmployeeService employeeService;
+
     @InjectMocks
     private AuthService authService;
 
     private User testUser;
     private LoginRequest loginRequest;
+    private SignupRequest signupRequest;
 
     @BeforeEach
     void setup() {
@@ -70,10 +75,16 @@ class AuthServiceTest {
         loginRequest = new LoginRequest();
         loginRequest.setEmail("test@test.com");
         loginRequest.setPassword("password000");
+
+        // create sign up request
+        signupRequest = new SignupRequest();
+        signupRequest.setEmail("test@example.com");
+        signupRequest.setPassword("password123");
+        signupRequest.setFirstName("John");
+        signupRequest.setLastName("Doe");
     }
 
     //                    authenticateUser Tests
-    //                    -----------------------
     @Test
     void authenticateUser_returnsUserSpecificJWTResponse() {
         // Arrange
@@ -117,7 +128,6 @@ class AuthServiceTest {
     }
 
     //                    registerUser Tests
-    //                    -----------------------
 
     @Test
     void registerUser_withValidData_returnsSuccessMessage() {
@@ -184,6 +194,62 @@ class AuthServiceTest {
         // verify that save was never called
         verify(userRepository, never()).save(any(User.class));
         verify(passwordEncoder, never()).encode(anyString());
+    }
+
+    @Test
+    void registerUser_RegistersUserSuccessfully_WhenEmployeeCreationSucceeds() {
+        // Arrange
+        when(userRepository.existsByEmail(signupRequest.getEmail())).thenReturn(false);
+        when(passwordEncoder.encode(signupRequest.getPassword())).thenReturn("encodedPassword");
+        when(userRepository.save(any(User.class))).thenReturn(testUser);
+
+        // Employee creation succeeds (no exception thrown)
+        doNothing().when(employeeService).createEmployeeForNewUser(any(User.class));
+
+        // Act
+        ResponseEntity<MessageResponse> response = authService.registerUser(signupRequest);
+
+        // Assert
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals("User registered successfully!", response.getBody().getMessage());
+
+        // Verify interactions
+        verify(userRepository).existsByEmail(signupRequest.getEmail());
+        verify(passwordEncoder).encode(signupRequest.getPassword());
+        verify(userRepository).save(any(User.class));
+        verify(employeeService).createEmployeeForNewUser(testUser);
+    }
+
+    @Test
+    void registerUser_ThrowsEmployeeCreationFailedException_WhenEmployeeCreationFails() {
+        // Arrange
+        when(userRepository.existsByEmail(signupRequest.getEmail())).thenReturn(false);
+        when(passwordEncoder.encode(signupRequest.getPassword())).thenReturn("encodedPassword");
+        when(userRepository.save(any(User.class))).thenReturn(testUser);
+
+        // Simulate employee creation failure
+        RuntimeException employeeCreationError = new RuntimeException("Database connection failed");
+        doThrow(employeeCreationError).when(employeeService).createEmployeeForNewUser(any(User.class));
+
+        // Act & Assert
+        EmployeeCreationFailedException exception = assertThrows(
+                EmployeeCreationFailedException.class,
+                () -> authService.registerUser(signupRequest)
+        );
+
+        // Assert exception properties
+        assertEquals("test@test.com", exception.getEmail());
+        assertTrue(exception.getMessage().contains("Failed to create employee for user"));
+        assertTrue(exception.getMessage().contains("test@test.com"));
+        assertTrue(exception.getMessage().contains("Database connection failed"));
+
+        // Verify interactions
+        verify(userRepository).existsByEmail(signupRequest.getEmail());
+        verify(passwordEncoder).encode(signupRequest.getPassword());
+        verify(userRepository).save(any(User.class));
+        verify(employeeService).createEmployeeForNewUser(testUser);
     }
 
     //                    logoutUser Tests
