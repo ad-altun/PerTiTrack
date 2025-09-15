@@ -48,6 +48,9 @@ class AuthServiceTest {
     @Mock
     private Authentication authentication;
 
+    @Mock
+    private EmployeeService employeeService;
+
     @InjectMocks
     private AuthService authService;
 
@@ -73,7 +76,6 @@ class AuthServiceTest {
     }
 
     //                    authenticateUser Tests
-    //                    -----------------------
     @Test
     void authenticateUser_returnsUserSpecificJWTResponse() {
         // Arrange
@@ -117,7 +119,6 @@ class AuthServiceTest {
     }
 
     //                    registerUser Tests
-    //                    -----------------------
 
     @Test
     void registerUser_withValidData_returnsSuccessMessage() {

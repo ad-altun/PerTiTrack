@@ -94,7 +94,6 @@ class EmployeeServiceTest {
 
         // Setup update request
         updateEmployeeRequest = new UpdateEmployeeRequest();
-        updateEmployeeRequest.setEmployeeNumber("EMP001-UPDATED");
         updateEmployeeRequest.setFirstName("John Updated");
         updateEmployeeRequest.setLastName("Doe Updated");
         updateEmployeeRequest.setActive(false);
@@ -182,46 +181,109 @@ class EmployeeServiceTest {
     @Test
     void createEmployee_CreatesEmployeeWithoutUser_WhenUserIdNotProvided() {
         // Arrange
-        createEmployeeRequest.setUserId(null);
         String generatedId = "550e8400-e29b-41d4-a716-446655440002";
+        String employeeNumber = "0001";
 
-        when(employeeRepository.findEmployeeByEmployeeNumber("EMP002")).thenReturn(Optional.empty());
+        createEmployeeRequest.setUserId(null);
+        createEmployeeRequest.setEmployeeNumber(employeeNumber);
+        createEmployeeRequest.setFirstName("John");
+        createEmployeeRequest.setLastName("Doe");
+
+
+        // Create test employee without user
+        Employee savedEmployee = new Employee();
+        savedEmployee.setId(generatedId);
+        savedEmployee.setEmployeeNumber(employeeNumber);
+        savedEmployee.setFirstName("John");
+        savedEmployee.setLastName("Doe");
+        savedEmployee.setIsActive(true);
+        savedEmployee.setUser(null); // No user linked
+
+        when(employeeRepository.findEmployeeByEmployeeNumber(employeeNumber))
+                .thenReturn(Optional.empty());
         when(idService.generateId()).thenReturn(generatedId);
-        when(employeeRepository.save(any(Employee.class))).thenReturn(testEmployee);
+        when(employeeRepository.save(any(Employee.class)))
+                .thenReturn(savedEmployee);
 
         // Act
         EmployeeDto result = employeeService.createEmployee(createEmployeeRequest);
 
         // Assert
         assertNotNull(result);
+        assertEquals(generatedId, result.id());
+        assertEquals(employeeNumber, result.employeeNumber());
+        assertEquals("John", result.firstName());
+        assertEquals("Doe", result.lastName());
+        assertEquals("John Doe", result.fullName());
+        assertTrue(result.isActive());
+        assertNull(result.userId());
+        assertNull(result.userEmail());
+        assertNull(result.userFullName());
 
-        verify(employeeRepository).findEmployeeByEmployeeNumber("EMP002");
+        verify(employeeRepository).findEmployeeByEmployeeNumber(employeeNumber);
         verify(idService).generateId();
-        verify(employeeRepository).save(any(Employee.class));
+        verify(employeeRepository).save(argThat(emp ->
+                emp.getEmployeeNumber().equals(employeeNumber) &&
+                        emp.getFirstName().equals("John") &&
+                        emp.getLastName().equals("Doe") &&
+                        emp.getUser() == null &&
+                        emp.getIsActive().equals(true)
+        ));
         verify(userRepository, never()).findById(any());
     }
 
     @Test
     void createEmployee_CreatesEmployeeWithUser_WhenUserIdProvided() {
         // Arrange
-        String generatedId = "550e8400-e29b-41d4-a716-446655440001";
-        String userId = createEmployeeRequest.getUserId();
+        String generatedId = "550e8400-e29b-41d4-a716-446655440002";
+        String employeeNumber = "0001";
 
-        when(employeeRepository.findEmployeeByEmployeeNumber("EMP002")).thenReturn(Optional.empty());
-        when(idService.generateId()).thenReturn(generatedId);
-        when(userRepository.findById(userId)).thenReturn(Optional.of(testUser));
-        when(employeeRepository.save(any(Employee.class))).thenReturn(testEmployee);
+        createEmployeeRequest.setUserId(null);
+        createEmployeeRequest.setEmployeeNumber(employeeNumber);
+        createEmployeeRequest.setFirstName("John");
+        createEmployeeRequest.setLastName("Doe");
+
+
+        // Create test employee without user
+        Employee savedEmployee = new Employee();
+        savedEmployee.setId(generatedId);
+        savedEmployee.setEmployeeNumber(employeeNumber);
+        savedEmployee.setFirstName("John");
+        savedEmployee.setLastName("Doe");
+        savedEmployee.setIsActive(true);
+        savedEmployee.setUser(null); // No user linked
+
+        when(employeeRepository.findEmployeeByEmployeeNumber(employeeNumber))
+                .thenReturn(Optional.empty());
+        when(idService.generateId()).thenReturn(null);
+        when(employeeRepository.save(any(Employee.class)))
+                .thenReturn(savedEmployee);
 
         // Act
         EmployeeDto result = employeeService.createEmployee(createEmployeeRequest);
 
         // Assert
         assertNotNull(result);
+        assertEquals(generatedId, result.id());
+        assertEquals(employeeNumber, result.employeeNumber());
+        assertEquals("John", result.firstName());
+        assertEquals("Doe", result.lastName());
+        assertEquals("John Doe", result.fullName());
+        assertTrue(result.isActive());
+        assertNull(result.userId());
+        assertNull(result.userEmail());
+        assertNull(result.userFullName());
 
-        verify(employeeRepository).findEmployeeByEmployeeNumber("EMP002");
+        verify(employeeRepository).findEmployeeByEmployeeNumber(employeeNumber);
         verify(idService).generateId();
-        verify(userRepository).findById(userId);
-        verify(employeeRepository).save(any(Employee.class));
+        verify(employeeRepository).save(argThat(emp ->
+                emp.getEmployeeNumber().equals(employeeNumber) &&
+                        emp.getFirstName().equals("John") &&
+                        emp.getLastName().equals("Doe") &&
+                        emp.getUser() == null &&
+                        emp.getIsActive().equals(true)
+        ));
+        verify(userRepository, never()).findById(any());
     }
 
     @Test
