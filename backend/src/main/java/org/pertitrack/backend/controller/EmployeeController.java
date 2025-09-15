@@ -1,13 +1,12 @@
 package org.pertitrack.backend.controller;
 
-import org.pertitrack.backend.dto.CreateEmployeeRequest;
-import org.pertitrack.backend.dto.EmployeeDto;
-import org.pertitrack.backend.dto.UpdateEmployeeRequest;
-import org.pertitrack.backend.service.EmployeeService;
-import org.springframework.http.ResponseEntity;
+import jakarta.validation.*;
+import org.pertitrack.backend.dto.*;
+import org.pertitrack.backend.service.*;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/employees")
@@ -41,8 +40,10 @@ public class EmployeeController {
 //    }
 
     @PostMapping
-    public ResponseEntity<EmployeeDto> createEmployee(@RequestBody CreateEmployeeRequest request) {
-        return ResponseEntity.ok(employeeService.createEmployee(request));
+    public ResponseEntity<EmployeeDto> createEmployee(@Valid @RequestBody CreateEmployeeRequest request) {
+//        return ResponseEntity.ok(employeeService.createEmployee(request));
+        EmployeeDto createdEmployee = employeeService.createEmployee(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdEmployee);
     }
 
     @PutMapping("/{id}")

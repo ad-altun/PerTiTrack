@@ -1,21 +1,17 @@
 package org.pertitrack.backend.service;
 
-import org.pertitrack.backend.dto.CreateEmployeeRequest;
-import org.pertitrack.backend.dto.EmployeeDto;
-import org.pertitrack.backend.dto.UpdateEmployeeRequest;
+import org.pertitrack.backend.dto.*;
 import org.pertitrack.backend.entity.auth.User;
-import org.pertitrack.backend.entity.personnel.Employee;
-import org.pertitrack.backend.exceptions.EmployeeAlreadyExistException;
-import org.pertitrack.backend.exceptions.EmployeeNotFoundException;
-import org.pertitrack.backend.mapper.EmployeeMapper;
-import org.pertitrack.backend.repository.EmployeeRepository;
-import org.pertitrack.backend.repository.UserRepository;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import org.pertitrack.backend.entity.personnel.*;
+import org.pertitrack.backend.exceptions.*;
+import org.pertitrack.backend.mapper.*;
+import org.pertitrack.backend.repository.*;
+import org.springframework.security.core.userdetails.*;
+import org.springframework.stereotype.*;
+import org.springframework.transaction.annotation.*;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.*;
+import java.util.stream.*;
 
 @Service
 @Transactional
@@ -65,6 +61,11 @@ public class EmployeeService {
 //                .orElseThrow(() -> new EmployeeNotFoundException(employeeName));
 //    }
 
+    @Transactional(readOnly = true)
+    public boolean employeeExistsForUser(String userId) {
+        return employeeRepository.findByUserId(userId).isPresent();
+    }
+
     public EmployeeDto createEmployee(CreateEmployeeRequest request) { // check if the employee number already exist
         if (employeeRepository.findEmployeeByEmployeeNumber(request.getEmployeeNumber()).isPresent()) {
             throw new EmployeeAlreadyExistException(request.getEmployeeNumber(), "Employee already exists: ");
@@ -92,6 +93,19 @@ public class EmployeeService {
 
         Employee saved = employeeRepository.save(employee);
 
+        // Handle case where employee might not be linked to a user
+        String userId = null;
+        String userEmail = null;
+        String userFullName = null;
+
+        if (saved.getUser() != null) {
+            userId = saved.getUser().getId();
+            userEmail = saved.getUser().getEmail();
+            userFullName = saved.getUser().getFullName();
+        }
+
+//        return employeeMapper.toDto(saved);
+
         return new EmployeeDto(
                 saved.getId(),
                 saved.getEmployeeNumber(),
@@ -99,9 +113,9 @@ public class EmployeeService {
                 saved.getLastName(),
                 saved.getFullName(),
                 saved.getIsActive(),
-                saved.getUser().getId(),
-                saved.getUser().getEmail(),
-                saved.getUser().getFullName()
+                userId,
+                userEmail,
+                userFullName
         );
 
     }
@@ -110,9 +124,13 @@ public class EmployeeService {
         Employee employee = employeeRepository.findById(id)
                 .orElseThrow(() -> new EmployeeNotFoundException("Employee not found: ", id));
 
-        employee.setEmployeeNumber(request.getEmployeeNumber());
-        employee.setFirstName(request.getFirstName());
-        employee.setLastName(request.getLastName());
+        if (request.getFirstName() != null) {
+            employee.setFirstName(request.getFirstName());
+        }
+        if (request.getLastName() != null) {
+            employee.setLastName(request.getLastName());
+        }
+
         employee.setIsActive(request.isActive());
 
         Employee updated = employeeRepository.save(employee);
@@ -148,6 +166,56 @@ public class EmployeeService {
         }
         employeeRepository.deleteById(employeeId);
         return true;
+    }
+
+
+     // Creates an employee record for a newly registered user (automatic creation)
+     // This method is called during user registration process
+     // @param user The user for whom to create an employee record
+
+    public void createEmployeeForNewUser(User user) {
+        // Check if employee already exists for this user
+        if (employeeRepository.findByUserId(user.getId()).isPresent()) {
+            return; // Employee already exists, skip creation
+        }
+
+        Employee employee = new Employee();
+        employee.setId(idService.generateId());
+        employee.setUser(user);
+        employee.setEmployeeNumber(generateNextEmployeeNumber());
+        employee.setFirstName(user.getFirstName());
+        employee.setLastName(user.getLastName());
+        employee.setIsActive(true);
+
+        employeeRepository.save(employee);
+    }
+
+    /**
+     * Generates the next sequential employee number
+     * @return Next employee number in format 0041, 0042, etc.
+     */
+    private String generateNextEmployeeNumber() {
+        // Find the employee with the highest employee number
+        Optional<Employee> lastEmployee = employeeRepository.findTopByOrderByEmployeeNumberDesc();
+
+        int nextEmployeeNumber;
+        if (lastEmployee.isPresent()) {
+            // Parse the current highest number and increment
+            String currentMaxNumber = lastEmployee.get().getEmployeeNumber();
+            try {
+                int currentMax = Integer.parseInt(currentMaxNumber);
+                nextEmployeeNumber = currentMax + 1;
+            } catch (NumberFormatException e) {
+                // If parsing fails, start from 41 (first employee will be 0041)
+                nextEmployeeNumber = 41;
+            }
+        } else {
+            // No employees exist yet, start from 41 (first employee will be 0041)
+            nextEmployeeNumber = 41;
+        }
+
+        // Format as 4-digit number with leading zeros
+        return String.format("%04d", nextEmployeeNumber);
     }
 
 }

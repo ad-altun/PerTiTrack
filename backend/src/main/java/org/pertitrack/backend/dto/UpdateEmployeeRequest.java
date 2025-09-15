@@ -6,9 +6,6 @@ import lombok.Data;
 @Data
 public class UpdateEmployeeRequest {
 
-    @Size(max = 20)
-    private String employeeNumber;
-
     @Size(max = 50)
     private String firstName;
 
