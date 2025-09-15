@@ -17,6 +17,7 @@ import java.time.LocalDateTime;
 public class UserSession {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
     @ManyToOne(fetch = FetchType.LAZY)

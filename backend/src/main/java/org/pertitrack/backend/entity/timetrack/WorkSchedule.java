@@ -25,6 +25,7 @@ public class WorkSchedule extends EmployeeOwnedEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
     @Column(name = "day_of_week", nullable = false)
