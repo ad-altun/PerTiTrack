@@ -24,21 +24,18 @@ public class AuthService {
     private final EmployeeService employeeService;
     private final PasswordEncoder encoder;
     private final JwtUtils jwtUtils;
-    private final IdService idService;
 
     public AuthService(
             AuthenticationManager authenticationManager,
             UserRepository userRepository,
             EmployeeService employeeService,
             PasswordEncoder encoder,
-            JwtUtils jwtUtils,
-            IdService idService) {
+            JwtUtils jwtUtils) {
         this.authenticationManager = authenticationManager;
         this.userRepository = userRepository;
         this.employeeService = employeeService;
         this.encoder = encoder;
         this.jwtUtils = jwtUtils;
-        this.idService = idService;
     }
 
     public ResponseEntity<JwtResponse> authenticateUser(LoginRequest loginRequest) {

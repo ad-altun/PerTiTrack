@@ -61,10 +61,10 @@ public class EmployeeService {
 //                .orElseThrow(() -> new EmployeeNotFoundException(employeeName));
 //    }
 
-    @Transactional(readOnly = true)
-    public boolean employeeExistsForUser(String userId) {
-        return employeeRepository.findByUserId(userId).isPresent();
-    }
+//    @Transactional(readOnly = true)
+//    public boolean employeeExistsForUser(String userId) {
+//        return employeeRepository.findByUserId(userId).isPresent();
+//    }
 
     public EmployeeDto createEmployee(CreateEmployeeRequest request) { // check if the employee number already exist
         if (employeeRepository.findEmployeeByEmployeeNumber(request.getEmployeeNumber()).isPresent()) {

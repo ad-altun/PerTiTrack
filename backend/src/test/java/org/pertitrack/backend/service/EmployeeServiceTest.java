@@ -19,6 +19,7 @@ import org.pertitrack.backend.repository.UserRepository;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.lang.reflect.*;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -328,6 +329,59 @@ class EmployeeServiceTest {
         verify(idService).generateId();
         verify(userRepository).findById(userId);
         verify(employeeRepository, never()).save(any(Employee.class));
+    }
+
+    @Test
+    void createEmployeeForNewUser_SkipsCreationWhenEmployeeExists() {
+        // Arrange
+        Employee existingEmployee = new Employee();
+        existingEmployee.setId("existing-emp-123");
+        when(employeeRepository.findByUserId(testUser.getId())).thenReturn(Optional.of(existingEmployee));
+
+        // Act
+        employeeService.createEmployeeForNewUser(testUser);
+
+        // Assert
+        verify(employeeRepository).findByUserId(testUser.getId());
+        verify(employeeRepository, never()).save(any(Employee.class));
+        verify(idService, never()).generateId();
+    }
+
+    @Test
+    void createEmployeeForNewUser_GeneratesCorrectEmployeeNumber() {
+        // Arrange
+        Employee lastEmployee = new Employee();
+        lastEmployee.setEmployeeNumber("0050");
+        when(employeeRepository.findByUserId(testUser.getId())).thenReturn(Optional.empty());
+        when(employeeRepository.findTopByOrderByEmployeeNumberDesc()).thenReturn(Optional.of(lastEmployee));
+        when(idService.generateId()).thenReturn("emp-456");
+
+        // Act
+        employeeService.createEmployeeForNewUser(testUser);
+
+        // Assert
+        verify(employeeRepository).save(argThat(employee ->
+                employee.getEmployeeNumber().equals("0051")
+        ));
+    }
+
+    @Test
+    void generateNextEmployeeNumber_IncrementsCorrectly_WhenEmployeesExist() throws Exception {
+        // Arrange
+        Employee lastEmployee = new Employee();
+        lastEmployee.setEmployeeNumber("0055");
+        when(employeeRepository.findTopByOrderByEmployeeNumberDesc()).thenReturn(Optional.of(lastEmployee));
+
+        // Use reflection to access private method
+        Method method = EmployeeService.class.getDeclaredMethod("generateNextEmployeeNumber");
+        method.setAccessible(true);
+
+        // Act
+        String result = (String) method.invoke(employeeService);
+
+        // Assert
+        assertEquals("0056", result);
+        verify(employeeRepository).findTopByOrderByEmployeeNumberDesc();
     }
 
     // updateEmployee Tests
