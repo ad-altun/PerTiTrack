@@ -18,6 +18,7 @@ import org.pertitrack.backend.entity.auth.User;
 public class Employee extends BaseEntity {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
     @OneToOne(fetch = FetchType.LAZY)
