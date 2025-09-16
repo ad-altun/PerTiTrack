@@ -11,7 +11,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import org.pertitrack.backend.entity.personnel.ApprovableEntity;
 import org.pertitrack.backend.entity.personnel.Employee;
 
-import java.io.Serial;
+import java.io.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -21,14 +21,10 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-public class TimeRecord extends ApprovableEntity {
+public class TimeRecord extends ApprovableEntity implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private String id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "employee_id", nullable = false)

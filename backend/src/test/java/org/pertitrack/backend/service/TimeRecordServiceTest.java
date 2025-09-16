@@ -55,7 +55,7 @@ class TimeRecordServiceTest {
     void setUp() {
         // Create test employee with String ID
         testEmployee = new Employee();
-        testEmployee.setId("emp-123-abc-456");
+//        testEmployee.setId("emp-123-abc-456");
         testEmployee.setFirstName("John");
         testEmployee.setLastName("Doe");
         testEmployee.setEmployeeNumber("EMP001");
@@ -63,7 +63,7 @@ class TimeRecordServiceTest {
 
         // Create test approver with String ID
         testApprover = new Employee();
-        testApprover.setId("mgr-456-def-789");
+//        testApprover.setId("mgr-456-def-789");
         testApprover.setFirstName("Jane");
         testApprover.setLastName("Manager");
         testApprover.setEmployeeNumber("MGR001");
@@ -71,7 +71,7 @@ class TimeRecordServiceTest {
 
         // Create test entity with String ID
         testEntity = new TimeRecord();
-        testEntity.setId("tr-789-ghi-012");
+//        testEntity.setId("tr-789-ghi-012");
         testEntity.setEmployee(testEmployee);
         testEntity.setRecordDate(LocalDate.of(2024, 1, 15));
         testEntity.setRecordTime(LocalDateTime.of(2024, 1, 15, 9, 0, 0));

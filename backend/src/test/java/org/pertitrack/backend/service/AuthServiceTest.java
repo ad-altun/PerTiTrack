@@ -63,7 +63,7 @@ class AuthServiceTest {
     void setup() {
         // Create test user with EMPLOYEE role, which is default
         testUser = new User();
-        testUser.setId("550e8400-e29b-41d4-a716-446655440000");
+//        testUser.setId("550e8400-e29b-41d4-a716-446655440000");
         testUser.setEmail("test@test.com");
         testUser.setPassword("encodedPassword000");
         testUser.setFirstName("Patrick");

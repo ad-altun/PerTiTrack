@@ -25,10 +25,6 @@ public class Absence extends ApprovableEntity implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private String id;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "employee_id", nullable = false)
     @NotNull

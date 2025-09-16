@@ -34,7 +34,7 @@ class TimeRecordMapperTest {
     void setUp() {
         // Create test employee
         testEmployee = new Employee();
-        testEmployee.setId("emp-123");
+//        testEmployee.setId("emp-123");
         testEmployee.setFirstName("John");
         testEmployee.setLastName("Doe");
         testEmployee.setEmployeeNumber("EMP001");
@@ -42,7 +42,7 @@ class TimeRecordMapperTest {
 
         // Create test approver
         testApprover = new Employee();
-        testApprover.setId("mgr-456");
+//        testApprover.setId("mgr-456");
         testApprover.setFirstName("Jane");
         testApprover.setLastName("Manager");
         testEmployee.setEmployeeNumber("MGR001");
@@ -61,7 +61,7 @@ class TimeRecordMapperTest {
 
         // Create test entity
         testEntity = new TimeRecord();
-        testEntity.setId("tr-789");
+//        testEntity.setId("tr-789");
         testEntity.setEmployee(testEmployee);
         testEntity.setRecordDate(LocalDate.of(2024, 1, 15));
         testEntity.setRecordTime(LocalDateTime.of(2024, 1, 15, 9, 0, 0));

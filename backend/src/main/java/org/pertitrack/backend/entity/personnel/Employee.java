@@ -1,13 +1,10 @@
 package org.pertitrack.backend.entity.personnel;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import org.pertitrack.backend.entity.BaseEntity;
-import org.pertitrack.backend.entity.auth.User;
+import jakarta.validation.constraints.*;
+import lombok.*;
+import org.pertitrack.backend.entity.*;
+import org.pertitrack.backend.entity.auth.*;
 
 @Entity
 @Table(name = "employees", schema = "personnel")
@@ -17,15 +14,7 @@ import org.pertitrack.backend.entity.auth.User;
 @EqualsAndHashCode(callSuper = true)
 public class Employee extends BaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private String id;
-
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", unique = true)
-    private User user;
-
-    @Column(name = "employee_number", unique = true, nullable = false)
+    @Column(name = "employee_number", unique = true)
     @NotBlank
     private String employeeNumber;
 
@@ -39,6 +28,10 @@ public class Employee extends BaseEntity {
 
     @Column(name = "is_active")
     private Boolean isActive = true;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", unique = true)
+    private User user;
 
     // Computed property
     @Transient
@@ -61,6 +54,16 @@ public class Employee extends BaseEntity {
             this.lastName =  names[2];
         }
 
+    }
+
+    // Constructor for creating new employees
+    public Employee(String firstName, String lastName, String employeeNumber, User user) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.employeeNumber = employeeNumber;
+        this.user = user;
+        this.isActive = true;
+        // BaseEntity handles id, version, createdAt, updatedAt initialization
     }
 
 }
