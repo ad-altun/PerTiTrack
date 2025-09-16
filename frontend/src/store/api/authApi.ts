@@ -8,9 +8,8 @@ import type {
     User
 } from "../../validation/authSchemas.ts";
 import { jwtResponseSchema, messageResponseSchema, userSchema } from "../../validation/authSchemas.ts";
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import type { RootState } from "../store.ts";
 import { STORAGE_KEYS } from "../../constants/storage";
+import { baseApi } from "./baseApi.ts";
 
 
 // transform and validate API response
@@ -45,24 +44,7 @@ const transformUserResponse = ( response: unknown ): User => {
 };
 
 // Auth API Slice with endpoints
-export const authApi = createApi({
-    reducerPath: 'authApi',
-    baseQuery: fetchBaseQuery({
-        baseUrl: '/api',
-        prepareHeaders: ( headers, { getState } ) => {
-
-            // Get token from Redux state
-            const token = ( getState() as RootState ).auth?.token;
-
-            if ( token ) {
-                headers.set('authorization', `Bearer ${ token }`);
-            }
-
-            headers.set('content-type', 'application/json');
-            return headers;
-        },
-    }),
-    tagTypes: [ 'User', 'Auth' ],
+export const authApi = baseApi.injectEndpoints({
     endpoints: ( builder ) => ( {
         // authentication endpoints
         login: builder.mutation<JwtResponse, LoginFormData>({
