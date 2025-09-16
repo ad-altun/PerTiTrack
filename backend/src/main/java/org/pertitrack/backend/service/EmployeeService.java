@@ -71,11 +71,11 @@ public class EmployeeService {
             throw new EmployeeAlreadyExistException(request.getEmployeeNumber(), "Employee already exists: ");
         }
 
-        String id = idService.generateId();
+//        String id = idService.generateId();
         String fullName = request.getFirstName() + " " + request.getLastName();
 
         Employee employee = new Employee();
-        employee.setId(id);
+//        employee.setId(id);
         employee.setEmployeeNumber(request.getEmployeeNumber());
         employee.setFirstName(request.getFirstName());
         employee.setLastName(request.getLastName());
@@ -173,6 +173,7 @@ public class EmployeeService {
      // This method is called during user registration process
      // @param user The user for whom to create an employee record
 
+    @Transactional
     public void createEmployeeForNewUser(User user) {
         // Check if employee already exists for this user
         if (employeeRepository.findByUserId(user.getId()).isPresent()) {
@@ -180,7 +181,7 @@ public class EmployeeService {
         }
 
         Employee employee = new Employee();
-        employee.setId(idService.generateId());
+//        employee.setId(idService.generateId());
         employee.setUser(user);
         employee.setEmployeeNumber(generateNextEmployeeNumber());
         employee.setFirstName(user.getFirstName());

@@ -28,14 +28,14 @@ class EmployeeMapperTest {
     void setUp() {
         // Setup test user
         testUser = new User();
-        testUser.setId("550e8400-e29b-41d4-a716-446655440000");
+//        testUser.setId("550e8400-e29b-41d4-a716-446655440000");
         testUser.setEmail("john.doe@test.com");
         testUser.setFirstName("John");
         testUser.setLastName("Doe");
 
         // Setup test employee entity with user
         testEmployee = new Employee();
-        testEmployee.setId("emp-123");
+//        testEmployee.setId("emp-123");
         testEmployee.setEmployeeNumber("EMP001");
         testEmployee.setFirstName("John");
         testEmployee.setLastName("Doe");
@@ -117,7 +117,7 @@ class EmployeeMapperTest {
 
         // Assert
         assertNotNull(result);
-        assertEquals(testEmployeeDto.id(), result.getId());
+//        assertEquals(testEmployeeDto.id(), result.getId());
         assertEquals(testEmployeeDto.employeeNumber(), result.getEmployeeNumber());
         assertEquals(testEmployeeDto.firstName(), result.getFirstName());
         assertEquals(testEmployeeDto.lastName(), result.getLastName());

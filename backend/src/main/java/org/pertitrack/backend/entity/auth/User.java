@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.pertitrack.backend.entity.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -14,21 +15,17 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 
-@Entity
-@Table(name = "users", schema = "auth")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(callSuper = false)  // Just this
+@EqualsAndHashCode(callSuper = true)
 @ToString(exclude = {"password"})
-public class User implements UserDetails {
+@Entity
+@Table(name = "users", schema = "auth")
+public class User extends BaseEntity implements UserDetails {
 
     @Serial
     private static final long serialVersionUID = 1L;
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private String id;
 
     @Column(unique = true, nullable = false)
     @Email

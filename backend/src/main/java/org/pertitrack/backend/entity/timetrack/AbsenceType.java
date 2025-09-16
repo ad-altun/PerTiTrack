@@ -1,16 +1,14 @@
 package org.pertitrack.backend.entity.timetrack;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.*;
+import lombok.*;
+import org.hibernate.annotations.*;
+import org.pertitrack.backend.entity.*;
 
-import java.io.Serial;
-import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.io.*;
+import java.time.*;
 
 @Entity
 @Table(name = "absence_types", schema = "timetrack")
@@ -18,14 +16,10 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-public class AbsenceType implements Serializable {
+public class AbsenceType extends BaseEntity implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private String id;
 
     @Column(nullable = false, length = 100)
     @NotBlank

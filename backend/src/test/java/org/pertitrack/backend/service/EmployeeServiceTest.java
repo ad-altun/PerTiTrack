@@ -58,14 +58,14 @@ class EmployeeServiceTest {
     void setUp() {
         // Setup test user
         testUser = new User();
-        testUser.setId("550e8400-e29b-41d4-a716-446655440000");
+//        testUser.setId("550e8400-e29b-41d4-a716-446655440000");
         testUser.setEmail("john.doe@test.com");
         testUser.setFirstName("John");
         testUser.setLastName("Doe");
 
         // Setup test employee entity
         testEmployee = new Employee();
-        testEmployee.setId("emp-123");
+//        testEmployee.setId("emp-123");
         testEmployee.setEmployeeNumber("EMP001");
         testEmployee.setFirstName("John");
         testEmployee.setLastName("Doe");
@@ -193,7 +193,7 @@ class EmployeeServiceTest {
 
         // Create test employee without user
         Employee savedEmployee = new Employee();
-        savedEmployee.setId(generatedId);
+//        savedEmployee.setId(generatedId);
         savedEmployee.setEmployeeNumber(employeeNumber);
         savedEmployee.setFirstName("John");
         savedEmployee.setLastName("Doe");
@@ -202,7 +202,7 @@ class EmployeeServiceTest {
 
         when(employeeRepository.findEmployeeByEmployeeNumber(employeeNumber))
                 .thenReturn(Optional.empty());
-        when(idService.generateId()).thenReturn(generatedId);
+//        when(idService.generateId()).thenReturn(generatedId);
         when(employeeRepository.save(any(Employee.class)))
                 .thenReturn(savedEmployee);
 
@@ -211,7 +211,7 @@ class EmployeeServiceTest {
 
         // Assert
         assertNotNull(result);
-        assertEquals(generatedId, result.id());
+//        assertEquals(generatedId, result.id());
         assertEquals(employeeNumber, result.employeeNumber());
         assertEquals("John", result.firstName());
         assertEquals("Doe", result.lastName());
@@ -222,7 +222,7 @@ class EmployeeServiceTest {
         assertNull(result.userFullName());
 
         verify(employeeRepository).findEmployeeByEmployeeNumber(employeeNumber);
-        verify(idService).generateId();
+//        verify(idService).generateId();
         verify(employeeRepository).save(argThat(emp ->
                 emp.getEmployeeNumber().equals(employeeNumber) &&
                         emp.getFirstName().equals("John") &&
@@ -247,7 +247,7 @@ class EmployeeServiceTest {
 
         // Create test employee without user
         Employee savedEmployee = new Employee();
-        savedEmployee.setId(generatedId);
+//        savedEmployee.setId(generatedId);
         savedEmployee.setEmployeeNumber(employeeNumber);
         savedEmployee.setFirstName("John");
         savedEmployee.setLastName("Doe");
@@ -256,7 +256,7 @@ class EmployeeServiceTest {
 
         when(employeeRepository.findEmployeeByEmployeeNumber(employeeNumber))
                 .thenReturn(Optional.empty());
-        when(idService.generateId()).thenReturn(null);
+//        when(idService.generateId()).thenReturn(null);
         when(employeeRepository.save(any(Employee.class)))
                 .thenReturn(savedEmployee);
 
@@ -265,7 +265,7 @@ class EmployeeServiceTest {
 
         // Assert
         assertNotNull(result);
-        assertEquals(generatedId, result.id());
+//        assertEquals(generatedId, result.id());
         assertEquals(employeeNumber, result.employeeNumber());
         assertEquals("John", result.firstName());
         assertEquals("Doe", result.lastName());
@@ -276,7 +276,7 @@ class EmployeeServiceTest {
         assertNull(result.userFullName());
 
         verify(employeeRepository).findEmployeeByEmployeeNumber(employeeNumber);
-        verify(idService).generateId();
+//        verify(idService).generateId();
         verify(employeeRepository).save(argThat(emp ->
                 emp.getEmployeeNumber().equals(employeeNumber) &&
                         emp.getFirstName().equals("John") &&
@@ -313,7 +313,7 @@ class EmployeeServiceTest {
         String userId = createEmployeeRequest.getUserId();
 
         when(employeeRepository.findEmployeeByEmployeeNumber("EMP002")).thenReturn(Optional.empty());
-        when(idService.generateId()).thenReturn("emp-new-123");
+//        when(idService.generateId()).thenReturn("emp-new-123");
         when(userRepository.findById(userId)).thenReturn(Optional.empty());
 
         // Act & Assert
@@ -326,7 +326,7 @@ class EmployeeServiceTest {
         assertTrue(exception.getMessage().contains(userId));
 
         verify(employeeRepository).findEmployeeByEmployeeNumber("EMP002");
-        verify(idService).generateId();
+//        verify(idService).generateId();
         verify(userRepository).findById(userId);
         verify(employeeRepository, never()).save(any(Employee.class));
     }
@@ -335,7 +335,7 @@ class EmployeeServiceTest {
     void createEmployeeForNewUser_SkipsCreationWhenEmployeeExists() {
         // Arrange
         Employee existingEmployee = new Employee();
-        existingEmployee.setId("existing-emp-123");
+//        existingEmployee.setId("existing-emp-123");
         when(employeeRepository.findByUserId(testUser.getId())).thenReturn(Optional.of(existingEmployee));
 
         // Act
@@ -354,7 +354,7 @@ class EmployeeServiceTest {
         lastEmployee.setEmployeeNumber("0050");
         when(employeeRepository.findByUserId(testUser.getId())).thenReturn(Optional.empty());
         when(employeeRepository.findTopByOrderByEmployeeNumberDesc()).thenReturn(Optional.of(lastEmployee));
-        when(idService.generateId()).thenReturn("emp-456");
+//        when(idService.generateId()).thenReturn("emp-123");
 
         // Act
         employeeService.createEmployeeForNewUser(testUser);
@@ -391,7 +391,7 @@ class EmployeeServiceTest {
         // Arrange
         String employeeId = "emp-123";
         Employee updatedEmployee = new Employee();
-        updatedEmployee.setId(employeeId);
+//        updatedEmployee.setId(employeeId);
         updatedEmployee.setEmployeeNumber("EMP001-UPDATED");
         updatedEmployee.setFirstName("John Updated");
         updatedEmployee.setLastName("Doe Updated");

@@ -33,7 +33,7 @@ class ApprovableEntityTest extends BaseEntity {
 
         // Create a test employee with proper UUID and required fields
         approver = new Employee();
-        approver.setId("550e8400-e29b-41d4-a716-446655440000");
+//        approver.setId("550e8400-e29b-41d4-a716-446655440000");
         approver.setEmployeeNumber("MGR001");
         approver.setFirstName("John");
         approver.setLastName("Manager");
