@@ -5,12 +5,23 @@ import { store } from "./store/store.ts";
 import { Provider } from "react-redux";
 import { createTheme, CssBaseline, ThemeProvider } from "@mui/material";
 
-const LoginForm = lazy(() => import("./components/auth/LoginForm.tsx"));
-const RootLayout = lazy(() => import("./pages/RootLayout.tsx"));
-const AuthLayout = lazy(() => import("./pages/AuthLayout.tsx"));
+const preloadCriticalRoutes = () => {
+    // Preload Dashboard on app start
+    import('./pages/HomePage.tsx');
+};
+
+// Call on app initialization
+preloadCriticalRoutes();
+
+// critical components non-lazy for faster initial load
+import RootLayout from "./pages/RootLayout.tsx";
+import AuthLayout from "./pages/AuthLayout.tsx";
+import LoginForm from "./components/auth/LoginForm.tsx";
+
+// lazy load heavy/rarely used components
 const RegisterForm = lazy(() => import("./components/auth/RegisterForm.tsx"));
 const ForgotPasswordForm = lazy(() => import("./components/auth/ForgotPasswordForm.tsx"));
-const Dashboard = lazy(() => import('./components/Dashboard.tsx'));
+const HomePage = lazy(() => import("./pages/HomePage.tsx"));
 
 // material-ui theme
 const theme = createTheme({
@@ -36,17 +47,13 @@ function App() {
     const router = createBrowserRouter([
         {
             path: "/",
-            element: (
-                <Suspense fallback={ <div><LoadingSpinner/></div> }>
-                    <RootLayout/>
-                </Suspense>
-            ),
+            element: <RootLayout/>,
             children: [
                 {
                     index: true,
                     element: (
                         <Suspense fallback={ <div><LoadingSpinner/></div> }>
-                            <Dashboard/>
+                            <HomePage />
                         </Suspense>
                     ),
                 },
@@ -54,7 +61,7 @@ function App() {
                     path: "dashboard",
                     element: (
                         <Suspense fallback={ <LoadingSpinner/> }>
-                            <Dashboard/>
+                            <HomePage />
                         </Suspense>
                     ),
                 },
@@ -62,27 +69,15 @@ function App() {
         },
         {
             path: "/auth",
-            element: (
-                <Suspense fallback={ <div><LoadingSpinner/></div> }>
-                    <AuthLayout/>
-                </Suspense>
-            ),
+            element: <AuthLayout/>,
             children: [
                 {
                     index: true,
-                    element: (
-                        <Suspense fallback={ <div><LoadingSpinner/></div> }>
-                            <LoginForm/>
-                        </Suspense>
-                    ),
+                    element: <LoginForm/>,
                 },
                 {
                     path: 'signin',
-                    element: (
-                        <Suspense fallback={ <div><LoadingSpinner/></div> }>
-                            <LoginForm/>
-                        </Suspense>
-                    ),
+                    element: <LoginForm/>,
                 },
                 {
                     path: 'register',

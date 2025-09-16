@@ -46,6 +46,13 @@ public class EmployeeService {
                 .orElseThrow(() -> new EmployeeNotFoundException(id, "Employee not found: "));
     }
 
+    // Add this new method
+    @Transactional(readOnly = true)
+    public EmployeeDto findEmployeeByUserId(String userId) {
+        return employeeRepository.findByUser_Id(userId)
+                .map(employeeMapper::toDto)
+                .orElseThrow(() -> new EmployeeNotFoundException(userId, "Employee not found: "));
+    }
 
 //    @Transactional(readOnly = true)
 //    public EmployeeDto getEmployeeByEmployeeNumber(String employeeNumber) {

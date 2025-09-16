@@ -22,6 +22,7 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final UserRepository userRepository;
     private final EmployeeService employeeService;
+    private final EmployeeRepository employeeRepository;
     private final PasswordEncoder encoder;
     private final JwtUtils jwtUtils;
 
@@ -30,12 +31,14 @@ public class AuthService {
             UserRepository userRepository,
             EmployeeService employeeService,
             PasswordEncoder encoder,
-            JwtUtils jwtUtils) {
+            JwtUtils jwtUtils,
+            EmployeeRepository employeeRepository) {
         this.authenticationManager = authenticationManager;
         this.userRepository = userRepository;
         this.employeeService = employeeService;
         this.encoder = encoder;
         this.jwtUtils = jwtUtils;
+        this.employeeRepository = employeeRepository;
     }
 
     public ResponseEntity<JwtResponse> authenticateUser(LoginRequest loginRequest) {
@@ -51,13 +54,17 @@ public class AuthService {
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList());
 
+        EmployeeDto employee = employeeService.findEmployeeByUserId(userDetails.getId());
+
         return ResponseEntity.ok(new JwtResponse(
                 jwt,
                 userDetails.getId(),
                 userDetails.getEmail(),
                 userDetails.getFirstName(),
                 userDetails.getLastName(),
-                roles
+                roles,
+                employee != null ? employee.id() : null,
+                employee != null ? employee.employeeNumber() : null
         ));
     }
 

@@ -7,7 +7,7 @@ import Navbar from "./Navbar";
 import type { HeaderProps } from "../validation/headerSchemas.ts";
 
 
-const Header: React.FC<HeaderProps> = ({ userName, portalName, activePage }) => {
+const Header: React.FC<HeaderProps> = ({  portalName }) => {
 
     return (
         <Box sx={{ width: "100%" }}>
@@ -27,7 +27,7 @@ const Header: React.FC<HeaderProps> = ({ userName, portalName, activePage }) => 
             </AppBar>
 
             {/* Bottom Navbar */}
-            <Navbar activePage={activePage} userName={userName} />
+            <Navbar />
         </Box>
     );
 };

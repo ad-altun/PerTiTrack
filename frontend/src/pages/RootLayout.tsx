@@ -1,20 +1,29 @@
 import { Navigate, Outlet } from "react-router-dom";
-import { useIsAuthenticated } from "../store/hook.ts";
+import { useAppSelector } from "../store/hook.ts";
 import Header from "../components/Header.tsx";
+import { useMemo } from "react";
 
 export default function RootLayout() {
 
-    const isAuthenticated = useIsAuthenticated();
+    const { isAuthenticated, token } = useAppSelector((state) => state.auth);
 
-    if ( !isAuthenticated ) {
-        return <Navigate to="/auth/signin" replace/>;
+    const isAuthed = useMemo(() => {
+        if (!isAuthenticated || !token) return false;
+        try {
+            const payload = JSON.parse(atob(token.split('.')[1]));
+            return payload.exp > Date.now() / 1000;
+        } catch {
+            return false;
+        }
+    }, [isAuthenticated, token]);
+
+    if (!isAuthed) {
+        return <Navigate to="/auth/signin" replace />;
     }
 
     return (
         <div>
-            <Header userName="Jane Patrick"
-                    portalName="Employee Portal"
-                    activePage="Timesheet" />
+            <Header portalName="Employee Portal" />
             <Outlet/>
         </div>
     );
