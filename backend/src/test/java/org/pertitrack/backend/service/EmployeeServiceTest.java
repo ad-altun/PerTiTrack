@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -98,6 +99,36 @@ class EmployeeServiceTest {
         updateEmployeeRequest.setFirstName("John Updated");
         updateEmployeeRequest.setLastName("Doe Updated");
         updateEmployeeRequest.setActive(false);
+    }
+
+    @Test
+    void findEmployeeByUserId_WhenEmployeeExists_ShouldReturnEmployeeDto() {
+        String userId = "550e8400-e29b-41d4-a716-446655440000";
+        String employeeId = "emp-123";
+
+        // Given
+        when(employeeRepository.findByUser_Id(userId)).thenReturn(Optional.of(testEmployee));
+        when(employeeMapper.toDto(testEmployee)).thenReturn(testEmployeeDto);
+
+        // When
+        EmployeeDto result = employeeService.findEmployeeByUserId(userId);
+
+        // Then
+        assertThat(result).isNotNull();
+        assertThat(result.id()).isEqualTo(employeeId);
+        assertThat(result.employeeNumber()).isEqualTo("EMP001");
+        assertThat(result.firstName()).isEqualTo("John");
+        assertThat(result.lastName()).isEqualTo("Doe");
+        assertThat(result.fullName()).isEqualTo("John Doe");
+        assertThat(result.isActive()).isTrue();
+        assertThat(result.userId()).isEqualTo(userId);
+        assertThat(result.userEmail()).isEqualTo("john.doe@test.com");
+        assertThat(result.userFullName()).isEqualTo("John Doe");
+
+        // Verify interactions
+        verify(employeeRepository, times(1)).findByUser_Id(userId);
+        verify(employeeMapper, times(1)).toDto(testEmployee);
+        verifyNoMoreInteractions(employeeRepository, employeeMapper);
     }
 
     // getAllEmployees Tests

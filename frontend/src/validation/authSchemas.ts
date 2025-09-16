@@ -50,6 +50,8 @@ export const jwtResponseSchema = z.object({
     firstName: z.string(),
     lastName: z.string(),
     roles: z.array(z.string()),
+    employeeId: z.string(),
+    employeeNumber: z.string(),
 });
 
 // forgot/reset password

@@ -61,7 +61,9 @@ class AuthControllerTest {
                 "test@example.com",
                 "Test",
                 "User",
-                List.of("ROLE_EMPLOYEE")
+                List.of("ROLE_EMPLOYEE"),
+                "550e8423-e29b-41d4-a716-446655440000",
+                "0041"
         );
 
         when(authService.authenticateUser(any(LoginRequest.class))).thenReturn(ResponseEntity.ok(expectedResponse));
