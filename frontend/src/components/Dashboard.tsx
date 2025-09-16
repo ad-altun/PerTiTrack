@@ -14,7 +14,7 @@ export default function Dashboard() {
                 marginTop: 0,
             }}
         >
-            <WelcomeSection userName="Mr. Jane" />
+            <WelcomeSection />
 
             {/* Main Content - Following the HTML design layout */}
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>

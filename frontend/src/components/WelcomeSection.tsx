@@ -1,8 +1,14 @@
 import React from 'react';
 import { Box, Typography, Paper } from '@mui/material';
 import { welcomeSectionSchema, type WelcomeSectionProps } from '../validation/welcomeSectionSchema';
+import { useAppSelector } from "../store/hook.ts";
+import { selectUserLastName } from "../store/slices/authSlice.ts";
 
-const WelcomeSection: React.FC<WelcomeSectionProps> = ({ userName = "Mr. Jane" }) => {
+
+const WelcomeSection: React.FC = () => {
+
+    const userName = useAppSelector(selectUserLastName)
+
     // Validate props using Zod
     const validatedProps = welcomeSectionSchema.parse({ userName });
 
