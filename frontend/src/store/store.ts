@@ -1,14 +1,15 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { setupListeners } from "@reduxjs/toolkit/query/react";
 import authSlice from "./slices/authSlice.ts";
-import { authApi } from "./api/authApi.ts";
 import { baseApi } from "./api/baseApi.ts";
+import workspaceSlice from "./slices/workspaceSlice.ts";
 
 export const store = configureStore({
     reducer: {
         // API slice reducer (RTK Query)
         [ baseApi.reducerPath ]: baseApi.reducer,
         auth: authSlice,
+        workspace: workspaceSlice,
     },
     // api middleware enables caching, invalidation, polling, ...
     middleware: ( getDefaultMiddleware ) =>
