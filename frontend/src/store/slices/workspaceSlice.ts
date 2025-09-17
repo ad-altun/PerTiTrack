@@ -20,7 +20,7 @@ interface ProtocolFilters {
     selectedDate: string;
     searchTerm: string;
     timePeriod: 'today' | 'thisWeek' | 'thisMonth' | 'custom';
-    bookingType: 'all' | 'arrival' | 'break' | 'departure';
+    bookingType: 'Arrival' | 'Break' | 'Leave';
 }
 
 interface UIState {
@@ -48,6 +48,7 @@ interface WorkspaceState {
     // Real-time updates
     realTime: {
         localTime: string;
+        localDate: string;
         autoRefreshEnabled: boolean;
         refreshInterval: number; // in seconds
     };
@@ -79,14 +80,15 @@ const initialState: WorkspaceState = {
             selectedDate: new Date().toISOString().split('T')[0], // Today's date
             searchTerm: '',
             timePeriod: 'today',
-            bookingType: 'all',
+            bookingType: 'Leave',
         },
         isLoading: false,
         lastRefreshTime: null,
     },
 
     realTime: {
-        localTime: new Date().toISOString(),
+        localTime: new Date().toLocaleTimeString(),
+        localDate: new Date().toLocaleDateString(),
         autoRefreshEnabled: true,
         refreshInterval: 1, // 1 second
     },
@@ -188,6 +190,10 @@ const workspaceSlice = createSlice({
             state.realTime.localTime = action.payload;
         },
 
+        updateLocalDate: (state, action: PayloadAction<string>) => {
+            state.realTime.localDate = action.payload;
+        },
+
         setAutoRefresh: (state, action: PayloadAction<boolean>) => {
             state.realTime.autoRefreshEnabled = action.payload;
         },
@@ -247,23 +253,14 @@ export const {
 // -------------------------------
 
 // Basic Selectors
-export const selectActivePage = (state: { workspace: WorkspaceState }) =>
-    state.workspace.navigation.activePage;
-
 export const selectPreviousPage = (state: { workspace: WorkspaceState}) =>
     state.workspace.navigation.previousPage;
 
 export const selectWorkStatus = (state: { workspace: WorkspaceState }) =>
     state.workspace.workStatus;
 
-export const selectProtocolFilters = (state: { workspace: WorkspaceState }) =>
-    state.workspace.ui.protocolFilters;
-
 export const selectUIState = (state: { workspace: WorkspaceState }) =>
     state.workspace.ui;
-
-export const selectRealTime = (state: { workspace: WorkspaceState }) =>
-    state.workspace.realTime;
 
 // work status selectors
 export const selectIsClockedIn = (state: { workspace: WorkspaceState})=>
@@ -314,13 +311,7 @@ export const selectSearchTerm = (state: { workspace: WorkspaceState }) =>
 export const selectTimePeriod = (state: { workspace: WorkspaceState }) =>
     state.workspace.ui.protocolFilters.timePeriod;
 
-export const selectBookingType = (state: { workspace: WorkspaceState }) =>
-    state.workspace.ui.protocolFilters.bookingType;
-
 // real-time selectors
-export const selectLocalTime = (state: { workspace: WorkspaceState }) =>
-    state.workspace.realTime.localTime;
-
 export const selectAutoRefreshEnabled = (state: { workspace: WorkspaceState }) =>
     state.workspace.realTime.autoRefreshEnabled;
 

@@ -12,7 +12,7 @@ interface AuthState {
         roles: string[];
         // additional user info for dynamic display
         fullName: string;
-        displayName: string;
+        profileName: string;
         employeeId?: string;
         employeeNumber?: string;
     } | null;
@@ -26,11 +26,11 @@ interface AuthState {
 }
 
 // Helper function to create computed user fields
-const createUserWithComputedFields = (userData: User) => ({
+const createUserWithComputedFields = ( userData: User ) => ( {
     ...userData,
-    fullName: `${userData.firstName || ''} ${userData.lastName || ''}`.trim(),
-    displayName: userData.lastName ? `${userData.firstName} ${userData.lastName}` : userData.firstName || '',
-});
+    fullName: `${ userData.firstName || '' } ${ userData.lastName || '' }`.trim(),
+    profileName: userData.lastName ? `${ userData.firstName } ${ userData.lastName }` : userData.firstName || '',
+} );
 
 // Initialize from localStorage
 const getInitialState = (): AuthState => {
@@ -38,7 +38,7 @@ const getInitialState = (): AuthState => {
         const token = localStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN);
         const userStr = localStorage.getItem(STORAGE_KEYS.USER);
 
-        if (token && userStr) {
+        if ( token && userStr ) {
             const user = userStr ? JSON.parse(userStr) : null;
 
             // if the user exists, add additional info to
@@ -47,39 +47,39 @@ const getInitialState = (): AuthState => {
             // const updatedUser = user ? {
             //     ...user,
             //     fullName: `${user.firstName} ${user.lastName}`,
-            //     displayName: user.lastName ? `${user.firstName} ${user.lastName}` : user.firstName,
+            //     profileName: user.lastName ? `${user.firstName} ${user.lastName}` : user.firstName,
             // } : null;
 
-        return {
-            token,
-            user: updatedUser,
-            isAuthenticated: true,
-            isLoading: false,
-            loginTime: localStorage.getItem('loginTime'),
-            lastActivity: localStorage.getItem('lastActivity') || new Date().toISOString(),
-            sessionTimeout: 15, // 15 minutes, later if no interaction, logout user
-            initialized: true,
-        };
+            return {
+                token,
+                user: updatedUser,
+                isAuthenticated: true,
+                isLoading: false,
+                loginTime: localStorage.getItem('loginTime'),
+                lastActivity: localStorage.getItem('lastActivity') || new Date().toISOString(),
+                sessionTimeout: 15, // 15 minutes, later if no interaction, logout user
+                initialized: true,
+            };
         }
-
     }
     catch (error) {
+        console.error('Error initializing auth state:', error);
         // If localStorage is corrupted, clear it
         localStorage.removeItem(STORAGE_KEYS.ACCESS_TOKEN);
         localStorage.removeItem(STORAGE_KEYS.USER);
         localStorage.removeItem('loginTime');
         localStorage.removeItem('lastActivity');
     }
-        return {
-            token: null,
-            user: null,
-            isAuthenticated: false,
-            isLoading: false,
-            loginTime: null,
-            lastActivity: null,
-            sessionTimeout: 15,
-            initialized: true,
-        };
+    return {
+        token: null,
+        user: null,
+        isAuthenticated: false,
+        isLoading: false,
+        loginTime: null,
+        lastActivity: null,
+        sessionTimeout: 15,
+        initialized: true,
+    };
 };
 
 const authSlice = createSlice({
@@ -97,11 +97,11 @@ const authSlice = createSlice({
                 roles,
                 employeeId,
                 employeeNumber,
-                } = action.payload;
+            } = action.payload;
 
             const loginTime = new Date().toISOString();
-            const fullName = `${firstName} ${lastName}`;
-            const displayName = lastName ? `${firstName} ${lastName}` : firstName;
+            const fullName = `${ firstName } ${ lastName }`;
+            const profileName = lastName ? `${ firstName } ${ lastName }` : firstName;
 
             // helper object
             const userData = {
@@ -128,7 +128,8 @@ const authSlice = createSlice({
                 localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(state.user));
                 localStorage.setItem('loginTime', loginTime);
                 localStorage.setItem('lastActivity', loginTime);
-            } catch (error) {
+            }
+            catch (error) {
                 console.error('Error saving credentials to localStorage:', error);
             }
         },
@@ -149,7 +150,8 @@ const authSlice = createSlice({
                 localStorage.removeItem(STORAGE_KEYS.USER);
                 localStorage.removeItem('loginTime');
                 localStorage.removeItem('lastActivity');
-            } catch (error) {
+            }
+            catch (error) {
                 console.error('Error clearing credentials from localStorage:', error);
             }
         },
@@ -159,7 +161,7 @@ const authSlice = createSlice({
             state.isLoading = action.payload;
         },
 
-        setInitialized: (state) => {
+        setInitialized: ( state ) => {
             state.initialized = true;
         },
 
@@ -173,7 +175,7 @@ const authSlice = createSlice({
                 // recalculate computed fields
                 // if ( updatedUser.firstName || updatedUser.lastName ) {
                 //     updatedUser.fullName = `${updatedUser.firstName} ${updatedUser.lastName}`;
-                //     updatedUser.displayName = updatedUser.lastName
+                //     updatedUser.profileName = updatedUser.lastName
                 //         ? `${updatedUser.firstName} ${updatedUser.lastName}`
                 //         : updatedUser.firstName;
                 // }
@@ -182,7 +184,8 @@ const authSlice = createSlice({
 
                 try {
                     localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(state.user));
-                } catch (error) {
+                }
+                catch (error) {
                     console.error('Error updating user profile in localStorage:', error);
                 }
 
@@ -197,7 +200,8 @@ const authSlice = createSlice({
 
             try {
                 localStorage.setItem('lastActivity', now);
-            } catch (error) {
+            }
+            catch (error) {
                 console.error('Error updating last activity in localStorage:', error);
             }
         },
@@ -205,7 +209,7 @@ const authSlice = createSlice({
         // set session timeout
         setSessionTimeout: ( state, action: PayloadAction<number> ) => {
             // add validation
-             // 1 min to 8 hours max
+            // 1 min to 8 hours max
             state.sessionTimeout = Math.max(1, Math.min(action.payload, 480));
         },
 
@@ -224,7 +228,8 @@ const authSlice = createSlice({
                 localStorage.removeItem(STORAGE_KEYS.USER);
                 localStorage.removeItem('loginTime');
                 localStorage.removeItem('lastActivity');
-            } catch (error) {
+            }
+            catch (error) {
                 console.error('Error expiring session: ', error);
             }
         }
@@ -249,83 +254,81 @@ export const {
 } = authSlice.actions;
 
 // Selectors
-export const selectCurrentUser = (state: { auth: AuthState }) => state.auth.user;
-export const selectToken = (state: { auth: AuthState }) => state.auth.token;
-export const selectIsAuthenticated = (state: { auth: AuthState }) => state.auth.isAuthenticated;
-export const selectIsLoading = (state: { auth: AuthState }) => state.auth.isLoading;
+export const selectCurrentUser = ( state: { auth: AuthState } ) => state.auth.user;
+export const selectToken = ( state: { auth: AuthState } ) => state.auth.token;
+export const selectIsAuthenticated = ( state: { auth: AuthState } ) => state.auth.isAuthenticated;
+export const selectIsLoading = ( state: { auth: AuthState } ) => state.auth.isLoading;
 
 // Enhanced selectors for dynamic display
-export const selectUserFullName = (state: { auth: AuthState }) =>
+export const selectUserFullName = ( state: { auth: AuthState } ) =>
     state.auth.user?.fullName || 'Unknown User';
 
-export const selectUserDisplayName = (state: { auth: AuthState }) =>
-    state.auth.user?.displayName || 'Guest';
-
-export const selectUserFirstName = (state: { auth: AuthState }) =>
+export const selectUserFirstName = ( state: { auth: AuthState } ) =>
     state.auth.user?.firstName || '';
 
-export const selectUserLastName = (state: { auth: AuthState }) =>
-    state.auth.user?.lastName || '';
+// export const selectUserLastName = (state: { auth: AuthState }) =>
+//     state.auth.user?.lastName || '';
 
 // Greeting selector for dynamic welcome messages
-export const selectUserGreeting = (state: { auth: AuthState }) => {
+export const selectUserGreeting = ( state: { auth: AuthState } ) => {
     const user = state.auth.user;
-    if (!user) return 'Welcome!';
+    if ( !user ) return 'Welcome!';
 
-    const title = user.lastName ? `Mr./Ms. ${user.lastName}` : user.firstName;
+    const title = user.lastName ? ` ${ user.firstName }` : 'Guest';
     const currentHour = new Date().getHours();
 
-    if (currentHour < 12) return `Good morning, ${title}!`;
-    if (currentHour < 17) return `Good afternoon, ${title}!`;
-    return `Good evening, ${title}!`;
+    if ( currentHour < 10 ) return `Good morning, ${ title }!`;
+    if ( currentHour < 17 ) return `Good afternoon, ${ title }!`;
+    return `Good evening, ${ title }!`;
 };
 
 // Employee info selectors
-export const selectEmployeeInfo = (state: { auth: AuthState }) => ({
+export const selectEmployeeInfo = ( state: { auth: AuthState } ) => ( {
     employeeId: state.auth.user?.employeeId || '',
     employeeNumber: state.auth.user?.employeeNumber || '',
     fullName: state.auth.user?.fullName || '',
-});
+} );
 
 // Session management selectors
-export const selectSessionInfo = (state: { auth: AuthState }) => ({
+export const selectSessionInfo = ( state: { auth: AuthState } ) => ( {
     loginTime: state.auth.loginTime,
     lastActivity: state.auth.lastActivity,
     sessionTimeout: state.auth.sessionTimeout,
-});
+} );
 
 // Check if the session is expired (helper selector)
-export const selectIsSessionExpired = (state: { auth: AuthState }) => {
+export const selectIsSessionExpired = ( state: { auth: AuthState } ) => {
     const { lastActivity, sessionTimeout, isAuthenticated } = state.auth;
 
-    if (!isAuthenticated || !lastActivity) return false;
+    if ( !isAuthenticated || !lastActivity ) return false;
 
     try {
         const lastActivityTime = new Date(lastActivity).getTime();
         const currentTime = new Date().getTime();
         const timeoutMs = sessionTimeout * 60 * 1000; // Convert minutes to milliseconds
 
-        return (currentTime - lastActivityTime) > timeoutMs;
-    } catch (error) {
+        return ( currentTime - lastActivityTime ) > timeoutMs;
+    }
+    catch (error) {
         console.error('Error checking session expiration: ', error);
         return true; // assume expired on error
     }
 };
 
 // User roles and permissions
-export const selectUserRoles = (state: { auth: AuthState }) =>
+export const selectUserRoles = ( state: { auth: AuthState } ) =>
     state.auth.user?.roles || [];
 
-export const selectHasRole = (role: string) => (state: { auth: AuthState }) =>
+export const selectHasRole = ( role: string ) => ( state: { auth: AuthState } ) =>
     state.auth.user?.roles.includes(role) || false;
 
-export const selectIsAdmin = (state: { auth: AuthState }) =>
+export const selectIsAdmin = ( state: { auth: AuthState } ) =>
     state.auth.user?.roles.includes('ROLE_ADMIN') || false;
 
-export const selectIsManager = (state: { auth: AuthState }) =>
+export const selectIsManager = ( state: { auth: AuthState } ) =>
     state.auth.user?.roles.includes('ROLE_MANAGER') || false;
 
-export const selectIsEmployee = (state: { auth: AuthState }) =>
+export const selectIsEmployee = ( state: { auth: AuthState } ) =>
     state.auth.user?.roles.includes('ROLE_EMPLOYEE') || false;
 
 export default authSlice.reducer;
