@@ -1,7 +1,7 @@
-import { type BookingProtocolProps, bookingProtocolSchema } from "../validation/protocolEntrySchema.ts";
-import ProtocolTable from "./ProtocolTable.tsx";
+import { type BookingProtocolProps, bookingProtocolSchema } from "../../validation/protocolEntrySchema.ts";
+import ProtocolTable from "../ProtocolTable.tsx";
 import { Paper } from "@mui/material";
-import ProtocolFilters from "./ProtocolFilters.tsx";
+import ProtocolFilters from "../ProtocolFilters.tsx";
 
 
 export default function BookingProtocol({ protocols = [] }: BookingProtocolProps) {

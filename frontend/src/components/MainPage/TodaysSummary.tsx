@@ -1,5 +1,5 @@
 import { Box, Grid, Paper, Typography } from "@mui/material";
-import { type TodaysSummaryProps, todaysSummarySchema } from "../validation/todaysSummarySchema.ts";
+import { type TodaysSummaryProps, todaysSummarySchema } from "../../validation/todaysSummarySchema.ts";
 
 
 export default function TodaysSummary({

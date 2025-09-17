@@ -1,16 +1,11 @@
 import React from 'react';
-import { Box, Typography, Paper } from '@mui/material';
-import { welcomeSectionSchema, type WelcomeSectionProps } from '../validation/welcomeSectionSchema';
-import { useAppSelector } from "../store/hook.ts";
-import { selectUserLastName } from "../store/slices/authSlice.ts";
+import { Typography, Paper } from '@mui/material';
+import { useAppSelector } from "../../store/hook.ts";
+import { selectUserGreeting } from "../../store/slices/authSlice.ts";
 
 
 const WelcomeSection: React.FC = () => {
-
-    const userName = useAppSelector(selectUserLastName)
-
-    // Validate props using Zod
-    const validatedProps = welcomeSectionSchema.parse({ userName });
+    const title = useAppSelector(selectUserGreeting);
 
     return (
         <Paper
@@ -43,7 +38,7 @@ const WelcomeSection: React.FC = () => {
                     marginBottom: '5px',
                 }}
             >
-                Good day {validatedProps.userName}.
+                {title}
             </Typography>
 
             <Typography

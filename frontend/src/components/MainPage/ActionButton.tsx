@@ -8,7 +8,7 @@ import {
     HelpOutline,
     Login
 } from '@mui/icons-material';
-import { actionButtonsSchema, type ActionButtonsProps, type ActionType } from "../validation/actionButtonsSchema.ts";
+import { actionButtonsSchema, type ActionButtonsProps, type ActionType } from "../../validation/actionButtonsSchema.ts";
 
 
 interface ActionButtonProps {
@@ -33,6 +33,7 @@ export default function ActionButton({
         if (validatedProps.onActionClick) {
             validatedProps.onActionClick(action);
         }
+        console.log("sfdsfds");
     };
 
     const actionItems = [

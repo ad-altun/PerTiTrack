@@ -1,25 +1,22 @@
 import React from 'react';
+import { useAppSelector } from "../../store/hook.ts";
 import { Box, Typography, Paper, Divider } from '@mui/material';
-import { bookingPanelSchema, type BookingPanelProps } from '../validation/bookingPanelSchema';
 import ActionButton from "./ActionButton.tsx";
 import WorkflowButton from "./WorkflowButton.tsx";
+import {
+    selectLocalTime,
+    selectLocalDate,
+    selectBookingType,
+} from '../../store/selectors/bookingSelectors.ts'
+import { useCurrentEmployee } from "../../hooks/useCurrentEmployee.ts";
+import { useQuickClockInMutation } from "../../store/api/timetrackApi.ts";
 
+const BookingPanel: React.FC = () => {
 
-const BookingPanel: React.FC<BookingPanelProps> = ({
-    localDate = "01/22/2025",
-    localTime = "09:15:42",
-    timeZone = "GMT +01:00 (Berlin)",
-    bookingType = "B1 Arrival",
-    employeeName = "Jane, Patrick (003)"
-}) => {
-    // Validate props using Zod
-    const validatedProps = bookingPanelSchema.parse({
-        localDate,
-        localTime,
-        timeZone,
-        bookingType,
-        employeeName
-    });
+const localDate = useAppSelector(selectLocalTime);
+const localTime = useAppSelector(selectLocalDate);
+const bookingType = useAppSelector(selectBookingType);
+const { displayName }  = useCurrentEmployee();
 
     return (
         <Paper
@@ -58,11 +55,10 @@ const BookingPanel: React.FC<BookingPanelProps> = ({
             >
                 {/* Info Rows */}
                 {[
-                    { label: 'Local Date:', value: validatedProps.localDate },
-                    { label: 'Local Time:', value: validatedProps.localTime },
-                    { label: 'Time Zone:', value: validatedProps.timeZone },
-                    { label: 'Booking Type:', value: validatedProps.bookingType },
-                    { label: 'Employee:', value: validatedProps.employeeName },
+                    { label: 'Local Date:', value: localDate },
+                    { label: 'Local Time:', value: localTime },
+                    { label: 'Last Booking Type:', value: bookingType },
+                    { label: 'Employee:', value: displayName },
                 ].map((info, index) => (
                     <Box
                         key={index}
@@ -104,7 +100,7 @@ const BookingPanel: React.FC<BookingPanelProps> = ({
                         border: '1px solid #e2e8f0',
                     }}
                 >
-                <ActionButton activeAction="clockIn" onActionClick={() => console.log('clockIn clicked')} />
+                <ActionButton activeAction="clockIn" onActionClick={useQuickClockInMutation} />
                 </Box>
                 <Box
                     sx={{
