@@ -1,32 +1,28 @@
 package org.pertitrack.backend.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.pertitrack.backend.dto.TimeRecordRequest;
-import org.pertitrack.backend.dto.TimeRecordResponse;
-import org.pertitrack.backend.dto.TimeRecordUpdateRequest;
-import org.pertitrack.backend.entity.timetrack.TimeRecord;
-import org.pertitrack.backend.exceptions.EmployeeNotFoundException;
-import org.pertitrack.backend.exceptions.TimeRecordNotFoundException;
-import org.pertitrack.backend.service.TimeRecordService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import com.fasterxml.jackson.databind.*;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.extension.*;
+import org.mockito.junit.jupiter.*;
+import org.pertitrack.backend.dto.timeTrackingDto.*;
+import org.pertitrack.backend.entity.timetrack.*;
+import org.pertitrack.backend.exceptions.*;
+import org.pertitrack.backend.service.*;
+import org.springframework.beans.factory.annotation.*;
+import org.springframework.boot.test.autoconfigure.web.servlet.*;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.security.test.context.support.*;
+import org.springframework.test.context.*;
+import org.springframework.test.context.bean.override.mockito.*;
+import org.springframework.test.web.servlet.*;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
+import java.time.*;
+import java.util.*;
 
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.mockito.Mockito.eq;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -49,6 +45,59 @@ class TimeRecordControllerTest {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    private final String BASE_URL = "/api/timetrack/time-records";
+
+    @Test
+    @WithMockUser
+    void getMyTimeRecords_Success_WithAllParameters() throws Exception {
+        // Arrange
+        List<TimeRecordResponse> timeRecords = Arrays.asList(
+                createTimeRecordResponse("1", "emp1"),
+                createTimeRecordResponse("2", "emp2")
+        );
+        LocalDate startDate = LocalDate.of(2023, 1, 1);
+        LocalDate endDate = LocalDate.of(2023, 1, 31);
+        String recordType = "CLOCK_IN";
+        when(timeRecordService.getMyTimeRecords(startDate, endDate, TimeRecord.RecordType.CLOCK_IN))
+                .thenReturn(timeRecords);
+
+        // Act & Assert
+        mockMvc.perform(get(BASE_URL + "/my-records")
+                        .param("startDate", "2023-01-01")
+                        .param("endDate", "2023-01-31")
+                        .param("recordType", recordType))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].recordType").value(recordType));
+    }
+
+    @Test
+    @WithMockUser
+    void getMyTodayRecords_Success_Returns200Ok() throws Exception {
+        // Arrange
+        List<TimeRecordResponse> timeRecords = Arrays.asList(
+                createTimeRecordResponse("1", "emp1"),
+                createTimeRecordResponse("2", "emp2")
+        );
+        when(timeRecordService.getMyTodayRecords()).thenReturn(timeRecords);
+
+        // Act & Assert
+        mockMvc.perform(get(BASE_URL + "/my-records/today"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @WithMockUser
+    void getMyTodayRecords_EmptyList_Returns200Ok() throws Exception {
+        // Arrange
+
+        when(timeRecordService.getMyTodayRecords()).thenReturn(Collections.emptyList());
+
+        // Act & Assert
+        mockMvc.perform(get(BASE_URL + "/my-records/today"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isEmpty());
+    }
 
     @Test
     @WithMockUser

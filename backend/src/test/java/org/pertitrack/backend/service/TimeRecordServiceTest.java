@@ -1,30 +1,24 @@
 package org.pertitrack.backend.service;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.pertitrack.backend.dto.TimeRecordRequest;
-import org.pertitrack.backend.dto.TimeRecordResponse;
-import org.pertitrack.backend.dto.TimeRecordUpdateRequest;
-import org.pertitrack.backend.entity.personnel.Employee;
-import org.pertitrack.backend.entity.timetrack.TimeRecord;
-import org.pertitrack.backend.exceptions.EmployeeNotFoundException;
-import org.pertitrack.backend.mapper.TimeRecordMapper;
-import org.pertitrack.backend.repository.EmployeeRepository;
-import org.pertitrack.backend.repository.TimeRecordRepository;
-import org.springframework.test.context.ActiveProfiles;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.extension.*;
+import org.mockito.*;
+import org.mockito.junit.jupiter.*;
+import org.pertitrack.backend.dto.timeTrackingDto.*;
+import org.pertitrack.backend.entity.personnel.*;
+import org.pertitrack.backend.entity.timetrack.*;
+import org.pertitrack.backend.exceptions.*;
+import org.pertitrack.backend.mapper.*;
+import org.pertitrack.backend.repository.*;
+import org.springframework.security.core.*;
+import org.springframework.security.core.context.*;
+import org.springframework.test.context.*;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.time.*;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -33,6 +27,15 @@ class TimeRecordServiceTest {
 
     @Mock
     private TimeRecordRepository timeRecordRepository;
+
+    @Mock
+    private UserRepository userRepository;
+
+    @Mock
+    private SecurityContext securityContext;
+
+    @Mock
+    private Authentication authentication;
 
     @Mock
     private EmployeeRepository employeeRepository;

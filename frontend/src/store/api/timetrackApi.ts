@@ -291,7 +291,7 @@ export const timetrackApi = baseApi.injectEndpoints({
             query: (actionData) => {
                 const validatedData = quickActionSchema.parse(actionData);
                 return {
-                    url: '/quick-actions/clock-in',
+                    url: '/time-bookings/clock-in',
                     method: 'POST',
                     body: validatedData,
                 };
@@ -305,7 +305,7 @@ export const timetrackApi = baseApi.injectEndpoints({
             query: (actionData) => {
                 const validatedData = quickActionSchema.parse(actionData);
                 return {
-                    url: '/quick-actions/clock-out',
+                    url: '/time-bookings/clock-out',
                     method: 'POST',
                     body: validatedData,
                 };
