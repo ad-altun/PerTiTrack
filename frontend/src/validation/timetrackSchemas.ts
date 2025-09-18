@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 // Enums
 export const recordTypeSchema = z.enum(['CLOCK_IN', 'CLOCK_OUT', 'BREAK_START', 'BREAK_END']);
-export const locationTypeSchema = z.enum(['OFFICE', 'REMOTE', 'FIELD', 'CLIENT_SITE']);
+export const locationTypeSchema = z.enum(['OFFICE', 'HOME', 'BUSINESS_TRIP']);
 export const absenceStatusSchema = z.enum(['PENDING', 'APPROVED', 'REJECTED', 'CANCELLED']);
 
 // Time Record Schemas
@@ -125,8 +125,14 @@ export const employeeDashboardSummarySchema = z.object({
     }),
 });
 
-// Quick Actions Schemas
-export const quickActionSchema = z.object({
+// Quick Actions Clock Schemas
+export const quickActionClockSchema = z.object({
+    recordType: recordTypeSchema,
+    notes: z.string().optional(),
+});
+
+// Quick Actions Location Schemas
+export const quickActionLocationSchema = z.object({
     locationType: locationTypeSchema,
     notes: z.string().optional(),
 });
@@ -156,4 +162,5 @@ export type CreateAbsenceRequest = z.infer<typeof createAbsenceSchema>;
 export type RejectAbsenceRequest = z.infer<typeof rejectAbsenceSchema>;
 
 export type EmployeeDashboardSummary = z.infer<typeof employeeDashboardSummarySchema>;
-export type QuickActionRequest = z.infer<typeof quickActionSchema>;
+export type QuickActionClockRequest = z.infer<typeof quickActionClockSchema>;
+export type QuickActionLocationRequest = z.infer<typeof quickActionLocationSchema>;

@@ -2,12 +2,19 @@ import { z } from 'zod';
 
 // Today's Summary Schema
 export const todaysSummarySchema = z.object({
-    arrivalTime: z.string().min(1, 'Arrival time is required').default('08:17:09'),
-    breakTime: z.string().min(1, 'Break time is required').default('12:30:15 - 13:30:25'),
-    workingTime: z.string().min(1, 'Working time is required').default('07:59:51'),
-    flexTime: z.string().min(1, 'Flex time is required').default('+00:29:51'),
-    status: z.string().min(1, 'Status is required').default('Working'),
+    arrivalTime: z.string().nullable().default(null),
+    breakTime: z.string().default('00:00:00'),
+    workingTime: z.string().default('00:00:00'),
+    flexTime: z.string().default('+00:00:00'),
+    status: z.enum([
+        'Not Started', 'Working', 'On Break', 'Finished'
+    ]).default('Not Started'),
+    isClockedIn: z.boolean().default(true),
+    currentClockInTime: z.string().nullable().default(null),
 });
 
 // Type inference from schema
 export type TodaysSummaryProps = z.infer<typeof todaysSummarySchema>;
+
+// Alias for consistency with the interface naming
+export type TodaySummary = TodaySummaryProps;
