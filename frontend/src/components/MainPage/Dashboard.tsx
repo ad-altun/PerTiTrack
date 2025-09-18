@@ -27,18 +27,12 @@ export default function Dashboard() {
 
                     {/* Right Panel - Today's Summary */}
                     <Box sx={{ flex: 2 }}>
-                        <TodaysSummary
-                            arrivalTime="08:17:09"
-                            breakTime="12:30:15 - 13:30:25"
-                            workingTime="07:59:51"
-                            flexTime="+00:29:51"
-                            status="Working"
-                        />
+                        <TodaysSummary />
                     </Box>
                 </Box>
 
                 {/* Booking Protocol Section */}
-                <BookingProtocol protocols={[]} />
+                <BookingProtocol />
             </Box>
         </Container>
     );

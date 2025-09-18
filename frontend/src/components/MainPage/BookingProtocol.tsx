@@ -4,10 +4,10 @@ import { Paper } from "@mui/material";
 import ProtocolFilters from "../ProtocolFilters.tsx";
 
 
-export default function BookingProtocol({ protocols = [] }: BookingProtocolProps) {
+export default function BookingProtocol() {
 
     // Validate props using Zod
-    const validatedProps = bookingProtocolSchema.parse({ protocols });
+    // const validatedProps = bookingProtocolSchema.parse({ protocols });
 
  return (
      <Paper
@@ -24,7 +24,7 @@ export default function BookingProtocol({ protocols = [] }: BookingProtocolProps
          <ProtocolFilters />
 
          {/* Protocol Table */}
-         <ProtocolTable protocols={validatedProps.protocols} />
+         <ProtocolTable  />
      </Paper>
  );
 };

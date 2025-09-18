@@ -6,7 +6,7 @@ import {
     Home,
     Flight,
     HelpOutline,
-    Login
+    Login, Logout
 } from '@mui/icons-material';
 import { actionButtonsSchema, type ActionButtonsProps, type ActionType } from "../../validation/actionButtonsSchema.ts";
 
@@ -19,7 +19,7 @@ interface ActionButtonProps {
 }
 
 export default function ActionButton({
-    activeAction = 'clockIn',
+    activeAction,
     onActionClick
 }: ActionButtonsProps) {
 
@@ -33,7 +33,6 @@ export default function ActionButton({
         if (validatedProps.onActionClick) {
             validatedProps.onActionClick(action);
         }
-        console.log("sfdsfds");
     };
 
     const actionItems = [
@@ -43,15 +42,20 @@ export default function ActionButton({
             label: 'Clock In'
         },
         {
-            id: 'break' as ActionType,
+            id: 'clockOut' as ActionType,
+            icon: <Logout sx={{ fontSize: 18 }} />,
+            label: 'Clock In'
+        },
+        {
+            id: 'startBreak' as ActionType,
             icon: <AccessTime sx={{ fontSize: 18 }} />,
             label: 'Break'
         },
-        // {
-        //     id: 'cancel' as ActionType,
-        //     icon: <Cancel sx={{ fontSize: 18 }} />,
-        //     label: 'Cancel'
-        // },
+        {
+            id: 'endBreak' as ActionType,
+            icon: <AccessTime sx={{ fontSize: 18 }} />,
+            label: 'Break'
+        },
         {
             id: 'homeOffice' as ActionType,
             icon: <Home sx={{ fontSize: 18 }} />,
@@ -62,11 +66,6 @@ export default function ActionButton({
             icon: <Flight sx={{ fontSize: 18 }} />,
             label: 'Business Trip'
         },
-        // {
-        //     id: 'query' as ActionType,
-        //     icon: <HelpOutline sx={{ fontSize: 18 }} />,
-        //     label: 'Query'
-        // },
     ];
 
  return (

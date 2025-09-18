@@ -18,6 +18,9 @@ const localTime = useAppSelector(selectLocalDate);
 const bookingType = useAppSelector(selectBookingType);
 const { displayName }  = useCurrentEmployee();
 
+// const [quickClockIn, { isLoading, isSuccess, isError }] = useQuickClockInMutation();
+
+
     return (
         <Paper
             elevation={2}
@@ -100,7 +103,7 @@ const { displayName }  = useCurrentEmployee();
                         border: '1px solid #e2e8f0',
                     }}
                 >
-                <ActionButton activeAction="clockIn" onActionClick={useQuickClockInMutation} />
+                <ActionButton activeAction="clockIn" onActionClick={() => console.log('clockIn')} />
                 </Box>
                 <Box
                     sx={{
