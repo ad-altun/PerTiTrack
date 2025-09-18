@@ -1,17 +1,18 @@
 package org.pertitrack.backend.controller;
 
-import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
-import org.pertitrack.backend.dto.MessageResponse;
-import org.pertitrack.backend.dto.TimeRecordRequest;
-import org.pertitrack.backend.dto.TimeRecordResponse;
-import org.pertitrack.backend.dto.TimeRecordUpdateRequest;
-import org.pertitrack.backend.service.TimeRecordService;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import jakarta.validation.*;
+import jakarta.validation.constraints.*;
+import lombok.*;
+import org.pertitrack.backend.dto.*;
+import org.pertitrack.backend.dto.timeTrackingDto.*;
+import org.pertitrack.backend.entity.timetrack.*;
+import org.pertitrack.backend.service.*;
+import org.springframework.format.annotation.*;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.time.*;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/timetrack/time-records")
@@ -42,6 +43,49 @@ public class TimeRecordController {
         List<TimeRecordResponse> timeRecords = timeRecordService.getTimeRecordsByEmployeeId(employeeId);
         return ResponseEntity.ok(timeRecords);
     }
+
+    @GetMapping("/my-records")
+    public ResponseEntity<List<TimeRecordResponse>> getMyTimeRecords(
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+            @RequestParam(required = false) String recordType) {
+        try {
+            TimeRecord.RecordType type = null;
+            if (recordType != null && !recordType.isEmpty()) {
+                type = TimeRecord.RecordType.valueOf(recordType.toUpperCase());
+            }
+
+            List<TimeRecordResponse> timeRecords = timeRecordService.getMyTimeRecords(startDate, endDate, type);
+            return ResponseEntity.ok(timeRecords);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @GetMapping("/my-records/today")
+    public ResponseEntity<List<TimeRecordResponse>> getMyTodayRecords() {
+        try {
+            List<TimeRecordResponse> timeRecords = timeRecordService.getMyTodayRecords();
+            return ResponseEntity.ok(timeRecords);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @PutMapping("/{id}/notes")
+    public ResponseEntity<TimeRecordResponse> updateTimeRecordNotes(
+            @PathVariable String id,
+            @Valid @RequestBody UpdateNotesRequest request) {
+        try {
+            TimeRecordResponse timeRecord = timeRecordService.updateTimeRecordNotes(id, request.notes());
+            return ResponseEntity.ok(timeRecord);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
 
 //    @GetMapping("/pending-manual")
 //    public ResponseEntity<List<TimeRecordResponse>> getPendingManualRecords() {
@@ -108,5 +152,12 @@ public class TimeRecordController {
             return ResponseEntity.notFound().build();
         }
     }
+
+    // DTO for updating notes
+    public record UpdateNotesRequest(
+            @NotBlank(message = "Notes cannot be blank")
+            @Size(max = 1000, message = "Notes cannot exceed 1000 characters")
+            String notes
+    ) {}
 
 }

@@ -1,8 +1,8 @@
 package org.pertitrack.backend.mapper;
 
-import org.pertitrack.backend.dto.TimeRecordRequest;
-import org.pertitrack.backend.dto.TimeRecordResponse;
-import org.pertitrack.backend.dto.TimeRecordUpdateRequest;
+import org.pertitrack.backend.dto.timeTrackingDto.TimeRecordRequest;
+import org.pertitrack.backend.dto.timeTrackingDto.TimeRecordResponse;
+import org.pertitrack.backend.dto.timeTrackingDto.TimeRecordUpdateRequest;
 import org.pertitrack.backend.entity.personnel.Employee;
 import org.pertitrack.backend.entity.timetrack.TimeRecord;
 import org.springframework.stereotype.Component;
