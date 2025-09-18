@@ -1,4 +1,4 @@
-package org.pertitrack.backend.dto;
+package org.pertitrack.backend.dto.timeTrackingDto;
 
 import lombok.With;
 import org.pertitrack.backend.entity.timetrack.TimeRecord;
@@ -7,8 +7,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @With
-public record TimeRecordRequest(
-        String employeeId,
+public record TimeRecordUpdateRequest(
         LocalDate recordDate,
         LocalDateTime recordTime,
         TimeRecord.RecordType recordType,
