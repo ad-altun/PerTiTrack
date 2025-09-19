@@ -6,7 +6,7 @@ export const protocolEntrySchema = z.object({
     date: z.string().min(1, 'Date is required'),
     time: z.string().min(1, 'Time is required'),
     booking: z.string().min(1, 'Booking is required'),
-    bookingType: z.enum(['arrival', 'break', 'departure', 'other']),
+    bookingType: z.enum(['arrival', 'break', 'departure']),
     terminal: z.string().min(1, 'Terminal is required'),
     workSummary: z.string().min(1, 'Work summary is required'),
 });

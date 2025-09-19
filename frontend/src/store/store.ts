@@ -3,6 +3,7 @@ import { setupListeners } from "@reduxjs/toolkit/query/react";
 import authSlice from "./slices/authSlice.ts";
 import { baseApi } from "./api/baseApi.ts";
 import workspaceSlice from "./slices/workspaceSlice.ts";
+import timeTrackSlice from "./slices/timeTrackSlice.ts";
 
 export const store = configureStore({
     reducer: {
@@ -10,6 +11,7 @@ export const store = configureStore({
         [ baseApi.reducerPath ]: baseApi.reducer,
         auth: authSlice,
         workspace: workspaceSlice,
+        timeTrack: timeTrackSlice,
     },
     // api middleware enables caching, invalidation, polling, ...
     middleware: ( getDefaultMiddleware ) =>

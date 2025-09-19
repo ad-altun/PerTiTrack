@@ -1,4 +1,4 @@
-import type { ProtocolEntry } from "../validation/protocolEntrySchema.ts";
+import type { ProtocolEntry, BookingProtocolProps } from "../validation/protocolEntrySchema.ts";
 import {
  Table,
  TableHead,
@@ -10,11 +10,15 @@ import {
  Box
 } from '@mui/material';
 import ProtocolWorkSummary from "./ProtocolWorkSummary.tsx";
-interface ProtocolTableProps {
- protocols: ProtocolEntry[];
-}
 
-export default function ProtocolTable({ protocols}: ProtocolTableProps = { protocols: []}) {
+// interface ProtocolTableProps {
+//  protocols: ProtocolEntry[];
+// }
+
+// export default function ProtocolTable({ protocols}: ProtocolTableProps = { protocols: []}) {
+export default function ProtocolTable() {
+
+ const protocols: BookingProtocolProps = [];
 
  // Default sample data if no protocols provided
  const defaultProtocols: ProtocolEntry[] = [

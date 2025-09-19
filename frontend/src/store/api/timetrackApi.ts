@@ -14,7 +14,7 @@ import {
     absenceTypeSchema,
     absenceTypeListSchema,
     employeeDashboardSummarySchema,
-    quickActionSchema,
+    quickActionClockSchema, type QuickActionClockRequest, quickActionLocationSchema,
 } from '../../validation/timetrackSchemas';
 import type {
     TimeRecord,
@@ -27,7 +27,7 @@ import type {
     RejectAbsenceRequest,
     AbsenceType,
     EmployeeDashboardSummary,
-    QuickActionRequest,
+    QuickActionLocationRequest,
 } from '../../validation/timetrackSchemas';
 
 // Query parameters interfaces
@@ -287,9 +287,9 @@ export const timetrackApi = baseApi.injectEndpoints({
 
         // ===== QUICK ACTIONS =====
         // Quick clock in
-        quickClockIn: builder.mutation<TimeRecord, QuickActionRequest>({
+        quickClockIn: builder.mutation<TimeRecord, QuickActionClockRequest>({
             query: (actionData) => {
-                const validatedData = quickActionSchema.parse(actionData);
+                const validatedData = quickActionClockSchema.parse(actionData);
                 return {
                     url: '/time-bookings/clock-in',
                     method: 'POST',
@@ -301,9 +301,9 @@ export const timetrackApi = baseApi.injectEndpoints({
         }),
 
         // Quick clock out
-        quickClockOut: builder.mutation<TimeRecord, QuickActionRequest>({
+        quickClockOut: builder.mutation<TimeRecord, QuickActionClockRequest>({
             query: (actionData) => {
-                const validatedData = quickActionSchema.parse(actionData);
+                const validatedData = quickActionClockSchema.parse(actionData);
                 return {
                     url: '/time-bookings/clock-out',
                     method: 'POST',
@@ -313,6 +313,63 @@ export const timetrackApi = baseApi.injectEndpoints({
             transformResponse: (response: unknown) => timeRecordSchema.parse(response),
             invalidatesTags: ['TimeRecord', 'MyTimeRecord', 'Dashboard'],
         }),
+
+        // Quick break start
+        quickBreakStart: builder.mutation<TimeRecord, QuickActionClockRequest>({
+            query: (actionData) => {
+                const validatedData = quickActionClockSchema.parse(actionData);
+                return {
+                    url: '/quick-actions/break-start',
+                    method: 'POST',
+                    body: validatedData,
+                };
+            },
+            transformResponse: (response: unknown) => timeRecordSchema.parse(response),
+            invalidatesTags: ['TimeRecord', 'MyTimeRecord', 'Dashboard'],
+        }),
+
+        // Quick break end
+        quickBreakEnd: builder.mutation<TimeRecord, QuickActionClockRequest>({
+            query: (actionData) => {
+                const validatedData = quickActionClockSchema.parse(actionData);
+                return {
+                    url: '/quick-actions/break-end',
+                    method: 'POST',
+                    body: validatedData,
+                };
+            },
+            transformResponse: (response: unknown) => timeRecordSchema.parse(response),
+            invalidatesTags: ['TimeRecord', 'MyTimeRecord', 'Dashboard'],
+        }),
+
+        // // Quick home office
+        // quickClockHomeOffice: builder.mutation<TimeRecord, QuickActionLocationRequest>({
+        //     query: (actionData) => {
+        //         const validatedData = quickActionLocationSchema.parse(actionData);
+        //         return {
+        //             url: '/quick-actions/home-office',
+        //             method: 'POST',
+        //             body: validatedData,
+        //         };
+        //     },
+        //     transformResponse: (response: unknown) => timeRecordSchema.parse(response),
+        //     invalidatesTags: ['TimeRecord', 'MyTimeRecord', 'Dashboard'],
+        // }),
+        //
+        //
+        // // Quick business trip
+        // quickClockBusinessTrip: builder.mutation<TimeRecord, QuickActionLocationRequest>({
+        //     query: (actionData) => {
+        //         const validatedData = quickActionLocationSchema.parse(actionData);
+        //         return {
+        //             url: '/quick-actions/business-trip',
+        //             method: 'POST',
+        //             body: validatedData,
+        //         };
+        //     },
+        //     transformResponse: (response: unknown) => timeRecordSchema.parse(response),
+        //     invalidatesTags: ['TimeRecord', 'MyTimeRecord', 'Dashboard'],
+        // }),
     }),
     overrideExisting: false,
 });
@@ -349,4 +406,6 @@ export const {
     // Quick Actions
     useQuickClockInMutation,
     useQuickClockOutMutation,
+    useQuickBreakStartMutation,
+    useQuickBreakEndMutation,
 } = timetrackApi;

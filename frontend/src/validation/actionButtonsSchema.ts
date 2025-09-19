@@ -3,11 +3,11 @@ import { z } from 'zod';
 // Action Types
 export const actionTypeSchema = z.enum([
     'clockIn',
-    'break',
-    'cancel',
+    'clockOut',
+    'breakStart',
+    'breakEnd',
     'homeOffice',
     'businessTrip',
-    'query'
 ]);
 
 export type ActionType = z.infer<typeof actionTypeSchema>;

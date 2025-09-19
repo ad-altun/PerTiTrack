@@ -7,18 +7,18 @@ import IconButton from "@mui/material/IconButton";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import Avatar from "@mui/material/Avatar";
 import Typography from "@mui/material/Typography";
-import type { NavbarProps } from "../validation/headerSchemas.ts";
 import { useLogout } from "../hooks/useLogout.ts";
-import { useAppDispatch, useAppSelector } from "../store/hook.ts";
-import { selectActivePage } from "../store/slices/workspaceSlice.ts";
-import { selectUserDisplayName } from "../store/slices/authSlice.ts";
+import { useAppSelector } from "../store/hook.ts";
+import {
+    selectActivePage,
+    selectUserProfileName
+} from "../store/selectors/navbarSelectors.ts";
 
-const Navbar: React.FC<NavbarProps> = (  ) => {
+const Navbar = () => {
     const [ anchorEl, setAnchorEl ] = React.useState<null | HTMLElement>(null);
 
-    const dispatch = useAppDispatch();
-    const activePage = useAppSelector(selectActivePage)
-    const userName = useAppSelector(selectUserDisplayName)
+    const activePage = useAppSelector(selectActivePage);
+    const userName = useAppSelector(selectUserProfileName);
 
     const handleMenuOpen = ( event: React.MouseEvent<HTMLButtonElement> ) => {
         setAnchorEl(event.currentTarget);
@@ -28,10 +28,10 @@ const Navbar: React.FC<NavbarProps> = (  ) => {
     const { logout, isLoading } = useLogout();
 
     const handleLogout = async () => {
-        if( !isLoading ) {
+        if ( !isLoading ) {
             await logout();
         }
-    }
+    };
 
     return (
         <Box
@@ -49,8 +49,8 @@ const Navbar: React.FC<NavbarProps> = (  ) => {
                 <Button
                     sx={ {
                         mr: 1,
-                        backgroundColor: activePage === activePage ? "#2d3748" : "transparent",
-                        color: activePage === activePage ? "white" : "white",
+                        backgroundColor: activePage === "HomePage" ? "#c53e3e" : "transparent",
+                        color: activePage === 'HomePage' ? "white" : "white",
                         "&:hover": { backgroundColor: "#4a5568", color: "white" },
                     } }
                 >
@@ -58,7 +58,7 @@ const Navbar: React.FC<NavbarProps> = (  ) => {
                 </Button>
                 <Button
                     sx={ {
-                        backgroundColor: activePage === activePage ? "#e53e3e" : "transparent",
+                        backgroundColor: activePage === 'Timesheet' ? "#e53e3e" : "transparent",
                         color: "white",
                         "&:hover": { backgroundColor: "#e53e3e", color: "white" },
                     } }

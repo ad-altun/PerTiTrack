@@ -22,29 +22,17 @@ export default function Dashboard() {
                 <Box sx={{ display: 'flex', gap: '20px' }}>
                     {/* Left Panel - Booking Actions */}
                     <Box sx={{ flex: 1, maxWidth: '30rem' }}>
-                        <BookingPanel
-                            localDate="01/22/2025"
-                            localTime="09:15:42"
-                            timeZone="GMT +01:00 (Berlin)"
-                            bookingType="B1 Arrival"
-                            employeeName="Jane, Patrick (00293)"
-                        />
+                        <BookingPanel />
                     </Box>
 
                     {/* Right Panel - Today's Summary */}
                     <Box sx={{ flex: 2 }}>
-                        <TodaysSummary
-                            arrivalTime="08:17:09"
-                            breakTime="12:30:15 - 13:30:25"
-                            workingTime="07:59:51"
-                            flexTime="+00:29:51"
-                            status="Working"
-                        />
+                        <TodaysSummary />
                     </Box>
                 </Box>
 
                 {/* Booking Protocol Section */}
-                <BookingProtocol protocols={[]} />
+                <BookingProtocol />
             </Box>
         </Container>
     );

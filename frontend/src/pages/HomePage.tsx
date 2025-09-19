@@ -1,4 +1,4 @@
-import Dashboard from "../components/Dashboard.tsx";
+import Dashboard from "../components/MainPage/Dashboard.tsx";
 
 export default function HomePage() {
  return (
