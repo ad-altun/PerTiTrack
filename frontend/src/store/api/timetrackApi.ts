@@ -14,10 +14,12 @@ import {
     absenceTypeSchema,
     absenceTypeListSchema,
     employeeDashboardSummarySchema,
-    quickActionClockSchema, type QuickActionClockRequest, quickActionLocationSchema,
+    quickActionClockSchema,
+    quickActionRequestSchema,
+    quickActionLocationSchema,
 } from '../../validation/timetrackSchemas';
 import type {
-    TimeRecord,
+    TimeRecordResponse,
     CreateTimeRecordRequest,
     UpdateTimeRecordRequest,
     WorkSchedule,
@@ -27,7 +29,11 @@ import type {
     RejectAbsenceRequest,
     AbsenceType,
     EmployeeDashboardSummary,
+    QuickActionRequest,
     QuickActionLocationRequest,
+    QuickActionClockRequest,
+    EnhancedQuickActionRequest,
+    TimeRecord
 } from '../../validation/timetrackSchemas';
 
 // Query parameters interfaces
@@ -287,13 +293,16 @@ export const timetrackApi = baseApi.injectEndpoints({
 
         // ===== QUICK ACTIONS =====
         // Quick clock in
-        quickClockIn: builder.mutation<TimeRecord, QuickActionClockRequest>({
-            query: (actionData) => {
-                const validatedData = quickActionClockSchema.parse(actionData);
+        quickClockIn: builder.mutation<TimeRecordResponse, EnhancedQuickActionRequest>({
+            query: (request) => {
                 return {
-                    url: '/time-bookings/clock-in',
+                    url: '/timetrack/time-records/time-bookings/clock-in',
                     method: 'POST',
-                    body: validatedData,
+                    body: quickActionRequestSchema.parse({
+                        recordType: 'CLOCK_IN',
+                        notes: request.notes,
+                        locationType: request.locationType || 'OFFICE',
+                    }),
                 };
             },
             transformResponse: (response: unknown) => timeRecordSchema.parse(response),
@@ -301,13 +310,15 @@ export const timetrackApi = baseApi.injectEndpoints({
         }),
 
         // Quick clock out
-        quickClockOut: builder.mutation<TimeRecord, QuickActionClockRequest>({
-            query: (actionData) => {
-                const validatedData = quickActionClockSchema.parse(actionData);
+        quickClockOut: builder.mutation<TimeRecord, Pick<QuickActionRequest, 'notes'>>({
+            query: (request) => {
                 return {
                     url: '/time-bookings/clock-out',
                     method: 'POST',
-                    body: validatedData,
+                    body: {
+                        recordType: 'CLOCK_OUT',
+                        notes: request.notes,
+                    },
                 };
             },
             transformResponse: (response: unknown) => timeRecordSchema.parse(response),
@@ -315,13 +326,16 @@ export const timetrackApi = baseApi.injectEndpoints({
         }),
 
         // Quick break start
-        quickBreakStart: builder.mutation<TimeRecord, QuickActionClockRequest>({
-            query: (actionData) => {
-                const validatedData = quickActionClockSchema.parse(actionData);
+        quickBreakStart: builder.mutation<TimeRecord, Pick<QuickActionRequest, 'notes'>>({
+            query: (request) => {
+                const validatedData = quickActionClockSchema.parse(request);
                 return {
                     url: '/quick-actions/break-start',
                     method: 'POST',
-                    body: validatedData,
+                    body: {
+                        recordType: 'BREAK_START',
+                        notes: validatedData.notes,
+                    },
                 };
             },
             transformResponse: (response: unknown) => timeRecordSchema.parse(response),
@@ -329,49 +343,115 @@ export const timetrackApi = baseApi.injectEndpoints({
         }),
 
         // Quick break end
-        quickBreakEnd: builder.mutation<TimeRecord, QuickActionClockRequest>({
-            query: (actionData) => {
-                const validatedData = quickActionClockSchema.parse(actionData);
+        quickBreakEnd: builder.mutation<TimeRecord, Pick<QuickActionRequest, 'notes'>>({
+            query: (request) => {
+                const validatedData = quickActionClockSchema.parse(request);
                 return {
                     url: '/quick-actions/break-end',
                     method: 'POST',
-                    body: validatedData,
+                    body: {
+                        recordType: 'BREAK_END',
+                        notes: validatedData.notes,
+                    },
                 };
             },
             transformResponse: (response: unknown) => timeRecordSchema.parse(response),
             invalidatesTags: ['TimeRecord', 'MyTimeRecord', 'Dashboard'],
         }),
 
-        // // Quick home office
-        // quickClockHomeOffice: builder.mutation<TimeRecord, QuickActionLocationRequest>({
-        //     query: (actionData) => {
-        //         const validatedData = quickActionLocationSchema.parse(actionData);
-        //         return {
-        //             url: '/quick-actions/home-office',
-        //             method: 'POST',
-        //             body: validatedData,
-        //         };
-        //     },
-        //     transformResponse: (response: unknown) => timeRecordSchema.parse(response),
-        //     invalidatesTags: ['TimeRecord', 'MyTimeRecord', 'Dashboard'],
-        // }),
-        //
-        //
+        // location specific clock in actions
+        // --------------------------------
+        // Quick home office
+        clockInHome: builder.mutation<TimeRecordResponse, Pick<QuickActionRequest, 'notes'>>({
+            query: (request) => {
+                const validatedData = quickActionRequestSchema.parse(request);
+                return {
+                    url: '/timetrack/time-records/time-bookings/clock-in',
+                    method: 'POST',
+                    body: {
+                        recordType: 'CLOCK_IN',
+                        notes: validatedData.notes || 'Home office work started',
+                        locationType: 'HOME',
+                    },
+                };
+            },
+            transformResponse: (response: unknown) => timeRecordSchema.parse(response),
+            invalidatesTags: ['TimeRecord', 'MyTimeRecord', 'Dashboard'],
+        }),
+
+
         // // Quick business trip
-        // quickClockBusinessTrip: builder.mutation<TimeRecord, QuickActionLocationRequest>({
-        //     query: (actionData) => {
-        //         const validatedData = quickActionLocationSchema.parse(actionData);
-        //         return {
-        //             url: '/quick-actions/business-trip',
-        //             method: 'POST',
-        //             body: validatedData,
-        //         };
-        //     },
-        //     transformResponse: (response: unknown) => timeRecordSchema.parse(response),
-        //     invalidatesTags: ['TimeRecord', 'MyTimeRecord', 'Dashboard'],
-        // }),
+        clockInBusinessTrip: builder.mutation<TimeRecordResponse, Pick<QuickActionRequest, 'notes'>>({
+            query: (request) => {
+                const validatedData = quickActionRequestSchema.parse(request);
+                return {
+                    url: '/timetrack/time-records/time-bookings/clock-in',
+                    method: 'POST',
+                    body: {
+                        recordType: 'CLOCK_IN',
+                        notes: validatedData.notes || 'Business trip work started',
+                        locationType: 'BUSINESS_TRIP',
+                    },
+                };
+            },
+            transformResponse: (response: unknown) => timeRecordSchema.parse(response),
+            invalidatesTags: ['TimeRecord', 'MyTimeRecord', 'Dashboard'],
+        }),
+
+        // Get today's time records
+        getTodayTimeRecords: builder.query<TimeRecordResponse[], void>({
+            query: () => ({
+                url: '/timetrack/time-records/today',
+                method: 'GET',
+            }),
+            providesTags: ['TimeRecord', 'MyTimeRecord'],
+        }),
+
+        // Get current status
+        getCurrentStatus: builder.query<{
+            isWorking: boolean;
+            isOnBreak: boolean;
+            currentLocation: string;
+            lastEntry: TimeRecordResponse | null;
+        }, void>({
+            query: () => ({
+                url: '/timetrack/status/current',
+                method: 'GET',
+            }),
+            providesTags: ['TimeRecord', 'Dashboard'],
+        }),
+
+        // Update time record notes
+        updateTimeRecordNotes: builder.mutation<TimeRecordResponse, {
+            id: string;
+            notes: string;
+        }>({
+            query: ({ id, notes }) => ({
+                // todo: probably backend api is forgotten
+                url: `/timetrack/time-records/${id}/notes`,
+                method: 'PATCH',
+                body: { notes },
+            }),
+            invalidatesTags: ['TimeRecord', 'MyTimeRecord'],
+        }),
+
+        // Get time summary for today
+        getTodaySummary: builder.query<{
+            arrivalTime: string | null;
+            departureTime: string | null;
+            breakTime: string;
+            workingTime: string;
+            flexTime: string;
+            status: string;
+        }, void>({
+            query: () => ({
+                url: '/timetrack/summary/today',
+                method: 'GET',
+            }),
+            providesTags: ['Dashboard', 'MyTimeRecord'],
+        }),
+
     }),
-    overrideExisting: false,
 });
 
 
@@ -385,6 +465,7 @@ export const {
     useCreateTimeRecordMutation,
     useUpdateTimeRecordMutation,
     useDeleteTimeRecordMutation,
+    useGetCurrentStatusQuery,
 
     // Work Schedules
     useGetEmployeeWorkSchedulesQuery,
@@ -408,4 +489,6 @@ export const {
     useQuickClockOutMutation,
     useQuickBreakStartMutation,
     useQuickBreakEndMutation,
+    useClockInHomeMutation,
+    useClockInBusinessTripMutation,
 } = timetrackApi;

@@ -1,14 +1,17 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
+import type { LocationType } from "../../validation/timetrackSchemas.ts";
 
 // Types
 export type PageType = 'HomePage' | 'Timesheet';
-export type LocationType = 'office' | 'home' | 'business_trip' | null;
+// export type LocationType = 'office' | 'home' | 'business_trip' | null;
+// const locationTypeSchema = z.enum(['OFFICE', 'HOME', 'BUSINESS_TRIP', 'CLIENT_SITE']);
 export type ActionButtonType = 'clockIn' | 'break' | 'cancel' | 'homeOffice' | 'businessTrip' | 'query';
+// const recordTypeSchema = z.enum(['CLOCK_IN', 'CLOCK_OUT', 'BREAK_START', 'BREAK_END']);
 
 interface WorkStatus {
     isClockedIn: boolean;
     isOnBreak: boolean;
-    locationType: LocationType;
+    locationType: LocationType | null;
     clockInTime: string | null;
     breakStartTime: string | null;
     lastActionTime: string | null;
@@ -20,7 +23,7 @@ interface ProtocolFilters {
     selectedDate: string;
     searchTerm: string;
     timePeriod: 'today' | 'thisWeek' | 'thisMonth' | 'custom';
-    bookingType: 'Arrival' | 'Break' | 'Leave';
+    bookingType: 'Clock In' | 'Pause' | 'Clock Out';
 }
 
 interface UIState {
@@ -80,15 +83,15 @@ const initialState: WorkspaceState = {
             selectedDate: new Date().toISOString().split('T')[0], // Today's date
             searchTerm: '',
             timePeriod: 'today',
-            bookingType: 'Leave',
+            bookingType: 'Clock Out',
         },
         isLoading: false,
         lastRefreshTime: null,
     },
 
     realTime: {
-        localTime: new Date().toLocaleTimeString(),
-        localDate: new Date().toLocaleDateString(),
+        localTime: new Date().toLocaleTimeString('de-DE', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' }).replace(',', ''),
+        localDate: new Date().toLocaleDateString('de-DE', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }).replace(',', ''),
         autoRefreshEnabled: true,
         refreshInterval: 1, // 1 second
     },
@@ -107,8 +110,8 @@ const workspaceSlice = createSlice({
 
         // ===== WORK STATUS ACTIONS =====
 
-        clockIn: (state, action: PayloadAction<{ time: string; recordId: string; locationType?: LocationType }>) => {
-            const { time, recordId, locationType = 'office' } = action.payload;
+        clockIn: (state, action: PayloadAction<{ time: string; recordId: string; locationType?: LocationType}>) => {
+            const { time, recordId, locationType = 'OFFICE' } = action.payload;
             state.workStatus.isClockedIn = true;
             state.workStatus.clockInTime = time;
             state.workStatus.lastActionTime = time;
@@ -339,12 +342,12 @@ export const selectActionButtonStates = (state: { workspace: WorkspaceState }) =
             disabled: !isClockedIn && !isOnBreak,
         },
         homeOffice: {
-            active: locationType === 'home',
+            active: locationType === 'HOME',
             text: 'Home Office',
             disabled: !isClockedIn,
         },
         businessTrip: {
-            active: locationType === 'business_trip',
+            active: locationType === 'BUSINESS_TRIP',
             text: 'Business Trip',
             disabled: !isClockedIn,
         },

@@ -1,304 +1,295 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
-// import type { TimeRecord } from '../../validation/timetrackSchemas';
-import { timetrackApi } from '../api/timetrackApi';
-import type { TodaysSummaryProps } from "../../validation/todaysSummarySchema.ts";
+import type { TodaySummaryProps } from "../../validation/todaySummarySchema.ts";
 import type { ProtocolEntry } from "../../validation/protocolEntrySchema.ts";
 import type { TimeTrackState } from "../../validation/timeTrackStateSchema.ts";
+import type { LocationType } from "../../validation/timetrackSchemas.ts";
 
 const initialState: TimeTrackState = {
     todaySummary: {
         arrivalTime: null,
+        departureTime: null,
         breakTime: "00:00:00",
         workingTime: "00:00:00",
         flexTime: "+00:00:00",
         status: 'Not Started',
-        isClockedIn: false,
-        currentClockInTime: null,
+        isWorking: false,
+        isOnBreak: false,
     },
     protocolEntries: [],
-    isBreakEnabled: false,
-    focusWorkSummary: false,
+    currentStatus: 'Not Started',
+    isLoading: false,
+    error: null,
+    focusWorkNotes: false,
+    lastEntryId: null,
 };
 
 const timeTrackSlice = createSlice({
     name: 'timeTrack',
     initialState,
     reducers: {
-        // Clock In Action
-        clockIn: (state, action: PayloadAction<{ time: string; notes?: string }>) => {
-            const currentTime = action.payload.time;
-            const currentDate = new Date().toLocaleDateString('en-GB'); // DD/MM/YYYY format
+        // set loading state
+        setLoading: ( state, action: PayloadAction<boolean> ) => {
+            state.isLoading = action.payload;
+        },
 
-            // Update Today's Summary - only set arrival time if it's the first clock in of the day
-            if (!state.todaySummary.arrivalTime) {
-                state.todaySummary.arrivalTime = currentTime;
+        // set error state
+        setError: ( state, action: PayloadAction<string | null> ) => {
+            state.error = action.payload;
+        },
+
+        // Clock In Action
+        clockIn: ( state, action: PayloadAction<{
+            locationType: LocationType; notes?: string
+        }> ) => {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('de-DE', {
+                hour12: false,
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+
+            // update today's summary
+            // (only set arrival time if it's the first clock in of the day)
+            if ( !state.todaySummary.arrivalTime ) {
+                state.todaySummary.arrivalTime = timeString;
             }
             state.todaySummary.status = 'Working';
-            state.todaySummary.isClockedIn = true;
-            state.todaySummary.currentClockInTime = currentTime;
-            state.isBreakEnabled = true;
+            state.todaySummary.isWorking = true;
+            state.todaySummary.isOnBreak = false;
+            state.currentStatus = 'Working';
 
             // Add new protocol entry
             const newEntry: ProtocolEntry = {
-                id: `clock-in-${Date.now()}`,
-                date: currentDate,
-                time: currentTime,
-                booking: 'A0 Arrival',
-                bookingType: 'arrival',
+                // TODO: decide to id style
+                // id: crypto.randomUUID(),
+                id: `clock-in-${ Date.now() }`,
+                date: now.toLocaleDateString('de-DE'),
+                time: timeString,
+                recordType: 'CLOCK_IN',
+                locationType: action.payload.locationType,
                 terminal: 'Web Terminal',
-                workSummary: action.payload.notes || 'Clock in via web terminal'
+                notes: action.payload.notes || 'Clock in via web terminal',
+                isManual: false,
+                createdAt: now.toISOString(),
+                updatedAt: now.toISOString(),
             };
 
             state.protocolEntries.unshift(newEntry); // Add to beginning of array
-
+            state.lastEntryId = newEntry.id;
             // Focus work summary for editing
-            state.focusWorkSummary = true;
+            state.focusWorkNotes = true;
         },
 
         // Clock Out Action
-        clockOut: (state, action: PayloadAction<{ time: string; notes?: string }>) => {
-            const currentTime = action.payload.time;
-            const currentDate = new Date().toLocaleDateString('en-GB');
+        clockOut: ( state, action: PayloadAction<{ notes?: string }> ) => {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('de-DE', {
+                hour12: false,
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
 
             // Update Today's Summary
+            state.todaySummary.departureTime = timeString;
             state.todaySummary.status = 'Finished';
-            state.todaySummary.isClockedIn = false;
-            state.todaySummary.currentClockInTime = null;
-            state.isBreakEnabled = false;
+            state.todaySummary.isWorking = false;
+            state.todaySummary.isOnBreak = false;
+            state.currentStatus = 'Finished';
+
+            // calculate working time
+            // todo: constraints can be added (e.g., <10h, <12h)
+            if ( state.todaySummary.arrivalTime && state.todaySummary.departureTime ) {
+                const arrivalTime = new Date(state.todaySummary.arrivalTime);
+                const departureTime = new Date(state.todaySummary.departureTime);
+                const workingTime = departureTime.getTime() - arrivalTime.getTime();
+                state.todaySummary.workingTime =
+                    new Date(workingTime).toLocaleTimeString('de-DE', {
+                        hour12: false,
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        second: '2-digit'
+                    });
+            }
 
             // Add new protocol entry
             const newEntry: ProtocolEntry = {
-                id: `clock-out-${Date.now()}`,
-                date: currentDate,
-                time: currentTime,
-                booking: 'C0 Departure',
-                bookingType: 'departure',
+                // todo: decide
+                // id: crypto.randomUUID(),
+                id: `clock-in-${ Date.now() }`,
+                date: now.toLocaleDateString('de-DE'),
+                time: timeString,
+                recordType: 'CLOCK_OUT',
+                // todo: forgot at backend api, so 'office' is default
+                // or use a selector
+                locationType: 'OFFICE',
                 terminal: 'Web Terminal',
-                workSummary: action.payload.notes || 'Clock out via web terminal'
+                notes: action.payload.notes || 'Clock in via web terminal',
+                isManual: false,
+                createdAt: now.toISOString(),
+                updatedAt: now.toISOString(),
             };
 
             state.protocolEntries.unshift(newEntry);
-            state.focusWorkSummary = true;
+            state.lastEntryId = newEntry.id;
+            state.focusWorkNotes = true;
         },
 
-        // Break Start Action
-        startBreak: (state, action: PayloadAction<{ time: string; notes?: string }>) => {
-            const currentTime = action.payload.time;
-            const currentDate = new Date().toLocaleDateString('en-GB');
+        // Start Break Action
+        startBreak: (state, action: PayloadAction<{ notes?: string }>) => {
+            const now = new Date();
+            const timeString =now.toLocaleDateString('de-DE', {
+                hour12: false,
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
 
             // Update Today's Summary
-            state.todaySummary.status = 'On Break';
+            state.todaySummary.status = 'Break';
+            state.todaySummary.isOnBreak = true;
+            state.currentStatus = 'Break';
 
             // Add new protocol entry
             const newEntry: ProtocolEntry = {
                 id: `break-start-${Date.now()}`,
-                date: currentDate,
-                time: currentTime,
-                booking: 'B1 Break Start',
-                bookingType: 'break',
+                date: now.toLocaleDateString('de-DE'),
+                time: timeString,
+                recordType: 'BREAK_START',
+                locationType: 'OFFICE',
                 terminal: 'Web Terminal',
-                workSummary: action.payload.notes || 'Break started'
+                notes: action.payload.notes || 'Break started',
+                isManual: false,
+                createdAt: now.toISOString(),
+                updatedAt: now.toISOString(),
             };
 
             state.protocolEntries.unshift(newEntry);
-            state.focusWorkSummary = true;
+            state.lastEntryId = newEntry.id;
+            state.focusWorkNotes = true;
         },
 
-        // Break End Action
-        endBreak: (state, action: PayloadAction<{ time: string; notes?: string }>) => {
-            const currentTime = action.payload.time;
-            const currentDate = new Date().toLocaleDateString('en-GB');
+        // End Break Action
+        endBreak: (state, action: PayloadAction<{ notes?: string }>) => {
+            const now = new Date();
+            const timeString =now.toLocaleDateString('de-DE', {
+                hour12: false,
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
 
             // Update Today's Summary
             state.todaySummary.status = 'Working';
+            state.todaySummary.isOnBreak = false;
+            state.currentStatus = 'Working';
 
             // Add a new protocol entry
             const newEntry: ProtocolEntry = {
+                // id: crypto.randomUUID(),
                 id: `break-end-${Date.now()}`,
-                date: currentDate,
-                time: currentTime,
-                booking: 'B2 Break End',
-                bookingType: 'break',
+                date: now.toLocaleDateString('de-De'),
+                time: timeString,
+                recordType: 'BREAK_END',
+                locationType: 'OFFICE',
                 terminal: 'Web Terminal',
-                workSummary: action.payload.notes || 'Break ended'
+                notes: action.payload.notes || 'Break ended',
+                isManual: false,
+                createdAt: now.toISOString(),
+                updatedAt: now.toISOString(),
             };
 
             state.protocolEntries.unshift(newEntry);
-            state.focusWorkSummary = true;
+            state.lastEntryId = newEntry.id;
+            state.focusWorkNotes = true;
         },
 
         // Update protocol entry work summary
-        updateWorkSummary: (state, action: PayloadAction<{ id: string; workSummary: string }>) => {
+        updateWorkNotes: (state, action: PayloadAction<{ id: string; notes: string }>) => {
             const entry = state.protocolEntries.find(entry => entry.id === action.payload.id);
             if (entry) {
-                entry.workSummary = action.payload.workSummary;
+                entry.notes = action.payload.notes;
+                entry.updatedAt = new Date().toISOString();
             }
         },
 
-        // Clear focus on work summary
-        clearWorkSummaryFocus: (state) => {
-            state.focusWorkSummary = false;
+        // Set focus for notes input
+        setFocusWorkNotes: ( state, action: PayloadAction<boolean> ) => {
+            state.focusWorkNotes = action.payload;
         },
 
         // Update working time (this would typically be called by a timer or from API)
-        updateWorkingTime: (state, action: PayloadAction<string>) => {
+        updateWorkingTime: ( state, action: PayloadAction<string> ) => {
             state.todaySummary.workingTime = action.payload;
         },
 
         // Update break time
-        updateBreakTime: (state, action: PayloadAction<string>) => {
+        updateBreakTime: ( state, action: PayloadAction<string> ) => {
             state.todaySummary.breakTime = action.payload;
         },
 
         // Update flex time
-        updateFlexTime: (state, action: PayloadAction<string>) => {
+        updateFlexTime: ( state, action: PayloadAction<string> ) => {
             state.todaySummary.flexTime = action.payload;
         },
 
-        // Load initial data (from API or localStorage)
-        loadInitialData: (state, action: PayloadAction<{
-            todaySummary: Partial<TodaysSummaryProps>;
-            protocolEntries: ProtocolEntry[]
-        }>) => {
-            state.todaySummary = { ...state.todaySummary, ...action.payload.todaySummary };
-            state.protocolEntries = action.payload.protocolEntries;
-            state.isBreakEnabled = state.todaySummary.isClockedIn;
+        // Load initial data
+        loadTodayData: (state, action: PayloadAction<{
+            summary: TodaySummaryProps; entries: ProtocolEntry[] }> ) =>
+        {
+            state.todaySummary = action.payload.summary;
+            state.protocolEntries = action.payload.entries;
+            state.currentStatus = action.payload.summary.status;
         },
-    },
-    extraReducers: (builder) => {
-        // Handle successful clock in API call
-        builder.addMatcher(
-            timetrackApi.endpoints.quickClockIn.matchFulfilled,
-            (state, action) => {
-                const timeRecord = action.payload;
-                const currentTime = new Date(timeRecord.recordTime).toLocaleTimeString('en-GB', {
-                    hour12: false,
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    second: '2-digit'
-                });
 
-                // Update or add protocol entry
-                const existingEntryIndex = state.protocolEntries.findIndex(
-                    entry => entry.id === `clock-in-${timeRecord.id}`
-                );
+        // Change location type (for home office, business trip, etc.)
+        changeLocationType: (state, action: PayloadAction<{ locationType: LocationType; notes?: string }>) => {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('de-DE', { hour12: false });
 
-                if (existingEntryIndex === -1) {
-                    const newEntry: ProtocolEntry = {
-                        id: `clock-in-${timeRecord.id}`,
-                        date: new Date(timeRecord.recordDate).toLocaleDateString('en-GB'),
-                        time: currentTime,
-                        booking: 'A0 Arrival',
-                        bookingType: 'arrival',
-                        terminal: 'Web Terminal',
-                        workSummary: timeRecord.notes || 'Clock in via web terminal'
-                    };
-                    state.protocolEntries.unshift(newEntry);
-                    state.focusWorkSummary = true;
-                }
-            }
-        );
+            // Add protocol entry for location change
+            const newEntry: ProtocolEntry = {
+                id: crypto.randomUUID(),
+                date: now.toLocaleDateString('de-DE'),
+                time: timeString,
+                recordType: 'CLOCK_IN', // Location change is treated as clock in with different location
+                locationType: action.payload.locationType,
+                terminal: 'Web Terminal',
+                notes: action.payload.notes || `Location changed to ${action.payload.locationType}`,
+                isManual: false,
+                createdAt: now.toISOString(),
+                updatedAt: now.toISOString(),
+            };
 
-        // Handle successful clock out API call
-        builder.addMatcher(
-            timetrackApi.endpoints.quickClockOut.matchFulfilled,
-            (state, action) => {
-                const timeRecord = action.payload;
-                const currentTime = new Date(timeRecord.recordTime).toLocaleTimeString('en-GB', {
-                    hour12: false,
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    second: '2-digit'
-                });
+            state.protocolEntries.unshift(newEntry);
+            state.lastEntryId = newEntry.id;
+            state.focusWorkNotes = true;
+        },
 
-                // Update state based on API response
-                state.todaySummary.status = 'Finished';
-                state.todaySummary.isClockedIn = false;
-                state.todaySummary.currentClockInTime = null;
-                state.isBreakEnabled = false;
-
-                // Add protocol entry
-                const newEntry: ProtocolEntry = {
-                    id: `clock-out-${timeRecord.id}`,
-                    date: new Date(timeRecord.recordDate).toLocaleDateString('en-GB'),
-                    time: currentTime,
-                    booking: 'C0 Departure',
-                    bookingType: 'departure',
-                    terminal: 'Web Terminal',
-                    workSummary: timeRecord.notes || 'Clock out via web terminal'
-                };
-                state.protocolEntries.unshift(newEntry);
-                state.focusWorkSummary = true;
-            }
-        );
-
-        builder.addMatcher(
-            timetrackApi.endpoints.quickBreakStart.matchFulfilled,
-            (state, action) => {
-                const timeRecord = action.payload;
-                const currentTime = new Date(timeRecord.recordTime).toLocaleTimeString('en-GB', {
-                    hour12: false,
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    second: '2-digit'
-                });
-
-                state.todaySummary.status = 'On Break';
-
-                const newEntry: ProtocolEntry = {
-                    id: `break-start-${timeRecord.id}`,
-                    date: new Date(timeRecord.recordDate).toLocaleDateString('en-GB'),
-                    time: currentTime,
-                    booking: 'B1 Break Start',
-                    bookingType: 'break',
-                    terminal: 'Web Terminal',
-                    workSummary: timeRecord.notes || 'Break started'
-                };
-                state.protocolEntries.unshift(newEntry);
-                state.focusWorkSummary = true;
-            }
-        );
-
-        builder.addMatcher(
-            timetrackApi.endpoints.quickBreakEnd.matchFulfilled,
-            (state, action) => {
-                const timeRecord = action.payload;
-                const currentTime = new Date(timeRecord.recordTime).toLocaleTimeString('en-GB', {
-                    hour12: false,
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    second: '2-digit'
-                });
-
-                state.todaySummary.status = 'Working';
-
-                const newEntry: ProtocolEntry = {
-                    id: `break-end-${timeRecord.id}`,
-                    date: new Date(timeRecord.recordDate).toLocaleDateString('en-GB'),
-                    time: currentTime,
-                    booking: 'B2 Break End',
-                    bookingType: 'break',
-                    terminal: 'Web Terminal',
-                    workSummary: timeRecord.notes || 'Break ended'
-                };
-                state.protocolEntries.unshift(newEntry);
-                state.focusWorkSummary = true;
-            }
-        );
+        // // Load initial data (from API or localStorage)
+        // loadInitialData: ( state, action: PayloadAction<{
+        //     todaySummary: Partial<TodaySummaryProps>;
+        //     protocolEntries: ProtocolEntry[]
+        // }> ) => {
+        //     state.todaySummary = { ...state.todaySummary, ...action.payload.todaySummary };
+        //     state.protocolEntries = action.payload.protocolEntries;
+        //     // state.isBreakEnabled = state.todaySummary.isClockedIn;
+        // },
     },
 });
 
 export const {
+    setLoading,
+    setError,
     clockIn,
     clockOut,
     startBreak,
     endBreak,
-    updateWorkSummary,
-    clearWorkSummaryFocus,
-    updateWorkingTime,
-    updateBreakTime,
-    updateFlexTime,
-    loadInitialData,
+    updateWorkNotes,
+    setFocusWorkNotes,
+    loadTodayData,
+    changeLocationType,
 } = timeTrackSlice.actions;
 
 export default timeTrackSlice.reducer;
