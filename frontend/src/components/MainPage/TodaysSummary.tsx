@@ -5,8 +5,8 @@ import {
     selectBreakTime,
     selectWorkingTime,
     selectStatus,
-    selectIsClockedIn,
-    selectCurrentClockIn,
+    // selectIsClockedIn,
+    // selectCurrentClockIn,
     selectFlexTime
 } from "../../store/selectors/timeTrackSelectors.ts";
 
@@ -18,8 +18,8 @@ export default function TodaysSummary() {
     const workingTime = useAppSelector(selectWorkingTime);
     const flexTime = useAppSelector(selectFlexTime);
     const status = useAppSelector(selectStatus);
-    const isClockedIn = useAppSelector(selectIsClockedIn);
-    const currentClockInTime = useAppSelector(selectCurrentClockIn);
+    // const isClockedIn = useAppSelector(selectIsClockedIn);
+    // const currentClockInTime = useAppSelector(selectCurrentClockIn);
 
 
     const summaryItems = [
@@ -140,9 +140,7 @@ export default function TodaysSummary() {
                     sx={{
                         marginTop: '20px',
                         padding: '16px',
-                        backgroundColor: isClockedIn ? '#f0fff4' : '#edf2f7',
                         borderRadius: '8px',
-                        border: `1px solid ${isClockedIn ? '#c6f6d5' : '#cbd5e0'}`,
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
@@ -174,8 +172,8 @@ export default function TodaysSummary() {
                             fontWeight: 500,
                         }}
                     >
-                        {isClockedIn
-                            ? `Current work session in progress (since ${currentClockInTime})`
+                        {workingTime
+                            ? `Current work session in progress (since ${workingTime})`
                             : 'No active work session'
                         }
                     </Typography>
