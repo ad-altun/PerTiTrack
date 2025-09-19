@@ -1,14 +1,21 @@
 import { z } from 'zod';
+import { recordTypeSchema, locationTypeSchema,  } from './timetrackSchemas';
 
 // Protocol Entry Schema
 export const protocolEntrySchema = z.object({
-    id: z.string().min(1, 'ID is required'),
-    date: z.string().min(1, 'Date is required'),
-    time: z.string().min(1, 'Time is required'),
-    booking: z.string().min(1, 'Booking is required'),
-    bookingType: z.enum(['arrival', 'break', 'departure']),
-    terminal: z.string().min(1, 'Terminal is required'),
-    workSummary: z.string().min(1, 'Work summary is required'),
+    id: z.string(),
+    date: z.string(),
+    time: z.string(),
+    // booking: z.string(),
+    recordType: recordTypeSchema,
+    locationType: locationTypeSchema,
+    // bookingType: z.enum(['arrival', 'break', 'departure']),
+    terminal: z.string(),
+    notes: z.string(),
+    // workSummary: z.string(),
+    isManual: z.boolean(),
+    createdAt: z.string(),
+    updatedAt: z.string(),
 });
 
 // Booking Protocol Schema
