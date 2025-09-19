@@ -4,7 +4,7 @@ import { z } from 'zod';
 export const bookingPanelSchema = z.object({
     localDate: z.string().min(1, 'Local date is required').default('01/22/2025'),
     localTime: z.string().min(1, 'Local time is required').default('09:15:42'),
-    bookingType: z.string().min(1, 'Booking type is required').default('Leave'),
+    bookingType: z.string().min(1, 'Booking type is required').default('Clock Out'),
     employeeName: z.string().min(1, 'Employee name is required').default('Jane, Patrick (00293)'),
 });
 
@@ -17,7 +17,7 @@ export const bookingUiSchema = z.object({
         selectedDate: z.string(), // Today's date
         searchTerm: z.string().default(''),
         timePeriod: z.string().default('today'),
-        bookingType: z.string().default('Leave'),
+        bookingType: z.string().default('Clock Out'),
     }),
     isLoading: z.boolean().default(false),
     lastRefreshTime: z.string().nullable().or(z.null()),

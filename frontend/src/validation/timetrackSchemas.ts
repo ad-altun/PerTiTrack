@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 // Enums
 export const recordTypeSchema = z.enum(['CLOCK_IN', 'CLOCK_OUT', 'BREAK_START', 'BREAK_END']);
-export const locationTypeSchema = z.enum(['OFFICE', 'HOME', 'BUSINESS_TRIP']);
+export const locationTypeSchema = z.enum(['OFFICE', 'HOME', 'BUSINESS_TRIP', 'CLIENT_SITE']);
 export const absenceStatusSchema = z.enum(['PENDING', 'APPROVED', 'REJECTED', 'CANCELLED']);
 
 // Time Record Schemas
@@ -136,6 +136,36 @@ export const quickActionLocationSchema = z.object({
     locationType: locationTypeSchema,
     notes: z.string().optional(),
 });
+
+// Zod schemas for API responses
+const timeRecordResponseSchema = z.object({
+    id: z.string(),
+    employeeId: z.string(),
+    employeeFirstName: z.string(),
+    employeeLastName: z.string(),
+    recordDate: z.string(),
+    recordTime: z.string(),
+    recordType: z.enum(['CLOCK_IN', 'CLOCK_OUT', 'BREAK_START', 'BREAK_END']),
+    locationType: z.enum(['OFFICE', 'HOME', 'BUSINESS_TRIP', 'CLIENT_SITE']),
+    notes: z.string().nullable(),
+    isManual: z.boolean(),
+    createdAt: z.string(),
+    updatedAt: z.string(),
+});
+
+export const quickActionRequestSchema = z.object({
+    recordType: z.enum(['CLOCK_IN', 'CLOCK_OUT', 'BREAK_START', 'BREAK_END']),
+    notes: z.string().optional(),
+    locationType: z.enum(['OFFICE', 'HOME', 'BUSINESS_TRIP', 'CLIENT_SITE']).optional(),
+});
+
+// Enhanced request type with location
+export interface EnhancedQuickActionRequest extends QuickActionRequest {
+    locationType?: 'OFFICE' | 'HOME' | 'BUSINESS_TRIP' | 'CLIENT_SITE';
+}
+
+export type TimeRecordResponse = z.infer<typeof timeRecordResponseSchema>;
+export type QuickActionRequest = z.infer<typeof quickActionRequestSchema>;
 
 // Array schemas
 export const timeRecordListSchema = z.array(timeRecordSchema);
