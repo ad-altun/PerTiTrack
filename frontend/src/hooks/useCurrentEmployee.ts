@@ -34,7 +34,7 @@ export const useCurrentEmployee = () => {
         employeeNumber: currentUser?.employeeNumber || null,
 
         // Display names (works for all user types)
-        displayName: getDisplayName(),
+        employeeName: getDisplayName(),
 
         // User context
         isEmployee,
