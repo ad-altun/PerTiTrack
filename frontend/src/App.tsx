@@ -3,7 +3,6 @@ import { lazy, Suspense } from "react";
 import { createBrowserRouter, Navigate, RouterProvider } from "react-router-dom";
 import { store } from "./store/store.ts";
 import { Provider } from "react-redux";
-import { createTheme, CssBaseline, ThemeProvider } from "@mui/material";
 
 const preloadCriticalRoutes = () => {
     // Preload Dashboard on app start
@@ -17,23 +16,25 @@ preloadCriticalRoutes();
 import RootLayout from "./pages/RootLayout.tsx";
 import AuthLayout from "./pages/AuthLayout.tsx";
 import LoginForm from "./components/auth/LoginForm.tsx";
+import { CustomThemeProvider } from "./contexts/ThemeContext.tsx";
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 
 // lazy load heavy/rarely used components
 const RegisterForm = lazy(() => import("./components/auth/RegisterForm.tsx"));
 const ForgotPasswordForm = lazy(() => import("./components/auth/ForgotPasswordForm.tsx"));
 const HomePage = lazy(() => import("./pages/HomePage.tsx"));
+const TimeSheetPage = lazy(() => import("./pages/TimeSheetPage.tsx"));
+const NotFoundPage = lazy(() => import("./pages/NotFoundPage.tsx"));
+const UnauthorizedPage = lazy(() => import("./pages/UnauthorizedPage.tsx"));
+const SettingsPage = lazy(() => import("./pages/SettingsPage.tsx"));
 
-// material-ui theme
-const theme = createTheme({
-    palette: {
-        primary: {
-            main: '#1976d2',
-        },
-        secondary: {
-            main: '#dc004e',
-        },
-    }
-});
+const LegalLayout = lazy(() => import("./pages/legalRequirements/LegalLayout.tsx"));
+const ImpressumPage = lazy(() => import("./pages/legalRequirements/ImpressumPage.tsx"));
+const PrivacyPolicyPage = lazy(() => import("./pages/legalRequirements/PrivacyPolicyPage.tsx"));
+const TermsOfService = lazy(() => import("./pages/legalRequirements/TermsOfService.tsx"));
+const AccessibilityStatement = lazy(() => import("./pages/legalRequirements/AccessibilityStatement.tsx"));
+const ContactPage = lazy(() => import("./pages/legalRequirements/ContactPage.tsx"));
 
 // Loading component
 const LoadingSpinner = () => (
@@ -43,8 +44,8 @@ const LoadingSpinner = () => (
 );
 
 function App() {
-
     const router = createBrowserRouter([
+        // main application routes
         {
             path: "/",
             element: <RootLayout/>,
@@ -53,20 +54,38 @@ function App() {
                     index: true,
                     element: (
                         <Suspense fallback={ <div><LoadingSpinner/></div> }>
-                            <HomePage />
+                            <HomePage/>
                         </Suspense>
                     ),
                 },
                 {
-                    path: "dashboard",
+                    path: "/dashboard",
                     element: (
                         <Suspense fallback={ <LoadingSpinner/> }>
-                            <HomePage />
+                            <HomePage/>
                         </Suspense>
                     ),
                 },
+                {
+                    path: '/timesheet',
+                    element: (
+                        <Suspense fallback={<div> <LoadingSpinner /> </div>} >
+                            <TimeSheetPage />
+                        </Suspense>
+                    )
+                },
+                {
+                    path: "/account-settings",
+                    element: (
+                        <Suspense fallback={<div> <LoadingSpinner/> </div>} >
+                            <SettingsPage />
+                        </Suspense>
+                    )
+                },
             ]
         },
+
+        // authentication pages
         {
             path: "/auth",
             element: <AuthLayout/>,
@@ -97,6 +116,63 @@ function App() {
                 },
             ]
         },
+
+        // legally required pages - accessible by everyone
+        {
+            path: '/legal',
+            element: (
+                <Suspense fallback={<div> <LoadingSpinner /> </div>} >
+                    <LegalLayout />
+                </Suspense>
+            ),
+            children: [
+                {
+                    index: true,
+                    element: <Navigate to="/legal/impressum" replace />,
+                },
+                {
+                    path: 'impressum',
+                    element: (
+                        <Suspense fallback={<div> <LoadingSpinner /> </div>} >
+                            <ImpressumPage />
+                        </Suspense>
+                    ),
+                },
+                {
+                    path: 'privacy-policy',
+                    element: (
+                        <Suspense fallback={<div> <LoadingSpinner /> </div>} >
+                            <PrivacyPolicyPage />
+                        </Suspense>
+                    )
+                },
+                {
+                    path: 'accessibility-statement',
+                    element: (
+                        <Suspense fallback={<div> <LoadingSpinner /> </div>} >
+                            <AccessibilityStatement />
+                        </Suspense>
+                    )
+                },
+                {
+                    path: 'contact',
+                    element: (
+                        <Suspense fallback={<div> <LoadingSpinner /> </div>} >
+                            <ContactPage />
+                        </Suspense>
+                    )
+                },
+                {
+                    path: 'terms-of-service',
+                    element: (
+                        <Suspense fallback={<div> <LoadingSpinner /> </div>} >
+                            <TermsOfService />
+                        </Suspense>
+                    )
+                },
+            ]
+        },
+
         // Redirect old routes to new structure
         {
             path: "/signin",
@@ -110,20 +186,51 @@ function App() {
             path: "/forgot-password",
             element: <Navigate to="/auth/forgot-password" replace/>,
         },
+        {
+            path: "/unauthorized",
+            element: (
+                <Suspense fallback={<div> <LoadingSpinner /></div> }>
+                    <UnauthorizedPage />
+                </Suspense>
+            )
+        },
+        {
+            path: "/forbidden",
+            element: (
+                <Suspense fallback={ <div> <LoadingSpinner /> </div> } >
+                    <UnauthorizedPage
+                        message="You don't have permission to access this page."
+                        showHomeButton={true}
+                    />
+                </Suspense>
+            )
+        },
+        {
+            path: "/404",
+            element: (
+                <Suspense fallback={<div> <LoadingSpinner/> </div>} >
+                    <NotFoundPage />
+                </Suspense>
+            )
+        },
         // Catch-all route for 404s
         {
             path: "*",
-            element: <div>Page not found</div>,
+            element: (
+                <Suspense fallback={<div> <LoadingSpinner/> </div>} >
+                    <NotFoundPage />
+                </Suspense>
+            )
         },
     ]);
 
     return (
         <Provider store={ store }>
-            <ThemeProvider theme={ theme }>
-                <CssBaseline>
+            <CustomThemeProvider >
+                <LocalizationProvider dateAdapter={ AdapterDayjs }>
                     <RouterProvider router={ router }/>
-                </CssBaseline>
-            </ThemeProvider>
+                </LocalizationProvider>
+            </CustomThemeProvider>
         </Provider>
     );
 }

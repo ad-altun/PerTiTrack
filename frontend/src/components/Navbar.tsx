@@ -1,5 +1,4 @@
 import React from "react";
-import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
@@ -13,9 +12,12 @@ import {
     selectActivePage,
     selectUserProfileName
 } from "../store/selectors/navbarSelectors.ts";
+import { Button } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 const Navbar = () => {
     const [ anchorEl, setAnchorEl ] = React.useState<null | HTMLElement>(null);
+    const navigate = useNavigate();
 
     const activePage = useAppSelector(selectActivePage);
     const userName = useAppSelector(selectUserProfileName);
@@ -33,6 +35,19 @@ const Navbar = () => {
         }
     };
 
+    const handleSettingsClick = () => {
+        handleMenuClose();
+        navigate('/account-settings');
+    }
+
+    const isActiveRoute = ( route: string ) => {
+        return location.pathname === route || activePage?.toLowerCase() === route.replace('/', '');
+    };
+
+    const navigateTo = ( route: string ) => {
+        navigate(route);
+    };
+
     return (
         <Box
             display="flex"
@@ -47,20 +62,24 @@ const Navbar = () => {
             {/* Left side - navigation */ }
             <Box>
                 <Button
+                    onClick={ () => navigateTo('/dashboard') }
                     sx={ {
                         mr: 1,
-                        backgroundColor: activePage === "HomePage" ? "#c53e3e" : "transparent",
-                        color: activePage === 'HomePage' ? "white" : "white",
+                        backgroundColor: isActiveRoute('/dashboard') || isActiveRoute('/') ? "#4a5568" : "transparent",
+                        color: "white",
                         "&:hover": { backgroundColor: "#4a5568", color: "white" },
+                        textTransform: 'none',
                     } }
                 >
                     HomePage
                 </Button>
                 <Button
+                    onClick={ () => navigateTo('/timesheet') }
                     sx={ {
-                        backgroundColor: activePage === 'Timesheet' ? "#e53e3e" : "transparent",
+                        backgroundColor: isActiveRoute('/timesheet') ? "#4a5568" : "transparent",
                         color: "white",
-                        "&:hover": { backgroundColor: "#e53e3e", color: "white" },
+                        "&:hover": { backgroundColor: "#4a5568", color: "white" },
+                        textTransform: 'none',
                     } }
                 >
                     Timesheet
@@ -84,8 +103,8 @@ const Navbar = () => {
                     open={ Boolean(anchorEl) }
                     onClose={ handleMenuClose }
                 >
-                    <MenuItem onClick={ handleMenuClose }>Account settings</MenuItem>
-                    <MenuItem onClick={ handleMenuClose }>Change account</MenuItem>
+                    <MenuItem onClick={ handleSettingsClick }>Account settings</MenuItem>
+                    {/*<MenuItem onClick={ handleMenuClose }>Change account</MenuItem>*/ }
                     <MenuItem onClick={ handleLogout }>Logout</MenuItem>
                 </Menu>
             </Box>

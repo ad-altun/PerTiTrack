@@ -8,9 +8,9 @@ const initialState: TimeTrackState = {
     todaySummary: {
         arrivalTime: null,
         departureTime: null,
-        breakTime: "00:00:00",
-        workingTime: "00:00:00",
-        flexTime: "+00:00:00",
+        breakTime: '',
+        workingTime: "",
+        flexTime: "",
         status: 'Not Started',
         isWorking: false,
         isOnBreak: false,
@@ -42,12 +42,8 @@ const timeTrackSlice = createSlice({
             locationType: LocationType; notes?: string
         }> ) => {
             const now = new Date();
-            const timeString = now.toLocaleTimeString('de-DE', {
-                hour12: false,
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit'
-            });
+            const timeString =now.toISOString();  // "2025-09-20T17:01:45.123Z"
+            const dateString =now.toISOString().split('T')[0];  // "2025-09-20"
 
             // update today's summary
             // (only set arrival time if it's the first clock in of the day)
@@ -64,7 +60,7 @@ const timeTrackSlice = createSlice({
                 // TODO: decide to id style
                 // id: crypto.randomUUID(),
                 id: `clock-in-${ Date.now() }`,
-                date: now.toLocaleDateString('de-DE'),
+                date: dateString,
                 time: timeString,
                 recordType: 'CLOCK_IN',
                 locationType: action.payload.locationType,
@@ -84,12 +80,8 @@ const timeTrackSlice = createSlice({
         // Clock Out Action
         clockOut: ( state, action: PayloadAction<{ notes?: string }> ) => {
             const now = new Date();
-            const timeString = now.toLocaleTimeString('de-DE', {
-                hour12: false,
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit'
-            });
+            const timeString =now.toISOString();  // "2025-09-20T17:01:45.123Z"
+            const dateString =now.toISOString().split('T')[0];  // "2025-09-20"
 
             // Update Today's Summary
             state.todaySummary.departureTime = timeString;
@@ -104,13 +96,7 @@ const timeTrackSlice = createSlice({
                 const arrivalTime = new Date(state.todaySummary.arrivalTime);
                 const departureTime = new Date(state.todaySummary.departureTime);
                 const workingTime = departureTime.getTime() - arrivalTime.getTime();
-                state.todaySummary.workingTime =
-                    new Date(workingTime).toLocaleTimeString('de-DE', {
-                        hour12: false,
-                        hour: '2-digit',
-                        minute: '2-digit',
-                        second: '2-digit'
-                    });
+                state.todaySummary.workingTime = timeString;
             }
 
             // Add new protocol entry
@@ -118,7 +104,7 @@ const timeTrackSlice = createSlice({
                 // todo: decide
                 // id: crypto.randomUUID(),
                 id: `clock-in-${ Date.now() }`,
-                date: now.toLocaleDateString('de-DE'),
+                date: dateString,
                 time: timeString,
                 recordType: 'CLOCK_OUT',
                 // todo: forgot at backend api, so 'office' is default
@@ -139,12 +125,8 @@ const timeTrackSlice = createSlice({
         // Start Break Action
         startBreak: (state, action: PayloadAction<{ notes?: string }>) => {
             const now = new Date();
-            const timeString =now.toLocaleDateString('de-DE', {
-                hour12: false,
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit'
-            });
+            const timeString =now.toISOString();  // "2025-09-20T17:01:45.123Z"
+            const dateString =now.toISOString().split('T')[0];  // "2025-09-20"
 
             // Update Today's Summary
             state.todaySummary.status = 'Break';
@@ -154,8 +136,8 @@ const timeTrackSlice = createSlice({
             // Add new protocol entry
             const newEntry: ProtocolEntry = {
                 id: `break-start-${Date.now()}`,
-                date: now.toLocaleDateString('de-DE'),
-                time: timeString,
+                date: dateString,   // ISO date format
+                time: timeString,   // ISO datetime format
                 recordType: 'BREAK_START',
                 locationType: 'OFFICE',
                 terminal: 'Web Terminal',
@@ -173,12 +155,8 @@ const timeTrackSlice = createSlice({
         // End Break Action
         endBreak: (state, action: PayloadAction<{ notes?: string }>) => {
             const now = new Date();
-            const timeString =now.toLocaleDateString('de-DE', {
-                hour12: false,
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit'
-            });
+            const timeString =now.toISOString();  // "2025-09-20T17:01:45.123Z"
+            const dateString =now.toISOString().split('T')[0];  // "2025-09-20"
 
             // Update Today's Summary
             state.todaySummary.status = 'Working';
@@ -189,7 +167,7 @@ const timeTrackSlice = createSlice({
             const newEntry: ProtocolEntry = {
                 // id: crypto.randomUUID(),
                 id: `break-end-${Date.now()}`,
-                date: now.toLocaleDateString('de-De'),
+                date: dateString,
                 time: timeString,
                 recordType: 'BREAK_END',
                 locationType: 'OFFICE',
@@ -246,12 +224,13 @@ const timeTrackSlice = createSlice({
         // Change location type (for home office, business trip, etc.)
         changeLocationType: (state, action: PayloadAction<{ locationType: LocationType; notes?: string }>) => {
             const now = new Date();
-            const timeString = now.toLocaleTimeString('de-DE', { hour12: false });
+            const timeString =now.toISOString();  // "2025-09-20T17:01:45.123Z"
+            const dateString =now.toISOString().split('T')[0];  // "2025-09-20"
 
             // Add protocol entry for location change
             const newEntry: ProtocolEntry = {
                 id: crypto.randomUUID(),
-                date: now.toLocaleDateString('de-DE'),
+                date: dateString,
                 time: timeString,
                 recordType: 'CLOCK_IN', // Location change is treated as clock in with different location
                 locationType: action.payload.locationType,
@@ -266,16 +245,6 @@ const timeTrackSlice = createSlice({
             state.lastEntryId = newEntry.id;
             state.focusWorkNotes = true;
         },
-
-        // // Load initial data (from API or localStorage)
-        // loadInitialData: ( state, action: PayloadAction<{
-        //     todaySummary: Partial<TodaySummaryProps>;
-        //     protocolEntries: ProtocolEntry[]
-        // }> ) => {
-        //     state.todaySummary = { ...state.todaySummary, ...action.payload.todaySummary };
-        //     state.protocolEntries = action.payload.protocolEntries;
-        //     // state.isBreakEnabled = state.todaySummary.isClockedIn;
-        // },
     },
 });
 

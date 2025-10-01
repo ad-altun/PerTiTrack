@@ -1,13 +1,7 @@
-import { type BookingProtocolProps, bookingProtocolSchema } from "../../validation/protocolEntrySchema.ts";
 import ProtocolTable from "../ProtocolTable.tsx";
-import { Paper } from "@mui/material";
-import ProtocolFilters from "../ProtocolFilters.tsx";
-
+import Paper from "@mui/material/Paper";
 
 export default function BookingProtocol() {
-
-    // Validate props using Zod
-    // const validatedProps = bookingProtocolSchema.parse({ protocols });
 
  return (
      <Paper
@@ -20,9 +14,6 @@ export default function BookingProtocol() {
              marginBottom: '20px',
          }}
      >
-         {/* Protocol Filters */}
-         <ProtocolFilters />
-
          {/* Protocol Table */}
          <ProtocolTable  />
      </Paper>

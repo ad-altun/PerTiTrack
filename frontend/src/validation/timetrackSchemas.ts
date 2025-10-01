@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import type { todaySummaryResponseSchema } from "./todaySummarySchema.ts";
 
 // Enums
 export const recordTypeSchema = z.enum(['CLOCK_IN', 'CLOCK_OUT', 'BREAK_START', 'BREAK_END']);
@@ -12,27 +13,29 @@ export const timeRecordSchema = z.object({
     employeeFirstName: z.string().min(1, 'Employee first name is required'),
     employeeLastName: z.string().min(1, 'Employee last name is required'),
     recordDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Date must be in YYYY-MM-DD format'),
-    recordTime: z.string().regex(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/, 'Time must be in ISO format'),
+    // DateTime in YYYY-MM-DDTHH:mm:ss format (no milliseconds to match backend)
+    recordTime: z.string().regex(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/, 'Time must be in YYYY-MM-DDTHH:mm:ss format'),
     recordType: recordTypeSchema,
     locationType: locationTypeSchema,
     notes: z.string().nullable(),
     isManual: z.boolean(),
-    createdAt: z.string(),
-    updatedAt: z.string(),
+    // Timestamps in YYYY-MM-DDTHH:mm:ss format (consistent with backend @JsonFormat)
+    createdAt: z.string().regex(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/, 'CreatedAt must be in YYYY-MM-DDTHH:mm:ss format'),
+    updatedAt: z.string().regex(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/, 'UpdatedAt must be in YYYY-MM-DDTHH:mm:ss format'),
 });
 
 export const createTimeRecordSchema = z.object({
     employeeId: z.string().min(1, 'Employee ID is required'),
     recordDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Date must be in YYYY-MM-DD format'),
-    recordTime: z.string().regex(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/, 'Time must be in ISO format'),
+    recordTime: z.string().regex(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/, 'Time must be in YYYY-MM-DDTHH:mm:ss format'),
     recordType: recordTypeSchema,
     locationType: locationTypeSchema,
-    notes: z.string().optional(),
+    notes: z.string().optional().nullable(),
     isManual: z.boolean().default(false),
 });
 
 export const updateTimeRecordSchema = z.object({
-    recordTime: z.string().regex(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/, 'Time must be in ISO format').optional(),
+    recordTime: z.string().regex(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/, 'Time must be in YYYY-MM-DDTHH:mm:ss format'),
     locationType: locationTypeSchema.optional(),
     notes: z.string().optional(),
     isManual: z.boolean().optional(),
@@ -93,22 +96,6 @@ export const absenceSchema = z.object({
     createdAt: z.string(),
 });
 
-export const createAbsenceSchema = z.object({
-    employeeId: z.string().min(1, 'Employee ID is required'),
-    absenceTypeId: z.string().min(1, 'Absence type ID is required'),
-    startDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Date must be in YYYY-MM-DD format'),
-    endDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Date must be in YYYY-MM-DD format'),
-    startTime: z.string().regex(/^\d{2}:\d{2}:\d{2}$/, 'Time must be in HH:MM:SS format').optional(),
-    endTime: z.string().regex(/^\d{2}:\d{2}:\d{2}$/, 'Time must be in HH:MM:SS format').optional(),
-    reason: z.string().min(1, 'Reason is required'),
-});
-
-
-export const rejectAbsenceSchema = z.object({
-    rejectedBy: z.string().min(1, 'Rejected by is required'),
-    rejectionReason: z.string().min(1, 'Rejection reason is required'),
-});
-
 // Dashboard Schemas
 export const employeeDashboardSummarySchema = z.object({
     todayStatus: z.object({
@@ -125,32 +112,32 @@ export const employeeDashboardSummarySchema = z.object({
     }),
 });
 
-// Quick Actions Clock Schemas
-export const quickActionClockSchema = z.object({
-    recordType: recordTypeSchema,
-    notes: z.string().optional(),
-});
-
-// Quick Actions Location Schemas
-export const quickActionLocationSchema = z.object({
-    locationType: locationTypeSchema,
-    notes: z.string().optional(),
+// a separate schema for request validation that only validates the notes
+export const quickActionNotesSchema = z.object({
+    notes: z.string().optional().nullable(),
 });
 
 // Zod schemas for API responses
-const timeRecordResponseSchema = z.object({
+export const timeRecordResponseSchema = z.object({
     id: z.string(),
     employeeId: z.string(),
     employeeFirstName: z.string(),
     employeeLastName: z.string(),
-    recordDate: z.string(),
-    recordTime: z.string(),
-    recordType: z.enum(['CLOCK_IN', 'CLOCK_OUT', 'BREAK_START', 'BREAK_END']),
-    locationType: z.enum(['OFFICE', 'HOME', 'BUSINESS_TRIP', 'CLIENT_SITE']),
+    recordDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Date must be in YYYY-MM-DD format'),
+    recordTime: z.string().regex(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/, 'Time must be in YYYY-MM-DDTHH:mm:ss format'),
+    recordType: recordTypeSchema,
+    locationType: locationTypeSchema,
     notes: z.string().nullable(),
     isManual: z.boolean(),
-    createdAt: z.string(),
-    updatedAt: z.string(),
+    createdAt: z.string().regex(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/, 'CreatedAt must be in YYYY-MM-DDTHH:mm:ss format'),
+    updatedAt: z.string().regex(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/, 'UpdatedAt must be in YYYY-MM-DDTHH:mm:ss format'),
+});
+
+export const currentStatusResponseSchema = z.object({
+    isWorking: z.boolean(),
+    isOnBreak: z.boolean(),
+    currentLocation: z.string(),
+    lastEntry: timeRecordSchema.nullable(),
 });
 
 export const quickActionRequestSchema = z.object({
@@ -166,17 +153,32 @@ export interface EnhancedQuickActionRequest extends QuickActionRequest {
 
 export type TimeRecordResponse = z.infer<typeof timeRecordResponseSchema>;
 export type QuickActionRequest = z.infer<typeof quickActionRequestSchema>;
+export type CurrentStatusResponse = z.infer<typeof currentStatusResponseSchema>;
+export type TodaySummaryResponse = z.infer<typeof todaySummaryResponseSchema>;
+
+// Helper functions for time formatting
+
+export const getCurrentISODateTime = (): string => {
+    const now = new Date();
+    // Format as YYYY-MM-DDTHH:mm:ss (no milliseconds)
+    return now.toISOString().slice(0, 19);
+};
+
+export const getCurrentISODate = (): string => {
+    const now = new Date();
+    // Format as YYYY-MM-DD
+    return now.toISOString().slice(0, 10);
+};
 
 // Array schemas
 export const timeRecordListSchema = z.array(timeRecordSchema);
 export const workScheduleListSchema = z.array(workScheduleSchema);
-export const absenceListSchema = z.array(absenceSchema);
-export const absenceTypeListSchema = z.array(absenceTypeSchema);
+
 
 // Type inference from schemas
+export type CurrentStatus = z.infer<typeof currentStatusResponseSchema>;
 export type RecordType = z.infer<typeof recordTypeSchema>;
 export type LocationType = z.infer<typeof locationTypeSchema>;
-export type AbsenceStatus = z.infer<typeof absenceStatusSchema>;
 
 export type TimeRecord = z.infer<typeof timeRecordSchema>;
 export type CreateTimeRecordRequest = z.infer<typeof createTimeRecordSchema>;
@@ -187,10 +189,5 @@ export type CreateWorkScheduleRequest = z.infer<typeof createWorkScheduleSchema>
 
 export type AbsenceType = z.infer<typeof absenceTypeSchema>;
 export type Absence = z.infer<typeof absenceSchema>;
-export type CreateAbsenceRequest = z.infer<typeof createAbsenceSchema>;
-
-export type RejectAbsenceRequest = z.infer<typeof rejectAbsenceSchema>;
 
 export type EmployeeDashboardSummary = z.infer<typeof employeeDashboardSummarySchema>;
-export type QuickActionClockRequest = z.infer<typeof quickActionClockSchema>;
-export type QuickActionLocationRequest = z.infer<typeof quickActionLocationSchema>;

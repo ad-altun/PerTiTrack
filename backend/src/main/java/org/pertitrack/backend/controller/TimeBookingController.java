@@ -7,7 +7,7 @@ import org.pertitrack.backend.dto.timeTrackingDto.TimeRecordResponse;
 import org.pertitrack.backend.dto.timeTrackingDto.TodaySummaryResponse;
 import org.pertitrack.backend.entity.timetrack.TimeRecord;
 import org.pertitrack.backend.exceptions.EntityNotFoundException;
-import org.pertitrack.backend.service.TimeBookingService;
+import org.pertitrack.backend.service.TimeRecordService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +19,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TimeBookingController {
 
-    private final TimeBookingService timeBookingService;
+    private final TimeRecordService timeRecordService;
 
     @PostMapping("/time-records/time-bookings/clock-in")
     public ResponseEntity<TimeRecordResponse> quickClockIn(
@@ -27,13 +27,13 @@ public class TimeBookingController {
         try {
             TimeRecordResponse timeRecord;
             if (request.locationType() != null) {
-                timeRecord = timeBookingService.quickClockIn(
+                timeRecord = timeRecordService.quickClockIn(
                         TimeRecord.RecordType.CLOCK_IN,
                         request.notes(),
                         request.locationType()
                 );
             } else {
-                timeRecord = timeBookingService.quickClockIn(
+                timeRecord = timeRecordService.quickClockIn(
                         TimeRecord.RecordType.CLOCK_IN,
                         request.notes()
                 );
@@ -54,7 +54,7 @@ public class TimeBookingController {
     public ResponseEntity<TimeRecordResponse> quickClockOut(
             @Valid @RequestBody QuickActionRequest request) {
         try {
-            TimeRecordResponse timeRecord = timeBookingService.quickClockOut(
+            TimeRecordResponse timeRecord = timeRecordService.quickClockOut(
                     TimeRecord.RecordType.CLOCK_OUT,
                     request.notes()
             );
@@ -74,7 +74,7 @@ public class TimeBookingController {
     public ResponseEntity<TimeRecordResponse> quickBreakStart(
             @Valid @RequestBody QuickActionRequest request) {
         try {
-            TimeRecordResponse timeRecord = timeBookingService.quickBreakStart(
+            TimeRecordResponse timeRecord = timeRecordService.quickBreakStart(
                     TimeRecord.RecordType.BREAK_START,
                     request.notes()
             );
@@ -94,7 +94,7 @@ public class TimeBookingController {
     public ResponseEntity<TimeRecordResponse> quickBreakEnd(
             @Valid @RequestBody QuickActionRequest request) {
         try {
-            TimeRecordResponse timeRecord = timeBookingService.quickBreakEnd(
+            TimeRecordResponse timeRecord = timeRecordService.quickBreakEnd(
                     TimeRecord.RecordType.BREAK_END,
                     request.notes()
             );
@@ -116,7 +116,7 @@ public class TimeBookingController {
             @RequestBody(required = false) LocationClockInRequest request) {
         try {
             String notes = request != null ? request.notes() : null;
-            TimeRecordResponse timeRecord = timeBookingService.clockInHome(notes);
+            TimeRecordResponse timeRecord = timeRecordService.clockInHome(notes);
             return ResponseEntity.status(HttpStatus.CREATED).body(timeRecord);
         } catch (IllegalStateException e) {
             return ResponseEntity.badRequest()
@@ -134,7 +134,7 @@ public class TimeBookingController {
             @RequestBody(required = false) LocationClockInRequest request) {
         try {
             String notes = request != null ? request.notes() : null;
-            TimeRecordResponse timeRecord = timeBookingService.clockInBusinessTrip(notes);
+            TimeRecordResponse timeRecord = timeRecordService.clockInBusinessTrip(notes);
             return ResponseEntity.status(HttpStatus.CREATED).body(timeRecord);
         } catch (IllegalStateException e) {
             return ResponseEntity.badRequest()
@@ -151,7 +151,7 @@ public class TimeBookingController {
     @GetMapping("/status/current")
     public ResponseEntity<CurrentStatusResponse> getCurrentStatus() {
         try {
-            CurrentStatusResponse status = timeBookingService.getCurrentStatus();
+            CurrentStatusResponse status = timeRecordService.getCurrentStatus();
             return ResponseEntity.ok(status);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
@@ -161,7 +161,7 @@ public class TimeBookingController {
     @GetMapping("/time-records/today")
     public ResponseEntity<List<TimeRecordResponse>> getTodayTimeRecords() {
         try {
-            List<TimeRecordResponse> records = timeBookingService.getTodayTimeRecords();
+            List<TimeRecordResponse> records = timeRecordService.getTodayTimeRecords();
             return ResponseEntity.ok(records);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
@@ -171,7 +171,7 @@ public class TimeBookingController {
     @GetMapping("/summary/today")
     public ResponseEntity<TodaySummaryResponse> getTodaySummary() {
         try {
-            TodaySummaryResponse summary = timeBookingService.getTodaySummary();
+            TodaySummaryResponse summary = timeRecordService.getTodaySummary();
             return ResponseEntity.ok(summary);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
@@ -183,7 +183,7 @@ public class TimeBookingController {
             @PathVariable String id,
             @Valid @RequestBody UpdateNotesRequest request) {
         try {
-            TimeRecordResponse updatedRecord = timeBookingService.updateTimeRecordNotes(id, request.notes());
+            TimeRecordResponse updatedRecord = timeRecordService.updateTimeRecordNotes(id, request.notes());
             return ResponseEntity.ok(updatedRecord);
         } catch (SecurityException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)

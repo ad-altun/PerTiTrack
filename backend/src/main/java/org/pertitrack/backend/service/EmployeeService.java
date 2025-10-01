@@ -20,16 +20,14 @@ public class EmployeeService {
     private final EmployeeRepository employeeRepository;
     private final UserRepository userRepository;
     private final EmployeeMapper employeeMapper;
-    private final IdService idService;
 
     public EmployeeService(EmployeeRepository employeeRepository,
                            UserRepository userRepository,
-                           EmployeeMapper employeeMapper,
-                           IdService idService) {
+                           EmployeeMapper employeeMapper
+    ) {
         this.employeeRepository = employeeRepository;
         this.userRepository = userRepository;
         this.employeeMapper = employeeMapper;
-        this.idService = idService;
     }
 
     @Transactional(readOnly = true)
@@ -90,7 +88,7 @@ public class EmployeeService {
         employee.setIsActive(true);
 
         // link employee to user
-        if(request.getUserId() != null) {
+        if (request.getUserId() != null) {
             User newEmployee = userRepository.findById(request.getUserId())
                     .orElseThrow(() -> new UsernameNotFoundException(
                             "User not found with ID: " + request.getUserId()
@@ -176,9 +174,9 @@ public class EmployeeService {
     }
 
 
-     // Creates an employee record for a newly registered user (automatic creation)
-     // This method is called during user registration process
-     // @param user The user for whom to create an employee record
+    // Creates an employee record for a newly registered user (automatic creation)
+    // This method is called during user registration process
+    // @param user The user for whom to create an employee record
 
     @Transactional
     public void createEmployeeForNewUser(User user) {
@@ -200,6 +198,7 @@ public class EmployeeService {
 
     /**
      * Generates the next sequential employee number
+     *
      * @return Next employee number in format 0041, 0042, etc.
      */
     private String generateNextEmployeeNumber() {

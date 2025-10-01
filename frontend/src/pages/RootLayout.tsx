@@ -2,6 +2,8 @@ import { Navigate, Outlet } from "react-router-dom";
 import { useAppSelector } from "../store/hook.ts";
 import Header from "../components/Header.tsx";
 import { useMemo } from "react";
+import Footer from "../components/Footer.tsx";
+import Navbar from "../components/Navbar.tsx";
 
 export default function RootLayout() {
 
@@ -24,7 +26,9 @@ export default function RootLayout() {
     return (
         <div>
             <Header portalName="Employee Portal" />
-            <Outlet/>
+            <Navbar />
+            <Outlet />
+            <Footer />
         </div>
     );
 };

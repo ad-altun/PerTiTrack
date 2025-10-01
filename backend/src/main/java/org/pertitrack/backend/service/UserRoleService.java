@@ -14,11 +14,9 @@ import java.util.Optional;
 public class UserRoleService {
 
     private final UserRoleRepository userRoleRepository;
-    private final IdService idService;
 
-    public UserRoleService(UserRoleRepository userRoleRepository, IdService idService) {
+    public UserRoleService(UserRoleRepository userRoleRepository) {
         this.userRoleRepository = userRoleRepository;
-        this.idService = idService;
     }
 
     private UserRoleDto toDto(UserRole role) {

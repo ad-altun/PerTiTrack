@@ -29,20 +29,6 @@ export default function WorkflowButton({
                     description: 'Check time balance',
                     color: '#38a169',
                 };
-            case 'schedule':
-                return {
-                    icon: <Schedule sx={{ fontSize: 20 }} />,
-                    label: 'Schedule',
-                    description: 'View work schedule',
-                    color: '#ed8936',
-                };
-            case 'reports':
-                return {
-                    icon: <Assessment sx={{ fontSize: 20 }} />,
-                    label: 'Reports',
-                    description: 'Time reports',
-                    color: '#9f7aea',
-                };
             default:
                 return {
                     icon: <Calendar sx={{ fontSize: 20 }} />,

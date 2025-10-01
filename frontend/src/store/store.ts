@@ -4,6 +4,7 @@ import authSlice from "./slices/authSlice.ts";
 import { baseApi } from "./api/baseApi.ts";
 import workspaceSlice from "./slices/workspaceSlice.ts";
 import timeTrackSlice from "./slices/timeTrackSlice.ts";
+import { rtkQueryErrorLogger } from "./middleware/errorMiddleware.ts";
 
 export const store = configureStore({
     reducer: {
@@ -20,7 +21,9 @@ export const store = configureStore({
                 // ignore these action types
                 ignoredActions: [ 'persist/PERSIST', 'persist/REHYDRATE' ],
             },
-        }).concat(baseApi.middleware),
+        })
+            .concat(baseApi.middleware)
+            .concat(rtkQueryErrorLogger),
 });
 
 // enable listener behavior for the store (for automatic fetching)

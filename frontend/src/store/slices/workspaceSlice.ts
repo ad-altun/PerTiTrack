@@ -3,10 +3,6 @@ import type { LocationType } from "../../validation/timetrackSchemas.ts";
 
 // Types
 export type PageType = 'HomePage' | 'Timesheet';
-// export type LocationType = 'office' | 'home' | 'business_trip' | null;
-// const locationTypeSchema = z.enum(['OFFICE', 'HOME', 'BUSINESS_TRIP', 'CLIENT_SITE']);
-export type ActionButtonType = 'clockIn' | 'break' | 'cancel' | 'homeOffice' | 'businessTrip' | 'query';
-// const recordTypeSchema = z.enum(['CLOCK_IN', 'CLOCK_OUT', 'BREAK_START', 'BREAK_END']);
 
 interface WorkStatus {
     isClockedIn: boolean;
@@ -23,7 +19,7 @@ interface ProtocolFilters {
     selectedDate: string;
     searchTerm: string;
     timePeriod: 'today' | 'thisWeek' | 'thisMonth' | 'custom';
-    bookingType: 'Clock In' | 'Pause' | 'Clock Out';
+    bookingType: "CLOCK_IN" | "CLOCK_OUT" | "BREAK_START" | "BREAK_END";
 }
 
 interface UIState {
@@ -83,7 +79,7 @@ const initialState: WorkspaceState = {
             selectedDate: new Date().toISOString().split('T')[0], // Today's date
             searchTerm: '',
             timePeriod: 'today',
-            bookingType: 'Clock Out',
+            bookingType: 'CLOCK_OUT',
         },
         isLoading: false,
         lastRefreshTime: null,
@@ -320,44 +316,6 @@ export const selectAutoRefreshEnabled = (state: { workspace: WorkspaceState }) =
 
 export const selectRefreshInterval = (state: { workspace: WorkspaceState }) =>
     state.workspace.realTime.refreshInterval;
-
-// Complex selectors for button states
-export const selectActionButtonStates = (state: { workspace: WorkspaceState }) => {
-    const { isClockedIn, isOnBreak, locationType } = state.workspace.workStatus;
-
-    return {
-        clockIn: {
-            active: isClockedIn,
-            text: isClockedIn ? 'Clock Out' : 'Clock In',
-            disabled: false,
-        },
-        break: {
-            active: isOnBreak,
-            text: isOnBreak ? 'End Break' : 'Break',
-            disabled: !isClockedIn,
-        },
-        cancel: {
-            active: false,
-            text: 'Cancel',
-            disabled: !isClockedIn && !isOnBreak,
-        },
-        homeOffice: {
-            active: locationType === 'HOME',
-            text: 'Home Office',
-            disabled: !isClockedIn,
-        },
-        businessTrip: {
-            active: locationType === 'BUSINESS_TRIP',
-            text: 'Business Trip',
-            disabled: !isClockedIn,
-        },
-        query: {
-            active: false,
-            text: 'Query',
-            disabled: false,
-        },
-    };
-};
 
 // Selector for current work session info
 export const selectCurrentSession = (state: { workspace: WorkspaceState }) => {

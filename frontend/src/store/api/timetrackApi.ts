@@ -7,16 +7,12 @@ import {
     workScheduleSchema,
     workScheduleListSchema,
     createWorkScheduleSchema,
-    absenceSchema,
-    absenceListSchema,
-    createAbsenceSchema,
-    rejectAbsenceSchema,
-    absenceTypeSchema,
-    absenceTypeListSchema,
     employeeDashboardSummarySchema,
-    quickActionClockSchema,
-    quickActionRequestSchema,
-    quickActionLocationSchema,
+    timeRecordResponseSchema,
+    getCurrentISODateTime,
+    getCurrentISODate,
+    type TodaySummaryResponse,
+    currentStatusResponseSchema, type CurrentStatusResponse, quickActionNotesSchema,
 } from '../../validation/timetrackSchemas';
 import type {
     TimeRecordResponse,
@@ -24,17 +20,12 @@ import type {
     UpdateTimeRecordRequest,
     WorkSchedule,
     CreateWorkScheduleRequest,
-    Absence,
-    CreateAbsenceRequest,
-    RejectAbsenceRequest,
-    AbsenceType,
     EmployeeDashboardSummary,
     QuickActionRequest,
-    QuickActionLocationRequest,
-    QuickActionClockRequest,
     EnhancedQuickActionRequest,
     TimeRecord
 } from '../../validation/timetrackSchemas';
+import { todaySummaryResponseSchema } from "../../validation/todaySummarySchema.ts";
 
 // Query parameters interfaces
 interface TimeRecordQueryParams {
@@ -48,13 +39,6 @@ interface EmployeeTimeRecordQueryParams {
     startDate?: string;
     endDate?: string;
     recordType?: string;
-}
-
-interface AbsenceQueryParams {
-    status?: string;
-    employeeId?: string;
-    startDate?: string;
-    endDate?: string;
 }
 
 interface WorkScheduleQueryParams {
@@ -110,7 +94,11 @@ export const timetrackApi = baseApi.injectEndpoints({
         // Create time record
         createTimeRecord: builder.mutation<TimeRecord, CreateTimeRecordRequest>({
             query: (timeRecordData) => {
-                const validatedData = createTimeRecordSchema.parse(timeRecordData);
+                const validatedData = createTimeRecordSchema.parse({
+                    ...timeRecordData,
+                    recordDate: timeRecordData.recordDate || getCurrentISODate(),
+                    recordTime: timeRecordData.recordTime || getCurrentISODateTime(),
+                });
                 return {
                     url: '/timetrack/time-records',
                     method: 'POST',
@@ -195,93 +183,6 @@ export const timetrackApi = baseApi.injectEndpoints({
             ],
         }),
 
-        // ===== ABSENCES =====
-
-        // Get all absences
-        getAllAbsences: builder.query<Absence[], AbsenceQueryParams>({
-            query: (params = {}) => ({
-                url: '/timetrack/absences',
-                params,
-            }),
-            transformResponse: (response: unknown) => absenceListSchema.parse(response),
-            providesTags: ['Absence'],
-        }),
-
-        // Get absences for specific employee
-        getEmployeeAbsences: builder.query<Absence[], string>({
-            query: (employeeId) => `/timetrack/absences/employee/${employeeId}`,
-            transformResponse: (response: unknown) => absenceListSchema.parse(response),
-            providesTags: (result, error, employeeId) => [
-                { type: 'Absence', id: `employee-${employeeId}` },
-                'Absence',
-            ],
-        }),
-
-        // Get current user's absences
-        getMyAbsences: builder.query<Absence[], void>({
-            query: () => '/timetrack/absences/my-absences',
-            transformResponse: (response: unknown) => absenceListSchema.parse(response),
-            providesTags: ['Absence', 'MyAbsence'],
-        }),
-
-        // Create absence request
-        createAbsence: builder.mutation<Absence, CreateAbsenceRequest>({
-            query: (absenceData) => {
-                const validatedData = createAbsenceSchema.parse(absenceData);
-                return {
-                    url: '/timetrack/absences',
-                    method: 'POST',
-                    body: validatedData,
-                };
-            },
-            transformResponse: (response: unknown) => absenceSchema.parse(response),
-            invalidatesTags: ['Absence', 'MyAbsence', 'Dashboard'],
-        }),
-
-        // Update absence request
-        updateAbsence: builder.mutation<Absence, { id: string; absenceData: CreateAbsenceRequest }>({
-            query: ({ id, absenceData }) => {
-                const validatedData = createAbsenceSchema.parse(absenceData);
-                return {
-                    url: `/timetrack/absences/${id}`,
-                    method: 'PUT',
-                    body: validatedData,
-                };
-            },
-            transformResponse: (response: unknown) => absenceSchema.parse(response),
-            invalidatesTags: (result, error, { id }) => [
-                { type: 'Absence', id },
-                'Absence',
-                'MyAbsence',
-                'Dashboard',
-            ],
-        }),
-
-        // Reject absence request
-        rejectAbsence: builder.mutation<Absence, { id: string; rejectionData: RejectAbsenceRequest }>({
-            query: ({ id, rejectionData }) => {
-                const validatedData = rejectAbsenceSchema.parse(rejectionData);
-                return {
-                    url: `/timetrack/absences/${id}/reject`,
-                    method: 'POST',
-                    body: validatedData,
-                };
-            },
-            transformResponse: (response: unknown) => absenceSchema.parse(response),
-            invalidatesTags: (result, error, { id }) => [
-                { type: 'Absence', id },
-                'Absence',
-                'Dashboard',
-            ],
-        }),
-
-        // Get absence types
-        getAbsenceTypes: builder.query<AbsenceType[], void>({
-            query: () => '/timetrack/absence-types',
-            transformResponse: (response: unknown) => absenceTypeListSchema.parse(response),
-            providesTags: ['AbsenceType'],
-        }),
-
         // ===== DASHBOARD =====
 
         // Get employee dashboard summary
@@ -298,56 +199,70 @@ export const timetrackApi = baseApi.injectEndpoints({
                 return {
                     url: '/timetrack/time-records/time-bookings/clock-in',
                     method: 'POST',
-                    body: quickActionRequestSchema.parse({
+                    body: {
                         recordType: 'CLOCK_IN',
                         notes: request.notes,
                         locationType: request.locationType || 'OFFICE',
-                    }),
+                        recordDate: getCurrentISODate(),
+                        recordTime: getCurrentISODateTime(),
+                    },
                 };
             },
-            transformResponse: (response: unknown) => timeRecordSchema.parse(response),
+            transformResponse: (response: unknown) => timeRecordResponseSchema.parse(response),
             invalidatesTags: ['TimeRecord', 'MyTimeRecord', 'Dashboard'],
         }),
 
         // Quick clock out
-        quickClockOut: builder.mutation<TimeRecord, Pick<QuickActionRequest, 'notes'>>({
+        quickClockOut: builder.mutation<TimeRecordResponse, Pick<QuickActionRequest, 'notes'>>({
             query: (request) => {
+                const validatedDate = quickActionNotesSchema.parse(request)
                 return {
-                    url: '/time-bookings/clock-out',
+                    url: '/timetrack/time-records/time-bookings/clock-out',
                     method: 'POST',
                     body: {
                         recordType: 'CLOCK_OUT',
-                        notes: request.notes,
+                        notes: validatedDate.notes,
                     },
                 };
             },
-            transformResponse: (response: unknown) => timeRecordSchema.parse(response),
+            transformResponse: (response: unknown) => timeRecordResponseSchema.parse(response),
             invalidatesTags: ['TimeRecord', 'MyTimeRecord', 'Dashboard'],
         }),
 
         // Quick break start
-        quickBreakStart: builder.mutation<TimeRecord, Pick<QuickActionRequest, 'notes'>>({
+        quickBreakStart: builder.mutation<TimeRecordResponse, Pick<QuickActionRequest, 'notes'>>({
             query: (request) => {
-                const validatedData = quickActionClockSchema.parse(request);
+                const validatedData = quickActionNotesSchema.parse(request);
                 return {
-                    url: '/quick-actions/break-start',
+                    url: '/timetrack/time-records/time-bookings/break-start',
                     method: 'POST',
                     body: {
-                        recordType: 'BREAK_START',
+                        recordType: "BREAK_START",
                         notes: validatedData.notes,
                     },
                 };
             },
-            transformResponse: (response: unknown) => timeRecordSchema.parse(response),
+            transformResponse: (response: unknown) => {
+                // console.log("Raw response >>>", response);
+                return timeRecordResponseSchema.parse(response);
+            },
             invalidatesTags: ['TimeRecord', 'MyTimeRecord', 'Dashboard'],
+            async onQueryStarted(arg, { dispatch, queryFulfilled }) {
+                try {
+                    await queryFulfilled;
+                    dispatch(timetrackApi.util.invalidateTags(['Dashboard']));
+                } catch (error) {
+                    console.error('Break start failed:', error);
+                }
+            },
         }),
 
         // Quick break end
-        quickBreakEnd: builder.mutation<TimeRecord, Pick<QuickActionRequest, 'notes'>>({
+        quickBreakEnd: builder.mutation<TimeRecordResponse, Pick<QuickActionRequest, 'notes'>>({
             query: (request) => {
-                const validatedData = quickActionClockSchema.parse(request);
+                const validatedData = quickActionNotesSchema.parse(request);
                 return {
-                    url: '/quick-actions/break-end',
+                    url: '/timetrack/time-records/time-bookings/break-end',
                     method: 'POST',
                     body: {
                         recordType: 'BREAK_END',
@@ -355,7 +270,7 @@ export const timetrackApi = baseApi.injectEndpoints({
                     },
                 };
             },
-            transformResponse: (response: unknown) => timeRecordSchema.parse(response),
+            transformResponse: (response: unknown) => timeRecordResponseSchema.parse(response),
             invalidatesTags: ['TimeRecord', 'MyTimeRecord', 'Dashboard'],
         }),
 
@@ -364,9 +279,9 @@ export const timetrackApi = baseApi.injectEndpoints({
         // Quick home office
         clockInHome: builder.mutation<TimeRecordResponse, Pick<QuickActionRequest, 'notes'>>({
             query: (request) => {
-                const validatedData = quickActionRequestSchema.parse(request);
+                const validatedData = quickActionNotesSchema.parse(request);
                 return {
-                    url: '/timetrack/time-records/time-bookings/clock-in',
+                    url: '/timetrack/time-records/time-bookings/clock-in/home',
                     method: 'POST',
                     body: {
                         recordType: 'CLOCK_IN',
@@ -375,7 +290,7 @@ export const timetrackApi = baseApi.injectEndpoints({
                     },
                 };
             },
-            transformResponse: (response: unknown) => timeRecordSchema.parse(response),
+            transformResponse: (response: unknown) => timeRecordResponseSchema.parse(response),
             invalidatesTags: ['TimeRecord', 'MyTimeRecord', 'Dashboard'],
         }),
 
@@ -383,9 +298,9 @@ export const timetrackApi = baseApi.injectEndpoints({
         // // Quick business trip
         clockInBusinessTrip: builder.mutation<TimeRecordResponse, Pick<QuickActionRequest, 'notes'>>({
             query: (request) => {
-                const validatedData = quickActionRequestSchema.parse(request);
+                const validatedData = quickActionNotesSchema.parse(request);
                 return {
-                    url: '/timetrack/time-records/time-bookings/clock-in',
+                    url: '/timetrack/time-records/time-bookings/clock-in/business-trip',
                     method: 'POST',
                     body: {
                         recordType: 'CLOCK_IN',
@@ -394,30 +309,47 @@ export const timetrackApi = baseApi.injectEndpoints({
                     },
                 };
             },
-            transformResponse: (response: unknown) => timeRecordSchema.parse(response),
+            transformResponse: (response: unknown) => timeRecordResponseSchema.parse(response),
             invalidatesTags: ['TimeRecord', 'MyTimeRecord', 'Dashboard'],
         }),
 
-        // Get today's time records
+        // Get today's time records with proper transformation
         getTodayTimeRecords: builder.query<TimeRecordResponse[], void>({
             query: () => ({
                 url: '/timetrack/time-records/today',
                 method: 'GET',
             }),
+            transformResponse: (response: unknown) => {
+                // Ensure it's an array and validate each record
+                const recordsArray = Array.isArray(response) ? response : [];
+                return recordsArray.map(record => timeRecordResponseSchema.parse(record));
+            },
             providesTags: ['TimeRecord', 'MyTimeRecord'],
         }),
 
-        // Get current status
-        getCurrentStatus: builder.query<{
-            isWorking: boolean;
-            isOnBreak: boolean;
-            currentLocation: string;
-            lastEntry: TimeRecordResponse | null;
-        }, void>({
+        // Get time records for a specific date
+        getTimeRecordsByDate: builder.query<TimeRecordResponse[], string>({
+            query: (date) => ({
+                url: '/timetrack/time-records/my-records',
+                params: {
+                    startDate: date,
+                    endDate: date,
+                },
+            }),
+            transformResponse: (response: unknown) => {
+                const recordsArray = Array.isArray(response) ? response : [];
+                return recordsArray.map(record => timeRecordResponseSchema.parse(record));
+            },
+            providesTags: ['TimeRecord', 'MyTimeRecord'],
+        }),
+
+        // Get current status with updated schema
+        getCurrentStatus: builder.query<CurrentStatusResponse, void>({
             query: () => ({
                 url: '/timetrack/status/current',
                 method: 'GET',
             }),
+            transformResponse: (response: unknown) => currentStatusResponseSchema.parse(response),
             providesTags: ['TimeRecord', 'Dashboard'],
         }),
 
@@ -427,28 +359,23 @@ export const timetrackApi = baseApi.injectEndpoints({
             notes: string;
         }>({
             query: ({ id, notes }) => ({
-                // todo: probably backend api is forgotten
                 url: `/timetrack/time-records/${id}/notes`,
                 method: 'PATCH',
                 body: { notes },
             }),
+            transformResponse: (response: unknown) => timeRecordResponseSchema.parse(response),
             invalidatesTags: ['TimeRecord', 'MyTimeRecord'],
         }),
 
-        // Get time summary for today
-        getTodaySummary: builder.query<{
-            arrivalTime: string | null;
-            departureTime: string | null;
-            breakTime: string;
-            workingTime: string;
-            flexTime: string;
-            status: string;
-        }, void>({
+        // Get today's summary with updated schema
+        getTodaySummary: builder.query<TodaySummaryResponse, void>({
             query: () => ({
                 url: '/timetrack/summary/today',
                 method: 'GET',
             }),
+            transformResponse: (response: unknown) => todaySummaryResponseSchema.parse(response),
             providesTags: ['Dashboard', 'MyTimeRecord'],
+            keepUnusedDataFor: 0,
         }),
 
     }),
@@ -466,21 +393,16 @@ export const {
     useUpdateTimeRecordMutation,
     useDeleteTimeRecordMutation,
     useGetCurrentStatusQuery,
+    useGetTodaySummaryQuery,
+
+    useGetTodayTimeRecordsQuery,
+    useGetTimeRecordsByDateQuery,
+    useUpdateTimeRecordNotesMutation,
 
     // Work Schedules
     useGetEmployeeWorkSchedulesQuery,
     useCreateWorkScheduleMutation,
     useUpdateWorkScheduleMutation,
-
-    // Absences
-    useGetAllAbsencesQuery,
-    useGetEmployeeAbsencesQuery,
-    useGetMyAbsencesQuery,
-    useCreateAbsenceMutation,
-    useUpdateAbsenceMutation,
-    useRejectAbsenceMutation,
-    useGetAbsenceTypesQuery,
-
     // Dashboard
     useGetEmployeeDashboardQuery,
 

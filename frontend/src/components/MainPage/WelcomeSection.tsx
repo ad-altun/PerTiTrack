@@ -5,7 +5,7 @@ import { selectUserGreeting } from "../../store/slices/authSlice.ts";
 
 
 const WelcomeSection: React.FC = () => {
-    const title = useAppSelector(selectUserGreeting);
+    const userName = useAppSelector(selectUserGreeting);
 
     return (
         <Paper
@@ -38,7 +38,7 @@ const WelcomeSection: React.FC = () => {
                     marginBottom: '5px',
                 }}
             >
-                {title}
+                {userName}
             </Typography>
 
             <Typography

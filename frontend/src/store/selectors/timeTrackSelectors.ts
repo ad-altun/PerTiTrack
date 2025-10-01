@@ -7,6 +7,11 @@ export const selectTimeTrackState = (state: RootState) => state.timeTrack;
 // Direct selectors for today's summary fields with proper null handling
 // ------------------------------------------------------------------------
 // todaySummary selectors
+export const selectTodaySummary = createSelector(
+    [selectTimeTrackState],
+    (timeTrack) => timeTrack?.todaySummary || null
+);
+
 export const selectArrivalTime = createSelector(
     [selectTimeTrackState],
     (timeTrack) => timeTrack?.todaySummary?.arrivalTime || null
@@ -41,9 +46,9 @@ export const selectProtocolEntries = createSelector(
 
 
 // Focus work summary selector
-export const selectFocusWorkSummary = createSelector(
+export const selectFocusWorkNotes = createSelector(
     [selectTimeTrackState],
-    (timeTrack) => timeTrack?.focusWorkSummary || false
+    (timeTrack) => timeTrack?.focusWorkNotes || false
 );
 
 // currentStatus selectors
@@ -51,3 +56,8 @@ export const selectCurrentStatus = createSelector(
     [selectTimeTrackState],
     (timeTrack) => timeTrack?.currentStatus || 'Not Started'
 );
+
+export const selectIsStatusLoading = createSelector(
+    [selectTimeTrackState],
+    (timeTrack) => timeTrack?.isLoading || false
+)

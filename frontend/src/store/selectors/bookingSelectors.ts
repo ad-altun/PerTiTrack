@@ -35,7 +35,7 @@ export const selectLocalDate = createSelector(
 // ui selectors
 export const selectBookingType = createSelector(
     [selectValidatedUiState],
-    (validatedUi) => validatedUi?.protocolFilters?.bookingType || 'Clock Out'
+    (validatedUi) => validatedUi?.protocolFilters?.bookingType
 );
 
 export const selectEmployeeName = createSelector(

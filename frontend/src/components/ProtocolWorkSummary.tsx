@@ -1,135 +1,178 @@
-import { Edit } from "@mui/icons-material";
 import { Box, Button, TextField, Typography } from "@mui/material";
 import IconButton from "@mui/material/IconButton";
-import { useState } from "react";
-
+import { useEffect, useState } from "react";
+import { Edit as EditIcon, Save as SaveIcon, Cancel as CancelIcon } from '@mui/icons-material';
+import {
+    Snackbar,
+    Alert
+} from '@mui/material';
+import { useUpdateTimeRecordNotesMutation } from "../store/api/timetrackApi.ts";
 
 interface ProtocolWorkSummaryProps {
     id: string;
-    workSummary: string;
+    workSummary: string | null;
+    isNewRecord?: boolean;
+    onNotesUpdate?: () => void;
 }
 
-export default function ProtocolWorkSummary({ id, workSummary }: ProtocolWorkSummaryProps) {
+export default function ProtocolWorkSummary( {
+    id,
+    workSummary,
+    isNewRecord = false,
+    onNotesUpdate,
+}: ProtocolWorkSummaryProps ) {
 
-    const [isEditing, setIsEditing] = useState(false);
-    const [editValue, setEditValue] = useState(workSummary);
-    const [currentSummary, setCurrentSummary] = useState(workSummary);
+    const [ isEditing, setIsEditing ] = useState(isNewRecord);
+    const [ notes, setNotes ] = useState(workSummary || '');
+    const [ showSuccess, setShowSuccess ] = useState(false);
 
-    const handleEditClick = () => {
-        setEditValue(currentSummary);
+    const [ updateNotes, { isLoading, error } ] = useUpdateTimeRecordNotesMutation();
+
+    // Auto-enable editing for new records
+    useEffect(() => {
+        if ( isNewRecord ) {
+            setIsEditing(true);
+            setNotes(''); // Start with empty notes for new records
+        }
+    }, [ isNewRecord ]);
+
+    const handleEdit = () => {
         setIsEditing(true);
+        setNotes(workSummary || '');
     };
 
-    const handleSave = () => {
-        setCurrentSummary(editValue);
-        setIsEditing(false);
-        console.log('Saving work summary for ID:', id, 'Value:', editValue);
-        // Here you would typically make an API call to save the data
+    const handleSave = async () => {
+        try {
+            await updateNotes({ id, notes }).unwrap();
+            setIsEditing(false);
+            setShowSuccess(true);
+
+            // Notify parent component
+            if ( onNotesUpdate ) {
+                onNotesUpdate();
+            }
+
+            // Dispatch custom event to trigger table refresh
+            window.dispatchEvent(new CustomEvent('timeRecordUpdated'));
+        }
+        catch (err) {
+            console.error('Failed to update notes:', err);
+        }
     };
 
     const handleCancel = () => {
-        setEditValue(currentSummary);
         setIsEditing(false);
+        setNotes(workSummary || '');
     };
 
-    if (isEditing) {
+    const handleKeyPress = ( event: React.KeyboardEvent ) => {
+        if ( event.key === 'Enter' && ( event.ctrlKey || event.metaKey ) ) {
+            handleSave().then();
+        } else if ( event.key === 'Escape' ) {
+            handleCancel();
+        }
+    };
+
+
+    if ( isEditing ) {
         return (
-            <Box sx={{ width: '100%' }}>
-                <TextField
-                    multiline
-                    minRows={2}
-                    maxRows={4}
-                    value={editValue}
-                    onChange={(e) => setEditValue(e.target.value)}
-                    sx={{
-                        width: '100%',
-                        marginBottom: '8px',
-                        '& .MuiOutlinedInput-root': {
-                            fontSize: '13px',
-                            '& fieldset': {
-                                borderColor: '#cbd5e0',
-                            },
-                        },
-                    }}
-                />
-                <Box sx={{ display: 'flex', gap: '8px' }}>
-                    <Button
-                        variant="contained"
-                        size="small"
-                        onClick={handleSave}
-                        sx={{
-                            backgroundColor: '#48bb78',
-                            color: 'white',
-                            fontSize: '12px',
-                            textTransform: 'none',
-                            minWidth: 'auto',
-                            padding: '4px 12px',
-                            '&:hover': {
-                                backgroundColor: '#38a169',
-                            },
-                        }}
-                    >
-                        Save
-                    </Button>
-                    <Button
+            <>
+                <Box sx={ { display: 'flex', flexDirection: 'column', gap: 1 } }>
+                    <TextField
+                        multiline
+                        rows={ 3 }
+                        value={ notes }
+                        onChange={ ( e ) => setNotes(e.target.value) }
+                        onKeyDown={ handleKeyPress }
+                        placeholder={ isNewRecord ? "Add work summary..." : "Edit work summary..." }
                         variant="outlined"
                         size="small"
-                        onClick={handleCancel}
-                        sx={{
-                            color: '#a0aec0',
-                            borderColor: '#a0aec0',
-                            fontSize: '12px',
-                            textTransform: 'none',
-                            minWidth: 'auto',
-                            padding: '4px 12px',
-                            '&:hover': {
-                                borderColor: '#718096',
-                                backgroundColor: 'transparent',
-                            },
-                        }}
-                    >
-                        Cancel
-                    </Button>
+                        autoFocus={ isNewRecord }
+                        sx={ {
+                            '& .MuiOutlinedInput-root': {
+                                fontSize: '13px',
+                            }
+                        } }
+                        disabled={ isLoading }
+                    />
+
+                    <Box sx={ { display: 'flex', gap: 1, justifyContent: 'flex-end' } }>
+                        <Button
+                            size="small"
+                            variant="contained"
+                            color="primary"
+                            startIcon={ <SaveIcon/> }
+                            onClick={ handleSave }
+                            disabled={ isLoading }
+                            sx={ { fontSize: '11px', height: '28px' } }
+                        >
+                            Save
+                        </Button>
+                        <Button
+                            size="small"
+                            variant="outlined"
+                            color="secondary"
+                            startIcon={ <CancelIcon/> }
+                            onClick={ handleCancel }
+                            disabled={ isLoading }
+                            sx={ { fontSize: '11px', height: '28px' } }
+                        >
+                            Cancel
+                        </Button>
+                    </Box>
+
+                    { error && (
+                        <Typography variant="caption" color="error">
+                            Failed to save notes. Please try again.
+                        </Typography>
+                    ) }
                 </Box>
-            </Box>
+
+                <Snackbar
+                    open={ showSuccess }
+                    autoHideDuration={ 3000 }
+                    onClose={ () => setShowSuccess(false) }
+                    anchorOrigin={ { vertical: 'bottom', horizontal: 'center' } }
+                >
+                    <Alert severity="success" onClose={ () => setShowSuccess(false) }>
+                        Work summary updated successfully!
+                    </Alert>
+                </Snackbar>
+            </>
         );
     }
 
- return (
-     <Box
-         sx={{
-             display: 'flex',
-             alignItems: 'flex-start',
-             gap: '8px',
-             cursor: 'pointer',
-         }}
-         onClick={handleEditClick}
-     >
-         <Typography
-             variant="body2"
-             sx={{
-                 color: '#4a5568',
-                 fontSize: '13px',
-                 lineHeight: 1.4,
-                 flex: 1,
-                 wordBreak: 'break-word',
-             }}
-         >
-             {currentSummary}
-         </Typography>
-         <IconButton
-             size="small"
-             sx={{
-                 padding: '2px',
-                 color: '#a0aec0',
-                 '&:hover': {
-                     color: '#4a5568',
-                     backgroundColor: '#f7fafc',
-                 },
-             }}
-         >
-             <Edit sx={{ fontSize: 14 }} />
-         </IconButton>
-     </Box>
- );
+    return (
+        <Box sx={ { display: 'flex', alignItems: 'flex-start', gap: 1 } }>
+            <Typography
+                variant="body2"
+                sx={ {
+                    color: '#4a5568',
+                    fontSize: '13px',
+                    lineHeight: 1.4,
+                    flex: 1,
+                    minHeight: '20px',
+                    fontStyle: workSummary ? 'normal' : 'italic',
+                    opacity: workSummary ? 1 : 0.6
+                } }
+            >
+                { workSummary || 'No work summary' }
+            </Typography>
+
+            <IconButton
+                size="small"
+                onClick={ handleEdit }
+                sx={ {
+                    padding: '2px',
+                    opacity: 0.7,
+                    '&:hover': {
+                        opacity: 1,
+                        backgroundColor: 'rgba(0, 0, 0, 0.04)'
+                    }
+                } }
+            >
+                <EditIcon sx={ { fontSize: '16px' } }/>
+            </IconButton>
+        </Box>
+    );
 };

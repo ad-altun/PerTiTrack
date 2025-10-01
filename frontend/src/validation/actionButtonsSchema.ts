@@ -2,12 +2,12 @@ import { z } from 'zod';
 
 // Action Types
 export const actionTypeSchema = z.enum([
-    'clockIn',
-    'clockOut',
-    'break',
-    'endBreak',
-    'homeOffice',
-    'businessTrip',
+    'CLOCK_IN',
+    'CLOCK_OUT',
+    'BREAK_START',
+    'BREAK_END',
+    'HOME',
+    'BUSINESS_TRIP',
 ]);
 
 // Action Buttons Schema

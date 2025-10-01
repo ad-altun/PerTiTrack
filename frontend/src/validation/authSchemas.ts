@@ -95,13 +95,6 @@ export const apiErrorSchema = z.object({
     errors: z.array(z.string()).optional(),
 });
 
-// auth state schema for storage validation
-export const authStateSchema = z.object({
-    user: userSchema.nullable(),
-    token: z.string().nullable(),
-    isAuthenticated: z.boolean(),
-});
-
 // Type inference from schema
 export type LoginFormData = z.infer<typeof loginSchema>;
 export type RegisterFormData = z.infer<typeof registerSchema>;
@@ -111,6 +104,5 @@ export type JwtResponse = z.infer<typeof jwtResponseSchema>;
 export type MessageResponse = z.infer<typeof messageResponseSchema>;
 export type User = z.infer<typeof userSchema>;
 export type ApiError = z.infer<typeof apiErrorSchema>;
-// export type StoredAuthState = z.infer<typeof authStateSchema>;
 
 

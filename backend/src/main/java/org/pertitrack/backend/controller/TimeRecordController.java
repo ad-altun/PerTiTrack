@@ -1,18 +1,22 @@
 package org.pertitrack.backend.controller;
 
-import jakarta.validation.*;
-import jakarta.validation.constraints.*;
-import lombok.*;
-import org.pertitrack.backend.dto.*;
-import org.pertitrack.backend.dto.timeTrackingDto.*;
-import org.pertitrack.backend.entity.timetrack.*;
-import org.pertitrack.backend.service.*;
-import org.springframework.format.annotation.*;
-import org.springframework.http.*;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import lombok.RequiredArgsConstructor;
+import org.pertitrack.backend.dto.MessageResponse;
+import org.pertitrack.backend.dto.timeTrackingDto.TimeRecordRequest;
+import org.pertitrack.backend.dto.timeTrackingDto.TimeRecordResponse;
+import org.pertitrack.backend.dto.timeTrackingDto.TimeRecordUpdateRequest;
+import org.pertitrack.backend.entity.timetrack.TimeRecord;
+import org.pertitrack.backend.service.TimeRecordService;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.*;
-import java.util.*;
+import java.time.LocalDate;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/timetrack/time-records")
@@ -74,40 +78,6 @@ public class TimeRecordController {
         }
     }
 
-    @PutMapping("/{id}/notes")
-    public ResponseEntity<TimeRecordResponse> updateTimeRecordNotes(
-            @PathVariable String id,
-            @Valid @RequestBody UpdateNotesRequest request) {
-        try {
-            TimeRecordResponse timeRecord = timeRecordService.updateTimeRecordNotes(id, request.notes());
-            return ResponseEntity.ok(timeRecord);
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        }
-    }
-
-
-//    @GetMapping("/pending-manual")
-//    public ResponseEntity<List<TimeRecordResponse>> getPendingManualRecords() {
-//        List<TimeRecordResponse> timeRecords = timeRecordService.getPendingManualRecords();
-//        return ResponseEntity.ok(timeRecords);
-//    }
-
-//    @GetMapping("/approved")
-//    public ResponseEntity<List<TimeRecordResponse>> getApprovedRecords() {
-//        List<TimeRecordResponse> timeRecords = timeRecordService.getApprovedRecords();
-//        return ResponseEntity.ok(timeRecords);
-//    }
-
-//    @GetMapping("/time-range")
-//    public ResponseEntity<List<TimeRecordResponse>> getTimeRecordsByTimeRange(
-//            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startTime,
-//            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endTime) {
-//        List<TimeRecordResponse> timeRecords = timeRecordService
-//                .getTimeRecordsByTimeRange(startTime, endTime);
-//        return ResponseEntity.ok(timeRecords);
-//    }
-
     @PostMapping
     public ResponseEntity<TimeRecordResponse> createTimeRecord(
             @Valid @RequestBody TimeRecordRequest request) {
@@ -130,18 +100,6 @@ public class TimeRecordController {
             return ResponseEntity.notFound().build();
         }
     }
-
-//    @PutMapping("/{id}/approve")
-//    public ResponseEntity<TimeRecordResponse> approveTimeRecord(
-//            @PathVariable String id,
-//            @Valid @RequestBody TimeRecordApprovalRequest request) {
-//        try {
-//            TimeRecordResponse timeRecord = timeRecordService.approveTimeRecord(id, request);
-//            return ResponseEntity.ok(timeRecord);
-//        } catch (RuntimeException e) {
-//            return ResponseEntity.notFound().build();
-//        }
-//    }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<MessageResponse> deleteTimeRecord(@PathVariable String id) {
