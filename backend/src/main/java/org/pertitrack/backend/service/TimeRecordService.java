@@ -115,10 +115,10 @@ public class TimeRecordService {
 
         if (!canStartBreak(employee, today)) {
             StatusCalculationResult status = getCurrentStatusForEmployee(employee, today);
-            if (!status.isWorking) {
-                throw new IllegalStateException("Employee must be clocked in to start break.");
-            } else {
+            if (status.isOnBreak) {
                 throw new IllegalStateException("Employee is already on break.");
+            } else {
+                throw new IllegalStateException("Employee must be clocked in to start break.");
             }
         }
 

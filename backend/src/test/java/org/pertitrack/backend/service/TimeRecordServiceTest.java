@@ -25,6 +25,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -36,6 +37,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -77,6 +79,8 @@ class TimeRecordServiceTest {
     private String userId = "user-123";
     private String employeeId = "emp-123-abc-456";
     private String timeRecordId = "tr-789-ghi-012";
+    private LocalDate today;
+    private LocalDateTime now;
 
         // Set up mocks for SecurityContextHolder to simulate authenticated user
     private void mockCurrentUserAndEmployee() {
@@ -89,6 +93,8 @@ class TimeRecordServiceTest {
 
     @BeforeEach
     void setUp() {
+        today = LocalDate.now();
+        now = LocalDateTime.now();
         // Create test user with String ID
         testUser = new User();
         ReflectionTestUtils.setField(testUser, "id", userId);
@@ -178,6 +184,273 @@ class TimeRecordServiceTest {
                 "Updated notes",
                 true
                 );
+    }
+
+//     --- Nested tests for quickClockIn ---
+//    ---------------------------------------------------------------
+    @Nested
+    class QuickClockInTests {
+
+    @Test
+    void quickClockIn_Success_NoPreviousRecord() {
+        // Arrange
+        mockCurrentUserAndEmployee();
+        LocalDate today = LocalDate.now();
+        LocalDateTime now = LocalDateTime.now();
+        String notes = "Morning clock-in";
+        TimeRecord savedTimeRecord = new TimeRecord();
+        TimeRecordResponse expectedResponse = new TimeRecordResponse("tr1", employeeId, "FN", "LN", today, now, TimeRecord.RecordType.CLOCK_IN, TimeRecord.LocationType.OFFICE, notes, false, now, now);
+
+        // Mock that employee is not already clocked in (empty records)
+        when(timeRecordRepository.findByEmployeeAndRecordDateOrderByRecordTimeAsc(
+                testEmployee, today))
+                .thenReturn(Collections.emptyList());
+
+        when(timeRecordRepository.save(any(TimeRecord.class))).thenReturn(savedTimeRecord);
+        when(timeRecordMapper.toResponse(any(TimeRecord.class))).thenReturn(expectedResponse);
+
+        // Act
+        TimeRecordResponse response = timeRecordService.quickClockIn(TimeRecord.RecordType.CLOCK_IN, notes);
+
+        // Assert
+        assertNotNull(response);
+        assertEquals(expectedResponse, response);
+        verify(timeRecordRepository, times(1)).save(any(TimeRecord.class));
+        verify(timeRecordMapper, times(1)).toResponse(any(TimeRecord.class));
+    }
+
+    @Test
+    void quickClockIn_ThrowsException_AlreadyClockedIn() {
+        // Arrange
+        mockCurrentUserAndEmployee();
+        LocalDate today = LocalDate.now();
+        LocalDateTime now = LocalDateTime.now();
+
+        // Mock that employee is already clocked in (has CLOCK_IN)
+        TimeRecord clockInRecord = new TimeRecord();
+        clockInRecord.setRecordType(TimeRecord.RecordType.CLOCK_IN);
+        clockInRecord.setRecordTime(now.minusHours(2));
+
+        when(timeRecordRepository.findByEmployeeAndRecordDateOrderByRecordTimeAsc(
+                testEmployee, today))
+                .thenReturn(Arrays.asList(clockInRecord));
+
+        // Act & Assert
+        IllegalStateException thrown = assertThrows(IllegalStateException.class,
+                () -> timeRecordService.quickClockIn(TimeRecord.RecordType.CLOCK_IN, ""));
+        assertEquals("Employee is already clocked in. Please clock out first.", thrown.getMessage());
+        verify(timeRecordRepository, never()).save(any(TimeRecord.class));
+    }
+
+        @Test
+        void quickClockIn_ThrowsException_EmployeeNotFound() {
+            // Arrange
+            when(userRepository.findByEmail(userEmail)).thenReturn(Optional.of(testUser));
+            when(employeeRepository.findByUser_Id(userId)).thenReturn(Optional.empty());
+
+            // Act & Assert
+            assertThrows(EmployeeNotFoundException.class,
+                    () -> timeRecordService.quickClockIn(TimeRecord.RecordType.CLOCK_IN, ""));
+        }
+    }
+
+    // --- Nested tests for quickClockOut ---
+    @Nested
+    class QuickClockOutTests {
+
+        @Test
+        void quickClockOut_Success() {
+            // Arrange
+            mockCurrentUserAndEmployee();
+            String notes = "End of day";
+            TimeRecord savedTimeRecord = new TimeRecord();
+            TimeRecordResponse expectedResponse = new TimeRecordResponse("tr2", employeeId, "FN", "LN", today, now, TimeRecord.RecordType.CLOCK_OUT, TimeRecord.LocationType.OFFICE, notes, false, now, now);
+
+            // Mock that employee is clocked in (has CLOCK_IN, no CLOCK_OUT)
+            TimeRecord clockInRecord = new TimeRecord();
+            clockInRecord.setRecordType(TimeRecord.RecordType.CLOCK_IN);
+            clockInRecord.setRecordTime(now.minusHours(8)); // Clocked in 8 hours ago
+
+            // Mock the repository call that getCurrentStatusForEmployee uses
+            when(timeRecordRepository.findByEmployeeAndRecordDateOrderByRecordTimeAsc(
+                    testEmployee, today))
+                    .thenReturn(Arrays.asList(clockInRecord));
+
+            when(timeRecordRepository.save(any(TimeRecord.class))).thenReturn(savedTimeRecord);
+            when(timeRecordMapper.toResponse(any(TimeRecord.class))).thenReturn(expectedResponse);
+
+            // Act
+            TimeRecordResponse response = timeRecordService.quickClockOut(
+                    TimeRecord.RecordType.CLOCK_OUT, notes);
+
+            // Assert
+            assertNotNull(response);
+            assertEquals(expectedResponse, response);
+            verify(timeRecordRepository, times(1)).save(any(TimeRecord.class));
+        }
+
+        @Test
+        void quickClockOut_ThrowsException_NotClockedIn() {
+            // Arrange
+            mockCurrentUserAndEmployee();
+            LocalDate today = LocalDate.now();
+
+            // Mock that employee is NOT clocked in (empty records)
+            when(timeRecordRepository.findByEmployeeAndRecordDateOrderByRecordTimeAsc(
+                    testEmployee, today))
+                    .thenReturn(Collections.emptyList());
+
+            // Act & Assert
+            IllegalStateException thrown = assertThrows(IllegalStateException.class,
+                    () -> timeRecordService.quickClockOut(TimeRecord.RecordType.CLOCK_OUT, ""));
+            assertEquals("Employee is not clocked in. Cannot clock out.", thrown.getMessage());
+        }
+    }
+
+    // --- Nested tests for quickBreakStart ---
+    @Nested
+    class QuickBreakStartTests {
+
+        @Test
+        void quickBreakStart_Success() {
+            // Arrange
+            mockCurrentUserAndEmployee();
+            LocalDate today = LocalDate.now();
+            LocalDateTime now = LocalDateTime.now();
+            String notes = "Lunch break";
+            TimeRecord savedTimeRecord = new TimeRecord();
+            TimeRecordResponse expectedResponse =
+                    new TimeRecordResponse("tr3", employeeId, "FN", "LN",
+                            today, now, TimeRecord.RecordType.BREAK_START,
+                            TimeRecord.LocationType.OFFICE, notes, false, now, now);
+
+            // Mock that employee is clocked in (has CLOCK_IN, no CLOCK_OUT, no active break)
+            TimeRecord clockInRecord = new TimeRecord();
+            clockInRecord.setRecordType(TimeRecord.RecordType.CLOCK_IN);
+            clockInRecord.setRecordTime(now.minusHours(2));
+
+            // Mock the repository call that getCurrentStatusForEmployee uses
+            when(timeRecordRepository.findByEmployeeAndRecordDateOrderByRecordTimeAsc(
+                    testEmployee, today))
+                    .thenReturn(Arrays.asList(clockInRecord)); // Only clock in, no break
+
+            when(timeRecordRepository.save(any(TimeRecord.class))).thenReturn(savedTimeRecord);
+            when(timeRecordMapper.toResponse(any(TimeRecord.class))).thenReturn(expectedResponse);
+
+            // Act
+            TimeRecordResponse response = timeRecordService.quickBreakStart(
+                    TimeRecord.RecordType.BREAK_START, notes);
+
+            // Assert
+            assertNotNull(response);
+            assertEquals(expectedResponse, response);
+            verify(timeRecordRepository, times(1)).save(any(TimeRecord.class));
+        }
+
+        @Test
+        void quickBreakStart_ThrowsException_NotClockedIn() {
+            // Arrange
+            mockCurrentUserAndEmployee();
+            LocalDate today = LocalDate.now();
+
+            // Mock that employee is NOT clocked in (empty list)
+            when(timeRecordRepository.findByEmployeeAndRecordDateOrderByRecordTimeAsc(
+                    testEmployee, today))
+                    .thenReturn(Collections.emptyList());
+
+            // Act & Assert
+            IllegalStateException thrown = assertThrows(IllegalStateException.class,
+                    () -> timeRecordService.quickBreakStart(TimeRecord.RecordType.BREAK_START, ""));
+            assertEquals("Employee must be clocked in to start break.", thrown.getMessage());
+        }
+
+        @Test
+        void quickBreakStart_ThrowsException_AlreadyOnBreak() {
+            // Arrange
+            LocalDate today = LocalDate.now();
+            LocalDateTime now = LocalDateTime.now();
+
+            mockCurrentUserAndEmployee();
+
+            // Mock that employee is clocked in - SET THE EMPLOYEE!
+            TimeRecord clockInRecord = new TimeRecord();
+            clockInRecord.setEmployee(testEmployee);  // ADD THIS
+            clockInRecord.setRecordType(TimeRecord.RecordType.CLOCK_IN);
+            clockInRecord.setRecordTime(now.minusHours(2));
+
+            // Mock that employee is already on break - SET THE EMPLOYEE!
+            TimeRecord breakStartRecord = new TimeRecord();
+            breakStartRecord.setEmployee(testEmployee);  // ADD THIS
+            breakStartRecord.setRecordType(TimeRecord.RecordType.BREAK_START);
+            breakStartRecord.setRecordTime(now.minusMinutes(30));
+
+            when(timeRecordRepository.findByEmployeeAndRecordDateOrderByRecordTimeAsc(
+                    any(Employee.class), any(LocalDate.class)))
+                    .thenReturn(Arrays.asList(clockInRecord, breakStartRecord));
+
+            // Act & Assert
+            IllegalStateException thrown = assertThrows(IllegalStateException.class,
+                    () -> timeRecordService.quickBreakStart(TimeRecord.RecordType.BREAK_START, ""));
+            assertEquals("Employee is already on break.", thrown.getMessage());
+            verify(timeRecordRepository, never()).save(any(TimeRecord.class));
+        }
+    }
+
+    // --- Nested tests for quickBreakEnd ---
+    @Nested
+    class QuickBreakEndTests {
+
+        @Test
+        void quickBreakEnd_Success() {
+            // Arrange
+            mockCurrentUserAndEmployee();
+            LocalDate today = LocalDate.now();
+            LocalDateTime now = LocalDateTime.now();
+            String notes = "Back from lunch";
+            TimeRecord savedTimeRecord = new TimeRecord();
+            TimeRecordResponse expectedResponse = new TimeRecordResponse("tr4", employeeId, "FN", "LN", today, now, TimeRecord.RecordType.BREAK_END, TimeRecord.LocationType.OFFICE, notes, false, now, now);
+
+
+            // Mock that employee is clocked in
+            TimeRecord clockInRecord = new TimeRecord();
+            clockInRecord.setRecordType(TimeRecord.RecordType.CLOCK_IN);
+            clockInRecord.setRecordTime(now.minusHours(3));
+            // Mock that employee is on break (has BREAK_START, no BREAK_END)
+            TimeRecord breakStartRecord = new TimeRecord();
+            breakStartRecord.setRecordType(TimeRecord.RecordType.BREAK_START);
+            breakStartRecord.setRecordTime(now.minusMinutes(30));
+
+            // Mock the repository call that getCurrentStatusForEmployee uses
+            when(timeRecordRepository.findByEmployeeAndRecordDateOrderByRecordTimeAsc(
+                    testEmployee, today))
+                    .thenReturn(Arrays.asList(clockInRecord, breakStartRecord));
+
+            when(timeRecordRepository.save(any(TimeRecord.class))).thenReturn(savedTimeRecord);
+            when(timeRecordMapper.toResponse(any(TimeRecord.class))).thenReturn(expectedResponse);
+
+            // Act
+            TimeRecordResponse response = timeRecordService.quickBreakEnd(TimeRecord.RecordType.BREAK_END, notes);
+
+            // Assert
+            assertNotNull(response);
+            assertEquals(expectedResponse, response);
+            verify(timeRecordRepository, times(1)).save(any(TimeRecord.class));
+        }
+
+        @Test
+        void quickBreakEnd_ThrowsException_NotOnBreak() {
+            // Arrange
+            mockCurrentUserAndEmployee();
+            when(timeRecordRepository.findByEmployeeAndRecordDateOrderByRecordTimeAsc(
+                    testEmployee, today))
+                    .thenReturn(Collections.emptyList());
+
+            // Act & Assert
+            IllegalStateException thrown = assertThrows(IllegalStateException.class,
+                    () -> timeRecordService.quickBreakEnd(TimeRecord.RecordType.BREAK_END, ""));
+            assertEquals("Employee is not on break. " +
+                    "Cannot end break.", thrown.getMessage());
+        }
     }
 
     /**
@@ -831,5 +1104,667 @@ class TimeRecordServiceTest {
         assertTrue(exception.getMessage().contains("Time record not found with id: " + timeRecordId));
         verify(timeRecordRepository).existsById(timeRecordId);
         verify(timeRecordRepository, never()).deleteById(timeRecordId);
+    }
+
+    /**
+     * Tests for private helper methods:
+     * - getCurrentStatusForEmployee
+     * - canClockIn
+     * - canClockOut
+     * - canStartBreak
+     * - canEndBreak
+     * - createTimeRecord (private helper)
+     * - calculateCurrentStatus
+     * - calculateTodaySummary
+     * - formatDurationNoSeconds
+     * - formatFlexTimeNoSeconds
+     */
+
+    @Nested
+    class CalculateCurrentStatusTests {
+
+        @Test
+        void calculateCurrentStatus_withEmptyRecords_returnsNotStarted() throws Exception {
+            // Arrange
+            List<TimeRecord> emptyRecords = Collections.emptyList();
+
+            // Act - Use reflection to call the private method
+            java.lang.reflect.Method method = TimeRecordService.class.getDeclaredMethod(
+                    "calculateCurrentStatus", List.class);
+            method.setAccessible(true);
+            Object result = method.invoke(timeRecordService, emptyRecords);
+
+            // Assert
+            assertNotNull(result);
+            assertEquals("Not Started", getFieldValue(result, "status"));
+            assertFalse((Boolean) getFieldValue(result, "isWorking"));
+            assertFalse((Boolean) getFieldValue(result, "isOnBreak"));
+        }
+
+        @Test
+        void calculateCurrentStatus_withOnlyClockIn_returnsWorking() throws Exception {
+            // Arrange
+            TimeRecord clockIn = new TimeRecord();
+            clockIn.setRecordType(TimeRecord.RecordType.CLOCK_IN);
+            clockIn.setRecordTime(LocalDateTime.now().minusHours(2));
+            List<TimeRecord> records = Arrays.asList(clockIn);
+
+            // Act
+            java.lang.reflect.Method method = TimeRecordService.class.getDeclaredMethod(
+                    "calculateCurrentStatus", List.class);
+            method.setAccessible(true);
+            Object result = method.invoke(timeRecordService, records);
+
+            // Assert
+            assertEquals("Working", getFieldValue(result, "status"));
+            assertTrue((Boolean) getFieldValue(result, "isWorking"));
+            assertFalse((Boolean) getFieldValue(result, "isOnBreak"));
+        }
+
+        @Test
+        void calculateCurrentStatus_withClockInAndBreakStart_returnsBreak() throws Exception {
+            // Arrange
+            TimeRecord clockIn = new TimeRecord();
+            clockIn.setRecordType(TimeRecord.RecordType.CLOCK_IN);
+            clockIn.setRecordTime(LocalDateTime.now().minusHours(3));
+
+            TimeRecord breakStart = new TimeRecord();
+            breakStart.setRecordType(TimeRecord.RecordType.BREAK_START);
+            breakStart.setRecordTime(LocalDateTime.now().minusMinutes(30));
+
+            List<TimeRecord> records = Arrays.asList(clockIn, breakStart);
+
+            // Act
+            java.lang.reflect.Method method = TimeRecordService.class.getDeclaredMethod(
+                    "calculateCurrentStatus", List.class);
+            method.setAccessible(true);
+            Object result = method.invoke(timeRecordService, records);
+
+            // Assert
+            assertEquals("Break", getFieldValue(result, "status"));
+            assertFalse((Boolean) getFieldValue(result, "isWorking"));
+            assertTrue((Boolean) getFieldValue(result, "isOnBreak"));
+        }
+
+        @Test
+        void calculateCurrentStatus_withCompleteWorkday_returnsFinished() throws Exception {
+            // Arrange
+            TimeRecord clockIn = new TimeRecord();
+            clockIn.setRecordType(TimeRecord.RecordType.CLOCK_IN);
+            clockIn.setRecordTime(LocalDateTime.now().minusHours(8));
+
+            TimeRecord clockOut = new TimeRecord();
+            clockOut.setRecordType(TimeRecord.RecordType.CLOCK_OUT);
+            clockOut.setRecordTime(LocalDateTime.now().minusHours(1));
+
+            List<TimeRecord> records = Arrays.asList(clockIn, clockOut);
+
+            // Act
+            java.lang.reflect.Method method = TimeRecordService.class.getDeclaredMethod(
+                    "calculateCurrentStatus", List.class);
+            method.setAccessible(true);
+            Object result = method.invoke(timeRecordService, records);
+
+            // Assert
+            assertEquals("Finished", getFieldValue(result, "status"));
+            assertFalse((Boolean) getFieldValue(result, "isWorking"));
+            assertFalse((Boolean) getFieldValue(result, "isOnBreak"));
+        }
+
+        @Test
+        void calculateCurrentStatus_withClockInBreakAndBreakEnd_returnsWorking() throws Exception {
+            // Arrange
+            TimeRecord clockIn = new TimeRecord();
+            clockIn.setRecordType(TimeRecord.RecordType.CLOCK_IN);
+            clockIn.setRecordTime(LocalDateTime.now().minusHours(4));
+
+            TimeRecord breakStart = new TimeRecord();
+            breakStart.setRecordType(TimeRecord.RecordType.BREAK_START);
+            breakStart.setRecordTime(LocalDateTime.now().minusHours(1));
+
+            TimeRecord breakEnd = new TimeRecord();
+            breakEnd.setRecordType(TimeRecord.RecordType.BREAK_END);
+            breakEnd.setRecordTime(LocalDateTime.now().minusMinutes(30));
+
+            List<TimeRecord> records = Arrays.asList(clockIn, breakStart, breakEnd);
+
+            // Act
+            java.lang.reflect.Method method = TimeRecordService.class.getDeclaredMethod(
+                    "calculateCurrentStatus", List.class);
+            method.setAccessible(true);
+            Object result = method.invoke(timeRecordService, records);
+
+            // Assert
+            assertEquals("Working", getFieldValue(result, "status"));
+            assertTrue((Boolean) getFieldValue(result, "isWorking"));
+            assertFalse((Boolean) getFieldValue(result, "isOnBreak"));
+        }
+
+        // Helper method to access private fields using reflection
+        private Object getFieldValue(Object obj, String fieldName) throws Exception {
+            java.lang.reflect.Field field = obj.getClass().getDeclaredField(fieldName);
+            field.setAccessible(true);
+            return field.get(obj);
+        }
+    }
+
+    @Nested
+    class CalculateTodaySummaryTests {
+
+        @Test
+        void calculateTodaySummary_withEmptyRecords_returnsDefaultSummary() throws Exception {
+            // Arrange
+            List<TimeRecord> emptyRecords = Collections.emptyList();
+
+            // Act
+            java.lang.reflect.Method method = TimeRecordService.class.getDeclaredMethod(
+                    "calculateTodaySummary", List.class);
+            method.setAccessible(true);
+            Object result = method.invoke(timeRecordService, emptyRecords);
+
+            // Assert
+            assertNotNull(result);
+            // Use reflection to check fields in TodaySummaryResponse
+            java.lang.reflect.Method getStatus = result.getClass().getMethod("status");
+            assertEquals("Not Started", getStatus.invoke(result));
+        }
+
+        @Test
+        void calculateTodaySummary_withClockInOnly_calculatesCorrectly() throws Exception {
+            // Arrange
+            LocalDateTime clockInTime = LocalDateTime.now().minusHours(2);
+            TimeRecord clockIn = new TimeRecord();
+            clockIn.setRecordType(TimeRecord.RecordType.CLOCK_IN);
+            clockIn.setRecordTime(clockInTime);
+            List<TimeRecord> records = Arrays.asList(clockIn);
+
+            // Act
+            java.lang.reflect.Method method = TimeRecordService.class.getDeclaredMethod(
+                    "calculateTodaySummary", List.class);
+            method.setAccessible(true);
+            Object result = method.invoke(timeRecordService, records);
+
+            // Assert
+            assertNotNull(result);
+            java.lang.reflect.Method getStatus = result.getClass().getMethod("status");
+            assertEquals("Working", getStatus.invoke(result));
+
+            java.lang.reflect.Method getArrivalTime = result.getClass().getMethod("arrivalTime");
+            assertNotNull(getArrivalTime.invoke(result));
+        }
+
+        @Test
+        void calculateTodaySummary_withFullWorkday_calculatesAllFields() throws Exception {
+            // Arrange
+            LocalDateTime clockInTime = LocalDateTime.of(2024, 10, 1, 9, 0);
+            LocalDateTime breakStartTime = LocalDateTime.of(2024, 10, 1, 12, 0);
+            LocalDateTime breakEndTime = LocalDateTime.of(2024, 10, 1, 12, 30);
+            LocalDateTime clockOutTime = LocalDateTime.of(2024, 10, 1, 17, 0);
+
+            TimeRecord clockIn = new TimeRecord();
+            clockIn.setRecordType(TimeRecord.RecordType.CLOCK_IN);
+            clockIn.setRecordTime(clockInTime);
+
+            TimeRecord breakStart = new TimeRecord();
+            breakStart.setRecordType(TimeRecord.RecordType.BREAK_START);
+            breakStart.setRecordTime(breakStartTime);
+
+            TimeRecord breakEnd = new TimeRecord();
+            breakEnd.setRecordType(TimeRecord.RecordType.BREAK_END);
+            breakEnd.setRecordTime(breakEndTime);
+
+            TimeRecord clockOut = new TimeRecord();
+            clockOut.setRecordType(TimeRecord.RecordType.CLOCK_OUT);
+            clockOut.setRecordTime(clockOutTime);
+
+            List<TimeRecord> records = Arrays.asList(clockIn, breakStart, breakEnd, clockOut);
+
+            // Act
+            java.lang.reflect.Method method = TimeRecordService.class.getDeclaredMethod(
+                    "calculateTodaySummary", List.class);
+            method.setAccessible(true);
+            Object result = method.invoke(timeRecordService, records);
+
+            // Assert
+            assertNotNull(result);
+            java.lang.reflect.Method getStatus = result.getClass().getMethod("status");
+            assertEquals("Finished", getStatus.invoke(result));
+
+            java.lang.reflect.Method getArrivalTime = result.getClass().getMethod("arrivalTime");
+            assertNotNull(getArrivalTime.invoke(result));
+
+            java.lang.reflect.Method getDepartureTime = result.getClass().getMethod("departureTime");
+            assertNotNull(getDepartureTime.invoke(result));
+        }
+
+        @Test
+        void calculateTodaySummary_withOngoingBreak_includesBreakTime() throws Exception {
+            // Arrange
+            LocalDateTime clockInTime = LocalDateTime.now().minusHours(3);
+            LocalDateTime breakStartTime = LocalDateTime.now().minusMinutes(15);
+
+            TimeRecord clockIn = new TimeRecord();
+            clockIn.setRecordType(TimeRecord.RecordType.CLOCK_IN);
+            clockIn.setRecordTime(clockInTime);
+
+            TimeRecord breakStart = new TimeRecord();
+            breakStart.setRecordType(TimeRecord.RecordType.BREAK_START);
+            breakStart.setRecordTime(breakStartTime);
+
+            List<TimeRecord> records = Arrays.asList(clockIn, breakStart);
+
+            // Act
+            java.lang.reflect.Method method = TimeRecordService.class.getDeclaredMethod(
+                    "calculateTodaySummary", List.class);
+            method.setAccessible(true);
+            Object result = method.invoke(timeRecordService, records);
+
+            // Assert
+            assertNotNull(result);
+            java.lang.reflect.Method getStatus = result.getClass().getMethod("status");
+            assertEquals("Break", getStatus.invoke(result));
+        }
+    }
+
+    @Nested
+    class formatDurationNoSecondsTests {
+
+        @Test
+        void formatDurationNoSeconds_withZeroDuration_returnsZeroTime() throws Exception {
+            // Arrange
+            Duration zeroDuration = Duration.ZERO;
+
+            // Act
+            java.lang.reflect.Method method = TimeRecordService.class.getDeclaredMethod(
+                    "formatDurationNoSeconds", Duration.class);
+            method.setAccessible(true);
+            String result = (String) method.invoke(timeRecordService, zeroDuration);
+
+            // Assert
+            assertEquals("00:00", result);
+        }
+
+        @Test
+        void formatDurationNoSeconds_withOneHour_returnsCorrectFormat() throws Exception {
+            // Arrange
+            Duration oneHour = Duration.ofHours(1);
+
+            // Act
+            java.lang.reflect.Method method = TimeRecordService.class.getDeclaredMethod(
+                    "formatDurationNoSeconds", Duration.class);
+            method.setAccessible(true);
+            String result = (String) method.invoke(timeRecordService, oneHour);
+
+            // Assert
+            assertEquals("01:00", result);
+        }
+
+        @Test
+        void formatDurationNoSeconds_withHoursAndMinutes_returnsCorrectFormat() throws Exception {
+            // Arrange
+            Duration duration = Duration.ofHours(8).plusMinutes(30);
+
+            // Act
+            java.lang.reflect.Method method = TimeRecordService.class.getDeclaredMethod(
+                    "formatDurationNoSeconds", Duration.class);
+            method.setAccessible(true);
+            String result = (String) method.invoke(timeRecordService, duration);
+
+            // Assert
+            assertEquals("08:30", result);
+        }
+
+        @Test
+        void formatDurationNoSeconds_withMoreThan24Hours_formatsCorrectly() throws Exception {
+            // Arrange
+            Duration duration = Duration.ofHours(25).plusMinutes(15);
+
+            // Act
+            java.lang.reflect.Method method = TimeRecordService.class.getDeclaredMethod(
+                    "formatDurationNoSeconds", Duration.class);
+            method.setAccessible(true);
+            String result = (String) method.invoke(timeRecordService, duration);
+
+            // Assert
+            assertEquals("25:15", result);
+        }
+    }
+
+    @Nested
+    class FormatFlexTimeTests {
+
+        @Test
+        void formatFlexTimeNoSeconds_withZeroDuration_returnsPositiveZero() throws Exception {
+            // Arrange
+            Duration zeroDuration = Duration.ZERO;
+
+            // Act
+            java.lang.reflect.Method method = TimeRecordService.class.getDeclaredMethod(
+                    "formatFlexTimeNoSeconds", Duration.class);
+            method.setAccessible(true);
+            String result = (String) method.invoke(timeRecordService, zeroDuration);
+
+            // Assert
+            assertEquals("+00:00", result);
+        }
+
+        @Test
+        void formatFlexTimeNoSeconds_withPositiveDuration_returnsWithPlusSign() throws Exception {
+            // Arrange
+            Duration positiveDuration = Duration.ofHours(2).plusMinutes(30);
+
+            // Act
+            java.lang.reflect.Method method = TimeRecordService.class.getDeclaredMethod(
+                    "formatFlexTimeNoSeconds", Duration.class);
+            method.setAccessible(true);
+            String result = (String) method.invoke(timeRecordService, positiveDuration);
+
+            // Assert
+            assertEquals("+02:30", result);
+        }
+
+        @Test
+        void formatFlexTimeNoSeconds_withNegativeDuration_returnsWithMinusSign() throws Exception {
+            // Arrange
+            Duration negativeDuration = Duration.ofHours(-3).minusMinutes(15);
+
+            // Act
+            java.lang.reflect.Method method = TimeRecordService.class.getDeclaredMethod(
+                    "formatFlexTimeNoSeconds", Duration.class);
+            method.setAccessible(true);
+            String result = (String) method.invoke(timeRecordService, negativeDuration);
+
+            // Assert
+            assertEquals("-03:15", result);
+        }
+
+        @Test
+        void formatFlexTimeNoSeconds_withNegativeOneHour_returnsCorrectFormat() throws Exception {
+            // Arrange
+            Duration negativeDuration = Duration.ofHours(-1);
+
+            // Act
+            java.lang.reflect.Method method = TimeRecordService.class.getDeclaredMethod(
+                    "formatFlexTimeNoSeconds", Duration.class);
+            method.setAccessible(true);
+            String result = (String) method.invoke(timeRecordService, negativeDuration);
+
+            // Assert
+            assertEquals("-01:00", result);
+        }
+    }
+
+    @Nested
+    class CreateTimeRecordHelperTests {
+
+        @Test
+        void createTimeRecord_withAllParameters_createsCorrectEntity() throws Exception {
+            // Arrange
+            LocalDate recordDate = LocalDate.now();
+            LocalDateTime recordTime = LocalDateTime.now();
+            String notes = "Test notes";
+
+            // Act - Use reflection to call the private method
+            java.lang.reflect.Method method = TimeRecordService.class.getDeclaredMethod(
+                    "createTimeRecord",
+                    Employee.class, LocalDate.class, LocalDateTime.class,
+                    TimeRecord.RecordType.class, TimeRecord.LocationType.class,
+                    String.class, boolean.class);
+            method.setAccessible(true);
+            TimeRecord result = (TimeRecord) method.invoke(
+                    timeRecordService,
+                    testEmployee, recordDate, recordTime,
+                    TimeRecord.RecordType.CLOCK_IN, TimeRecord.LocationType.OFFICE,
+                    notes, false);
+
+            // Assert
+            assertNotNull(result);
+            assertEquals(testEmployee, result.getEmployee());
+            assertEquals(recordDate, result.getRecordDate());
+            assertEquals(recordTime, result.getRecordTime());
+            assertEquals(TimeRecord.RecordType.CLOCK_IN, result.getRecordType());
+            assertEquals(TimeRecord.LocationType.OFFICE, result.getLocationType());
+            assertEquals(notes, result.getNotes());
+            assertFalse(result.getIsManual());
+            assertEquals(recordTime, result.getCreatedAt());
+            assertEquals(recordTime, result.getUpdatedAt());
+        }
+
+        @Test
+        void createTimeRecord_withManualFlag_setsCorrectly() throws Exception {
+            // Arrange
+            LocalDate recordDate = LocalDate.now();
+            LocalDateTime recordTime = LocalDateTime.now();
+
+            // Act
+            java.lang.reflect.Method method = TimeRecordService.class.getDeclaredMethod(
+                    "createTimeRecord",
+                    Employee.class, LocalDate.class, LocalDateTime.class,
+                    TimeRecord.RecordType.class, TimeRecord.LocationType.class,
+                    String.class, boolean.class);
+            method.setAccessible(true);
+            TimeRecord result = (TimeRecord) method.invoke(
+                    timeRecordService,
+                    testEmployee, recordDate, recordTime,
+                    TimeRecord.RecordType.CLOCK_IN, TimeRecord.LocationType.HOME,
+                    "Manual entry", true);
+
+            // Assert
+            assertTrue(result.getIsManual());
+            assertEquals(TimeRecord.LocationType.HOME, result.getLocationType());
+        }
+
+        @Test
+        void createTimeRecord_withBreakType_createsCorrectEntity() throws Exception {
+            // Arrange
+            LocalDate recordDate = LocalDate.now();
+            LocalDateTime recordTime = LocalDateTime.now();
+
+            // Act
+            java.lang.reflect.Method method = TimeRecordService.class.getDeclaredMethod(
+                    "createTimeRecord",
+                    Employee.class, LocalDate.class, LocalDateTime.class,
+                    TimeRecord.RecordType.class, TimeRecord.LocationType.class,
+                    String.class, boolean.class);
+            method.setAccessible(true);
+            TimeRecord result = (TimeRecord) method.invoke(
+                    timeRecordService,
+                    testEmployee, recordDate, recordTime,
+                    TimeRecord.RecordType.BREAK_START, TimeRecord.LocationType.OFFICE,
+                    "Break time", false);
+
+            // Assert
+            assertEquals(TimeRecord.RecordType.BREAK_START, result.getRecordType());
+        }
+    }
+
+    @Nested
+    class CanClockInTests {
+
+        @Test
+        void canClockIn_whenNotClockedIn_returnsTrue() throws Exception {
+            // Arrange
+            LocalDate today = LocalDate.now();
+            when(timeRecordRepository.findByEmployeeAndRecordDateOrderByRecordTimeAsc(
+                    testEmployee, today)).thenReturn(Collections.emptyList());
+
+            // Act
+            java.lang.reflect.Method method = TimeRecordService.class.getDeclaredMethod(
+                    "canClockIn", Employee.class, LocalDate.class);
+            method.setAccessible(true);
+            boolean result = (boolean) method.invoke(timeRecordService, testEmployee, today);
+
+            // Assert
+            assertTrue(result);
+        }
+
+        @Test
+        void canClockIn_whenAlreadyClockedIn_returnsFalse() throws Exception {
+            // Arrange
+            LocalDate today = LocalDate.now();
+
+            TimeRecord clockIn = new TimeRecord();
+            clockIn.setRecordType(TimeRecord.RecordType.CLOCK_IN);
+            clockIn.setRecordTime(LocalDateTime.now().minusHours(2));
+
+            when(timeRecordRepository.findByEmployeeAndRecordDateOrderByRecordTimeAsc(
+                    testEmployee, today)).thenReturn(Arrays.asList(clockIn));
+
+            // Act
+            java.lang.reflect.Method method = TimeRecordService.class.getDeclaredMethod(
+                    "canClockIn", Employee.class, LocalDate.class);
+            method.setAccessible(true);
+            boolean result = (boolean) method.invoke(timeRecordService, testEmployee, today);
+
+            // Assert
+            assertFalse(result);
+        }
+    }
+
+    @Nested
+    class CanClockOutTests {
+
+        @Test
+        void canClockOut_whenClockedIn_returnsTrue() throws Exception {
+            // Arrange
+            LocalDate today = LocalDate.now();
+
+            TimeRecord clockIn = new TimeRecord();
+            clockIn.setRecordType(TimeRecord.RecordType.CLOCK_IN);
+            clockIn.setRecordTime(LocalDateTime.now().minusHours(2));
+
+            when(timeRecordRepository.findByEmployeeAndRecordDateOrderByRecordTimeAsc(
+                    testEmployee, today)).thenReturn(Arrays.asList(clockIn));
+
+            // Act
+            java.lang.reflect.Method method = TimeRecordService.class.getDeclaredMethod(
+                    "canClockOut", Employee.class, LocalDate.class);
+            method.setAccessible(true);
+            boolean result = (boolean) method.invoke(timeRecordService, testEmployee, today);
+
+            // Assert
+            assertTrue(result);
+        }
+
+        @Test
+        void canClockOut_whenNotClockedIn_returnsFalse() throws Exception {
+            // Arrange
+            LocalDate today = LocalDate.now();
+            when(timeRecordRepository.findByEmployeeAndRecordDateOrderByRecordTimeAsc(
+                    testEmployee, today)).thenReturn(Collections.emptyList());
+
+            // Act
+            java.lang.reflect.Method method = TimeRecordService.class.getDeclaredMethod(
+                    "canClockOut", Employee.class, LocalDate.class);
+            method.setAccessible(true);
+            boolean result = (boolean) method.invoke(timeRecordService, testEmployee, today);
+
+            // Assert
+            assertFalse(result);
+        }
+    }
+
+    @Nested
+    class CanStartBreakTests {
+
+        @Test
+        void canStartBreak_whenWorkingAndNotOnBreak_returnsTrue() throws Exception {
+            // Arrange
+            LocalDate today = LocalDate.now();
+
+            TimeRecord clockIn = new TimeRecord();
+            clockIn.setRecordType(TimeRecord.RecordType.CLOCK_IN);
+            clockIn.setRecordTime(LocalDateTime.now().minusHours(2));
+
+            when(timeRecordRepository.findByEmployeeAndRecordDateOrderByRecordTimeAsc(
+                    testEmployee, today)).thenReturn(Arrays.asList(clockIn));
+
+            // Act
+            java.lang.reflect.Method method = TimeRecordService.class.getDeclaredMethod(
+                    "canStartBreak", Employee.class, LocalDate.class);
+            method.setAccessible(true);
+            boolean result = (boolean) method.invoke(timeRecordService, testEmployee, today);
+
+            // Assert
+            assertTrue(result);
+        }
+
+        @Test
+        void canStartBreak_whenAlreadyOnBreak_returnsFalse() throws Exception {
+            // Arrange
+            LocalDate today = LocalDate.now();
+
+            TimeRecord clockIn = new TimeRecord();
+            clockIn.setRecordType(TimeRecord.RecordType.CLOCK_IN);
+            clockIn.setRecordTime(LocalDateTime.now().minusHours(2));
+
+            TimeRecord breakStart = new TimeRecord();
+            breakStart.setRecordType(TimeRecord.RecordType.BREAK_START);
+            breakStart.setRecordTime(LocalDateTime.now().minusMinutes(30));
+
+            when(timeRecordRepository.findByEmployeeAndRecordDateOrderByRecordTimeAsc(
+                    testEmployee, today)).thenReturn(Arrays.asList(clockIn, breakStart));
+
+            // Act
+            java.lang.reflect.Method method = TimeRecordService.class.getDeclaredMethod(
+                    "canStartBreak", Employee.class, LocalDate.class);
+            method.setAccessible(true);
+            boolean result = (boolean) method.invoke(timeRecordService, testEmployee, today);
+
+            // Assert
+            assertFalse(result);
+        }
+    }
+
+    @Nested
+    class CanEndBreakTests {
+
+        @Test
+        void canEndBreak_whenOnBreak_returnsTrue() throws Exception {
+            // Arrange
+            LocalDate today = LocalDate.now();
+
+            TimeRecord clockIn = new TimeRecord();
+            clockIn.setRecordType(TimeRecord.RecordType.CLOCK_IN);
+            clockIn.setRecordTime(LocalDateTime.now().minusHours(2));
+
+            TimeRecord breakStart = new TimeRecord();
+            breakStart.setRecordType(TimeRecord.RecordType.BREAK_START);
+            breakStart.setRecordTime(LocalDateTime.now().minusMinutes(30));
+
+            when(timeRecordRepository.findByEmployeeAndRecordDateOrderByRecordTimeAsc(
+                    testEmployee, today)).thenReturn(Arrays.asList(clockIn, breakStart));
+
+            // Act
+            java.lang.reflect.Method method = TimeRecordService.class.getDeclaredMethod(
+                    "canEndBreak", Employee.class, LocalDate.class);
+            method.setAccessible(true);
+            boolean result = (boolean) method.invoke(timeRecordService, testEmployee, today);
+
+            // Assert
+            assertTrue(result);
+        }
+
+        @Test
+        void canEndBreak_whenNotOnBreak_returnsFalse() throws Exception {
+            // Arrange
+            LocalDate today = LocalDate.now();
+
+            TimeRecord clockIn = new TimeRecord();
+            clockIn.setRecordType(TimeRecord.RecordType.CLOCK_IN);
+            clockIn.setRecordTime(LocalDateTime.now().minusHours(2));
+
+            when(timeRecordRepository.findByEmployeeAndRecordDateOrderByRecordTimeAsc(
+                    testEmployee, today)).thenReturn(Arrays.asList(clockIn));
+
+            // Act
+            java.lang.reflect.Method method = TimeRecordService.class.getDeclaredMethod(
+                    "canEndBreak", Employee.class, LocalDate.class);
+            method.setAccessible(true);
+            boolean result = (boolean) method.invoke(timeRecordService, testEmployee, today);
+
+            // Assert
+            assertFalse(result);
+        }
     }
 }
