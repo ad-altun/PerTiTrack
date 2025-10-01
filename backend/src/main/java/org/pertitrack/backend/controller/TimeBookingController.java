@@ -19,6 +19,9 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TimeBookingController {
 
+    private static final String ERROR_HEADER = "X-Error-Message";
+    private static final String UNEXPECTED_ERROR = "An unexpected error occurred";
+
     private final TimeRecordService timeRecordService;
 
     @PostMapping("/time-records/time-bookings/clock-in")
@@ -41,11 +44,11 @@ public class TimeBookingController {
             return ResponseEntity.status(HttpStatus.CREATED).body(timeRecord);
         } catch (IllegalStateException e) {
             return ResponseEntity.badRequest()
-                    .header("X-Error-Message", e.getMessage())
+                    .header(ERROR_HEADER, e.getMessage())
                     .build();
         } catch (Exception e) {
             return ResponseEntity.internalServerError()
-                    .header("X-Error-Message", "An unexpected error occurred")
+                    .header(ERROR_HEADER, UNEXPECTED_ERROR)
                     .build();
         }
     }
@@ -61,11 +64,11 @@ public class TimeBookingController {
             return ResponseEntity.ok(timeRecord);
         } catch (IllegalStateException e) {
             return ResponseEntity.badRequest()
-                    .header("X-Error-Message", e.getMessage())
+                    .header(ERROR_HEADER, e.getMessage())
                     .build();
         } catch (Exception e) {
             return ResponseEntity.internalServerError()
-                    .header("X-Error-Message", "An unexpected error occurred")
+                    .header(ERROR_HEADER, UNEXPECTED_ERROR)
                     .build();
         }
     }
@@ -81,11 +84,11 @@ public class TimeBookingController {
             return ResponseEntity.ok(timeRecord);
         } catch (IllegalStateException e) {
             return ResponseEntity.badRequest()
-                    .header("X-Error-Message", e.getMessage())
+                    .header(ERROR_HEADER, e.getMessage())
                     .build();
         } catch (Exception e) {
             return ResponseEntity.internalServerError()
-                    .header("X-Error-Message", "An unexpected error occurred")
+                    .header(ERROR_HEADER, UNEXPECTED_ERROR)
                     .build();
         }
     }
@@ -101,11 +104,11 @@ public class TimeBookingController {
             return ResponseEntity.ok(timeRecord);
         } catch (IllegalStateException e) {
             return ResponseEntity.badRequest()
-                    .header("X-Error-Message", e.getMessage())
+                    .header(ERROR_HEADER, e.getMessage())
                     .build();
         } catch (Exception e) {
             return ResponseEntity.internalServerError()
-                    .header("X-Error-Message", "An unexpected error occurred")
+                    .header(ERROR_HEADER, UNEXPECTED_ERROR)
                     .build();
         }
     }
@@ -120,11 +123,11 @@ public class TimeBookingController {
             return ResponseEntity.status(HttpStatus.CREATED).body(timeRecord);
         } catch (IllegalStateException e) {
             return ResponseEntity.badRequest()
-                    .header("X-Error-Message", e.getMessage())
+                    .header(ERROR_HEADER, e.getMessage())
                     .build();
         } catch (Exception e) {
             return ResponseEntity.internalServerError()
-                    .header("X-Error-Message", "An unexpected error occurred")
+                    .header(ERROR_HEADER, UNEXPECTED_ERROR)
                     .build();
         }
     }
@@ -138,11 +141,11 @@ public class TimeBookingController {
             return ResponseEntity.status(HttpStatus.CREATED).body(timeRecord);
         } catch (IllegalStateException e) {
             return ResponseEntity.badRequest()
-                    .header("X-Error-Message", e.getMessage())
+                    .header(ERROR_HEADER, e.getMessage())
                     .build();
         } catch (Exception e) {
             return ResponseEntity.internalServerError()
-                    .header("X-Error-Message", "An unexpected error occurred")
+                    .header(ERROR_HEADER, UNEXPECTED_ERROR)
                     .build();
         }
     }
@@ -187,15 +190,15 @@ public class TimeBookingController {
             return ResponseEntity.ok(updatedRecord);
         } catch (SecurityException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                    .header("X-Error-Message", e.getMessage())
+                    .header(ERROR_HEADER, e.getMessage())
                     .build();
         } catch (EntityNotFoundException e) {
             return ResponseEntity.notFound()
-                    .header("X-Error-Message", e.getMessage())
+                    .header(ERROR_HEADER, e.getMessage())
                     .build();
         } catch (Exception e) {
             return ResponseEntity.internalServerError()
-                    .header("X-Error-Message", "An unexpected error occurred")
+                    .header(ERROR_HEADER, UNEXPECTED_ERROR)
                     .build();
         }
     }

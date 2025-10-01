@@ -29,7 +29,7 @@ public class TimeRecord extends ApprovableEntity implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "employee_id", nullable = false)
     @NotNull
-    private Employee employee;
+    private transient Employee employee;
 
     @Column(name = "record_date", nullable = false)
     @NotNull
@@ -56,7 +56,7 @@ public class TimeRecord extends ApprovableEntity implements Serializable {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "approved_by")
-    private Employee approvedBy;
+    private transient Employee approvedBy;
 
     @Column(name = "approved_at")
     private LocalDateTime approvedAt;

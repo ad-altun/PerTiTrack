@@ -128,6 +128,8 @@ class UserRoleServiceTest {
         assert(result.getFirst().getDescription().equals(testRole.getDescription()));
         assert(result.getFirst().getPermissions().equals(testRole.getPermissions()));
         assert(result.getFirst().getCreatedAt().equals(testRole.getCreatedAt()));
+
+        verify(userRoleRepository).findUserRoleByPermissionsContainsIgnoreCase(testRole.getPermissions());
     }
 
 }

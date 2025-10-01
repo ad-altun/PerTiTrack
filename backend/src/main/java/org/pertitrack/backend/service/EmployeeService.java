@@ -17,6 +17,8 @@ import java.util.stream.*;
 @Transactional
 public class EmployeeService {
 
+    private static final String EMPLOYEE_NOT_FOUND = "Employee not found: ";
+
     private final EmployeeRepository employeeRepository;
     private final UserRepository userRepository;
     private final EmployeeMapper employeeMapper;
@@ -41,7 +43,7 @@ public class EmployeeService {
     public EmployeeDto getEmployeeById(String id) {
         return employeeRepository.findById(id)
                 .map(employeeMapper::toDto)
-                .orElseThrow(() -> new EmployeeNotFoundException(id, "Employee not found: "));
+                .orElseThrow(() -> new EmployeeNotFoundException(id, EMPLOYEE_NOT_FOUND));
     }
 
     // Add this new method
@@ -49,7 +51,7 @@ public class EmployeeService {
     public EmployeeDto findEmployeeByUserId(String userId) {
         return employeeRepository.findByUser_Id(userId)
                 .map(employeeMapper::toDto)
-                .orElseThrow(() -> new EmployeeNotFoundException(userId, "Employee not found: "));
+                .orElseThrow(() -> new EmployeeNotFoundException(userId, EMPLOYEE_NOT_FOUND));
     }
 
 //    @Transactional(readOnly = true)
@@ -127,7 +129,7 @@ public class EmployeeService {
 
     public EmployeeDto updateEmployee(String id, UpdateEmployeeRequest request) {
         Employee employee = employeeRepository.findById(id)
-                .orElseThrow(() -> new EmployeeNotFoundException("Employee not found: ", id));
+                .orElseThrow(() -> new EmployeeNotFoundException(EMPLOYEE_NOT_FOUND, id));
 
         if (request.getFirstName() != null) {
             employee.setFirstName(request.getFirstName());

@@ -63,6 +63,7 @@ class AuthEntryPointJwtTest {
 
             @Override
             public void setWriteListener(jakarta.servlet.WriteListener writeListener) {
+                // Not used in this test - WriteListener is only needed for async operations
             }
         });
     }

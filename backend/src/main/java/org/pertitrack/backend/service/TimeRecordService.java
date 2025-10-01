@@ -34,6 +34,10 @@ import static org.pertitrack.backend.util.TimeUtils.shortFormatTime;
 @Transactional
 public class TimeRecordService {
 
+    private static final String NOT_STARTED_STATUS = "Not Started";
+    private static final String BREAK_SESSION_TYPE = "BREAK";
+    private static final String WORK_SESSION_TYPE = "WORK";
+
     private final TimeRecordRepository timeRecordRepository;
     private final EmployeeRepository employeeRepository;
     private final UserRepository userRepository;
@@ -365,7 +369,7 @@ public class TimeRecordService {
     // -------------------------------------------------------------
     private StatusCalculationResult calculateCurrentStatus(List<TimeRecord> records) {
         if (records.isEmpty()) {
-            return new StatusCalculationResult("Not Started", false, false);
+            return new StatusCalculationResult(NOT_STARTED_STATUS, false, false);
         }
 
         LocalDateTime lastClockIn = null;
@@ -412,7 +416,7 @@ public class TimeRecordService {
             status = "Finished";
             isWorking = false;
         } else {
-            status = "Not Started";
+            status = NOT_STARTED_STATUS;
             isWorking = false;
         }
 
@@ -423,7 +427,7 @@ public class TimeRecordService {
         if (records.isEmpty()) {
             return new TodaySummaryResponse(
                     null, null,
-                    "00:00", "00:00", "-08:00", "Not Started",
+                    "00:00", "00:00", "-08:00", NOT_STARTED_STATUS,
                     false, false);
         }
 
@@ -443,30 +447,30 @@ public class TimeRecordService {
                         arrivalTime = record.getRecordTime().toLocalTime();
                     }
                     sessionStart = record.getRecordTime();
-                    sessionType = "WORK";
+                    sessionType = WORK_SESSION_TYPE;
                 }
                 case BREAK_START -> {
-                    if ("WORK".equals(sessionType) && sessionStart != null) {
+                    if (WORK_SESSION_TYPE.equals(sessionType) && sessionStart != null) {
                         totalWorkingTime = totalWorkingTime.plus(
                                 Duration.between(sessionStart, record.getRecordTime()));
                     }
                     sessionStart = record.getRecordTime();
-                    sessionType = "BREAK";
+                    sessionType = BREAK_SESSION_TYPE;
                 }
                 case BREAK_END -> {
-                    if ("BREAK".equals(sessionType) && sessionStart != null) {
+                    if (BREAK_SESSION_TYPE.equals(sessionType) && sessionStart != null) {
                         totalBreakTime = totalBreakTime.plus(
                                 Duration.between(sessionStart, record.getRecordTime()));
                     }
                     sessionStart = record.getRecordTime();
-                    sessionType = "WORK";
+                    sessionType = WORK_SESSION_TYPE;
                 }
                 case CLOCK_OUT -> {
                     departureTime = record.getRecordTime().toLocalTime();
-                    if ("WORK".equals(sessionType) && sessionStart != null) {
+                    if (WORK_SESSION_TYPE.equals(sessionType) && sessionStart != null) {
                         totalWorkingTime = totalWorkingTime.plus(
                                 Duration.between(sessionStart, record.getRecordTime()));
-                    } else if ("BREAK".equals(sessionType) && sessionStart != null) {
+                    } else if (BREAK_SESSION_TYPE.equals(sessionType) && sessionStart != null) {
                         totalBreakTime = totalBreakTime.plus(
                                 Duration.between(sessionStart, record.getRecordTime()));
                     }
@@ -481,9 +485,9 @@ public class TimeRecordService {
 
         // Only add current time if we're actually in an active session
         if (sessionStart != null) {
-            if ("WORK".equals(sessionType)) {
+            if (WORK_SESSION_TYPE.equals(sessionType)) {
                 totalWorkingTime = totalWorkingTime.plus(Duration.between(sessionStart, now));
-            } else if ("BREAK".equals(sessionType)) {
+            } else if (BREAK_SESSION_TYPE.equals(sessionType)) {
                 totalBreakTime = totalBreakTime.plus(Duration.between(sessionStart, now));
             }
         }
