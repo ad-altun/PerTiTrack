@@ -261,7 +261,7 @@ public class TimeRecordService {
 
     @Transactional(readOnly = true)
     public List<TimeRecordResponse> getTimeRecordsByEmployeeId(String employeeId) {
-        List<TimeRecord> entities = timeRecordRepository.findByEmployeeId(employeeId);
+        List<TimeRecord> entities = timeRecordRepository.findByEmployee_Id(employeeId);
         return timeRecordMapper.toResponseList(entities);
     }
 
