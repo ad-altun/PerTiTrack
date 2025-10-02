@@ -42,7 +42,7 @@ export default function NotFoundPage() {
                     sx={ {
                         backgroundColor: '#3FC8EE', borderRadius: '2rem',
                         color: '#fff', fontWeight: 'bold', padding: '1.25rem 2.5rem',
-                        fontSize: '1.25rem', mt: 6, fontSize: '1rem',
+                        fontSize: '1.25rem', mt: 6,
                         '&:hover': {
                             backgroundColor: '#3F71EE', color: '000', textTransform: 'none',
                             fontWeight: 'bold', fontSize: '1.2rem',

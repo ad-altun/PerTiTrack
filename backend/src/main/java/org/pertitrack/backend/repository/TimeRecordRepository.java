@@ -11,7 +11,7 @@ import java.util.*;
 @Repository
 public interface TimeRecordRepository extends JpaRepository<TimeRecord, String> {
 
-    List<TimeRecord> findByEmployeeId(String employeeId);
+    List<TimeRecord> findByEmployee_Id(String employeeId);
 
     boolean existsByEmployeeAndRecordDateAndRecordType(Employee employee, LocalDate recordDate, TimeRecord.RecordType recordType);
 

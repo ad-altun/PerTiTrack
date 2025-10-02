@@ -28,7 +28,7 @@ public class Absence extends ApprovableEntity implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "employee_id", nullable = false)
     @NotNull
-    private transient Employee employee;
+    private Employee employee;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "absence_type_id", nullable = false)

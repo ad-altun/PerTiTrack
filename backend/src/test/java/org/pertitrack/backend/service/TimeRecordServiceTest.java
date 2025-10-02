@@ -951,7 +951,7 @@ class TimeRecordServiceTest {
         List<TimeRecord> entities = Arrays.asList(testEntity);
         List<TimeRecordResponse> expectedResponses = Arrays.asList(testResponse);
 
-        when(timeRecordRepository.findByEmployeeId(employeeId)).thenReturn(entities);
+        when(timeRecordRepository.findByEmployee_Id(employeeId)).thenReturn(entities);
         when(timeRecordMapper.toResponseList(entities)).thenReturn(expectedResponses);
 
         // Act
@@ -961,7 +961,7 @@ class TimeRecordServiceTest {
         assertNotNull(result);
         assertEquals(1, result.size());
         assertEquals(expectedResponses, result);
-        verify(timeRecordRepository).findByEmployeeId(employeeId);
+        verify(timeRecordRepository).findByEmployee_Id(employeeId);
         verify(timeRecordMapper).toResponseList(entities);
     }
 
@@ -972,7 +972,7 @@ class TimeRecordServiceTest {
         List<TimeRecord> entities = Arrays.asList();
         List<TimeRecordResponse> expectedResponses = Arrays.asList();
 
-        when(timeRecordRepository.findByEmployeeId(employeeId)).thenReturn(entities);
+        when(timeRecordRepository.findByEmployee_Id(employeeId)).thenReturn(entities);
         when(timeRecordMapper.toResponseList(entities)).thenReturn(expectedResponses);
 
         // Act
@@ -981,7 +981,7 @@ class TimeRecordServiceTest {
         // Assert
         assertNotNull(result);
         assertTrue(result.isEmpty());
-        verify(timeRecordRepository).findByEmployeeId(employeeId);
+        verify(timeRecordRepository).findByEmployee_Id(employeeId);
         verify(timeRecordMapper).toResponseList(entities);
     }
 
