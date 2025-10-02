@@ -7,7 +7,7 @@ import org.pertitrack.backend.entity.*;
 import org.pertitrack.backend.entity.auth.*;
 
 @Entity
-@Table(name = "employees", schema = "personnel")
+@Table(name = "employees", schema = "app_personnel")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

@@ -21,7 +21,7 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = true)
 @ToString(exclude = {"password"})
 @Entity
-@Table(name = "users", schema = "auth")
+@Table(name = "users", schema = "app_users")
 public class User extends BaseEntity implements UserDetails {
 
     @Serial

@@ -1,8 +1,8 @@
 
-CREATE SCHEMA IF NOT EXISTS timetrack;
+CREATE SCHEMA IF NOT EXISTS app_timetrack;
 
 -- Create absence_types table with String IDs
-CREATE TABLE IF NOT EXISTS timetrack.absence_types (
+CREATE TABLE IF NOT EXISTS app_timetrack.absence_types (
                                                        id VARCHAR(36) PRIMARY KEY DEFAULT gen_random_uuid()::text,
     name VARCHAR(100) NOT NULL,
     code VARCHAR(20) UNIQUE NOT NULL,
@@ -16,21 +16,21 @@ CREATE TABLE IF NOT EXISTS timetrack.absence_types (
     );
 
 -- Add constraints
-ALTER TABLE timetrack.absence_types
+ALTER TABLE app_timetrack.absence_types
     ADD CONSTRAINT check_color_code_format
         CHECK (color_code IS NULL OR color_code ~ '^#[0-9A-Fa-f]{6}$');
 
 -- Create indexes
-CREATE INDEX IF NOT EXISTS idx_absence_types_code ON timetrack.absence_types (code);
-CREATE INDEX IF NOT EXISTS idx_absence_types_name ON timetrack.absence_types (name);
-CREATE INDEX IF NOT EXISTS idx_absence_types_is_active ON timetrack.absence_types (is_active);
+CREATE INDEX IF NOT EXISTS idx_absence_types_code ON app_timetrack.absence_types (code);
+CREATE INDEX IF NOT EXISTS idx_absence_types_name ON app_timetrack.absence_types (name);
+CREATE INDEX IF NOT EXISTS idx_absence_types_is_active ON app_timetrack.absence_types (is_active);
 
 -- -- Create indexes for better performance
--- CREATE INDEX IF NOT EXISTS idx_absence_types_requires_approval ON timetrack.absence_types (requires_approval);
--- CREATE INDEX IF NOT EXISTS idx_absence_types_created_at ON timetrack.absence_types (created_at);
+-- CREATE INDEX IF NOT EXISTS idx_absence_types_requires_approval ON app_timetrack.absence_types (requires_approval);
+-- CREATE INDEX IF NOT EXISTS idx_absence_types_created_at ON app_timetrack.absence_types (created_at);
 
 -- Insert default absence types
-INSERT INTO timetrack.absence_types (id, name, code, description, requires_approval, affects_vacation_balance, is_paid,
+INSERT INTO app_timetrack.absence_types (id, name, code, description, requires_approval, affects_vacation_balance, is_paid,
                                      color_code)
 VALUES (gen_random_uuid(),'Vacation', 'VAC', 'Annual vacation leave', true, true, true, '#4CAF50'),
        (gen_random_uuid(),'Sick Leave', 'SICK', 'Medical leave for illness', false, false, true, '#F44336'),
@@ -44,24 +44,24 @@ VALUES (gen_random_uuid(),'Vacation', 'VAC', 'Annual vacation leave', true, true
 
 -- Add comments for documentation
 COMMENT
-ON TABLE timetrack.absence_types IS 'Types of absences available for employee requests';
+ON TABLE app_timetrack.absence_types IS 'Types of absences available for employee requests';
 COMMENT
-ON COLUMN timetrack.absence_types.id IS 'Unique identifier for the absence type';
+ON COLUMN app_timetrack.absence_types.id IS 'Unique identifier for the absence type';
 COMMENT
-ON COLUMN timetrack.absence_types.name IS 'Display name of the absence type';
+ON COLUMN app_timetrack.absence_types.name IS 'Display name of the absence type';
 COMMENT
-ON COLUMN timetrack.absence_types.code IS 'Unique short code for the absence type';
+ON COLUMN app_timetrack.absence_types.code IS 'Unique short code for the absence type';
 COMMENT
-ON COLUMN timetrack.absence_types.description IS 'Detailed description of when this absence type applies';
+ON COLUMN app_timetrack.absence_types.description IS 'Detailed description of when this absence type applies';
 COMMENT
-ON COLUMN timetrack.absence_types.requires_approval IS 'Whether this absence type requires manager approval';
+ON COLUMN app_timetrack.absence_types.requires_approval IS 'Whether this absence type requires manager approval';
 COMMENT
-ON COLUMN timetrack.absence_types.affects_vacation_balance IS 'Whether this absence counts against vacation balance';
+ON COLUMN app_timetrack.absence_types.affects_vacation_balance IS 'Whether this absence counts against vacation balance';
 COMMENT
-ON COLUMN timetrack.absence_types.is_paid IS 'Whether this absence type is paid time off';
+ON COLUMN app_timetrack.absence_types.is_paid IS 'Whether this absence type is paid time off';
 COMMENT
-ON COLUMN timetrack.absence_types.color_code IS 'Hex color code for UI display (e.g., #FF0000)';
+ON COLUMN app_timetrack.absence_types.color_code IS 'Hex color code for UI display (e.g., #FF0000)';
 COMMENT
-ON COLUMN timetrack.absence_types.is_active IS 'Whether this absence type is currently available for use';
+ON COLUMN app_timetrack.absence_types.is_active IS 'Whether this absence type is currently available for use';
 COMMENT
-ON COLUMN timetrack.absence_types.created_at IS 'Timestamp when the absence type was created';
+ON COLUMN app_timetrack.absence_types.created_at IS 'Timestamp when the absence type was created';

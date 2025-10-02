@@ -15,7 +15,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 @Entity
-@Table(name = "absences", schema = "timetrack")
+@Table(name = "absences", schema = "app_timetrack")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
