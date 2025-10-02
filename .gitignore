@@ -19,3 +19,4 @@ backend/.mvn
 /frontend/dist-ssr
 /frontend/*.local
 /frontend/public
+/backend/src/main/resources/db/migration/

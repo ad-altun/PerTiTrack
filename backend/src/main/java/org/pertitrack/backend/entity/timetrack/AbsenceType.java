@@ -11,7 +11,7 @@ import java.io.*;
 import java.time.*;
 
 @Entity
-@Table(name = "absence_types", schema = "timetrack")
+@Table(name = "absence_types", schema = "app_timetrack")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

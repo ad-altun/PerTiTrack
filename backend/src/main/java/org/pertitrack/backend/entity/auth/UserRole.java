@@ -10,7 +10,7 @@ import org.pertitrack.backend.entity.*;
 import java.time.*;
 
 @Entity
-@Table(name = "user_roles", schema = "auth")
+@Table(name = "user_roles", schema = "app_users")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

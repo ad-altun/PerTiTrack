@@ -16,7 +16,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "time_records", schema = "timetrack")
+@Table(name = "time_records", schema = "app_timetrack")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

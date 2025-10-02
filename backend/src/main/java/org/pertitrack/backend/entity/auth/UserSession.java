@@ -11,7 +11,7 @@ import java.time.*;
 
 @EqualsAndHashCode(callSuper = true)
 @Entity
-@Table(name = "user_sessions", schema = "auth")
+@Table(name = "user_sessions", schema = "app_users")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
