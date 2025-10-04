@@ -15,7 +15,7 @@ const BookingPanel: React.FC = () => {
     const dynamicLocalTime = useDynamicLocalTime();
     const isStatusLoading = useAppSelector(selectIsStatusLoading);
 
-// local state for notification
+    // local state for notification
     const [ showSuccess, setShowSuccess ] = useState(false);
     const [ successMessage, setSuccessMessage ] = useState('');
 
@@ -83,9 +83,8 @@ const BookingPanel: React.FC = () => {
             <Paper
                 elevation={ 2 }
                 sx={ {
-                    backgroundColor: 'white',
+                    backgroundColor: 'background.cardSection',
                     borderRadius: '12px',
-                    boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
                     overflow: 'hidden',
                     marginBottom: '20px',
                 } }
@@ -93,39 +92,45 @@ const BookingPanel: React.FC = () => {
                 {/* Section Header */ }
                 <Box
                     sx={ {
-                        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                        color: 'white',
-                        padding: '20px',
+                        color: 'text.primary',
+                        padding: '10px 20px',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'space-between',
                     } }
                 >
-                    <Typography variant="h6" component="div" sx={ { fontWeight: 600 } }>
-                        Quick Actions
+                    <Typography variant="h6" component="div"
+                                sx={ {
+                                    fontWeight: 600, width: '100%',
+                                    borderBottom: '2px solid', borderColor: 'border.main'
+                                } }>
+                        Booking Panel
                     </Typography>
-
-                    {/*{ !isDataLoading && currentStatus && (*/ }
-                    {/*    <Typography variant="body2" sx={ { opacity: 0.9 } }>*/ }
-                    {/*        Status: { currentStatus.isWorking ? 'Working' :*/ }
-                    {/*        currentStatus.isOnBreak ? 'On Break' : 'Not Working' }*/ }
-                    {/*    </Typography>*/ }
-                    {/*) }*/ }
                 </Box>
 
                 {/* Current Info Section */ }
                 <Box
                     sx={ {
-                        backgroundColor: '#f8fafc',
+                        // backgroundColor: 'background.default',
+                        margin: '10px 20px 0px 20px',
                         padding: '20px',
-                        borderBottom: '1px solid #e2e8f0',
+                        border: '1px solid',
+                        borderColor: '#e2e8f0',
+                        borderRadius: '12px',
+                        backgroundColor: 'background.cardItem',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        flex: 1,
+                        overflow: 'auto',
+                        maxHeight: '400px',
+                        minHeight: '175px',
                     } }
                 >
                     <Typography
                         variant="subtitle2"
                         sx={ {
                             fontWeight: 600,
-                            color: '#4a5568',
+                            color: 'text.hover',
                             marginBottom: '12px',
                         } }
                     >
@@ -136,7 +141,7 @@ const BookingPanel: React.FC = () => {
                     <Box
                         sx={ {
                             display: 'grid',
-                            gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' },
+                            gridTemplateColumns: { xs: '1fr', sm: '1fr' },
                             gap: '12px',
                         } }
                     >
@@ -156,10 +161,8 @@ const BookingPanel: React.FC = () => {
                                     justifyContent: 'space-between',
                                     alignItems: 'center',
                                     padding: '8px 12px',
-                                    backgroundColor: 'white',
-                                    borderRadius: '6px',
-                                    border: '1px solid #e2e8f0',
                                     opacity: info.isLoading ? 0.7 : 1,
+                                    borderBottom: '2px solid', borderColor: 'border.light',
                                 } }
                             >
                                 <Typography
@@ -190,17 +193,19 @@ const BookingPanel: React.FC = () => {
                 </Box>
 
                 {/* Action Buttons */ }
-                <Box sx={ { padding: '24px' } }>
+                <Box sx={ {
+                    padding: '20px',
+                } }>
                     <ActionButton onActionComplete={ handleActionComplete }/>
 
-                    <Divider sx={ { margin: '20px 0' } }/>
+                    <Divider sx={ { margin: '10px 0' } }/>
 
                     {/* Workflow Actions */ }
                     <Typography
                         variant="subtitle2"
                         sx={ {
                             fontWeight: 600,
-                            color: '#4a5568',
+                            color: 'text.secondary',
                             marginBottom: '16px',
                         } }
                     >

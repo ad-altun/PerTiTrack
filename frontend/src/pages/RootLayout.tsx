@@ -4,6 +4,7 @@ import Header from "../components/Header.tsx";
 import { useMemo } from "react";
 import Footer from "../components/Footer.tsx";
 import Navbar from "../components/Navbar.tsx";
+import { Box } from "@mui/material";
 
 export default function RootLayout() {
 
@@ -25,10 +26,27 @@ export default function RootLayout() {
 
     return (
         <div>
-            <Header portalName="Employee Portal" />
-            <Navbar />
-            <Outlet />
-            <Footer />
+            <Box
+                sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    minHeight: '100vh',
+                }}
+            >
+                <Header portalName="Employee Portal" />
+                <Navbar />
+                <Box
+                    component="main"
+                    sx={{
+                        flex: 1,
+                        display: 'flex',
+                        flexDirection: 'column',
+                    }}
+                >
+                    <Outlet />
+                </Box>
+                <Footer />
+            </Box>
         </div>
     );
 };

@@ -14,18 +14,26 @@ const Header: React.FC<HeaderProps> = ( { portalName } ) => {
             <AppBar
                 position="static"
                 sx={ {
-                    background: "primary.main",
+                    bgcolor: "background.appBar",
                     borderRadius: "0"
                 } }
             >
                 <Toolbar sx={ { justifyContent: "space-between" } }>
-                    <Link to="/" style={ { textDecoration: "none", color: "white" } }>
-                        <Typography variant="h6" sx={ { fontWeight: "bold" } }>
+                    <Link to="/" style={ { textDecoration: "none" } }>
+                        <Typography variant="h6"
+                                    sx={ {
+                                        fontWeight: "bold",
+                                        color: "text.header" } }>
                             timekeeper
                         </Typography>
                     </Link>
                     <Box display="flex" alignItems="center" gap={ 1 }>
-                        <Typography variant="body1" sx={ { mr: 1 } }>{ portalName }</Typography>
+                        <Typography variant="h6"
+                                    sx={ {
+                                        mr: 1,
+                                        color: "text.header",
+                                        fontWeight: "bold"} }
+                        >{ portalName }</Typography>
                     </Box>
                 </Toolbar>
             </AppBar>

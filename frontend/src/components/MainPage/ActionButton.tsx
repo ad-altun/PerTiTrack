@@ -48,7 +48,6 @@ export default function ActionButton( { onActionComplete }: ActionButtonsProps )
     const [ quickBreakEnd, { isLoading: isEndingBreak } ] = useQuickBreakEndMutation();
     const [ clockInHome, { isLoading: isClockingInHome } ] = useClockInHomeMutation();
     const [ clockInBusinessTrip, { isLoading: isClockingInBusinessTrip } ] = useClockInBusinessTripMutation();
-    const { refetch: refetchSummary } = useGetTodaySummaryQuery();
 
     // Local State
     const [ showError, setShowError ] = useState(false);
@@ -271,6 +270,10 @@ export default function ActionButton( { onActionComplete }: ActionButtonsProps )
                     gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
                     gap: '1rem',
                     marginBottom: '1rem',
+                    backgroundColor: 'background.cardItem',
+                    padding: '12px 16px',
+                    borderRadius: '8px',
+                    border: '1px solid #e2e8f0',
                 } }
             >
                 { availableActions.map(( action, index ) => (
@@ -278,10 +281,10 @@ export default function ActionButton( { onActionComplete }: ActionButtonsProps )
                         key={ index }
                         onClick={ action.disabled ? undefined : action.onClick }
                         sx={ {
-                            padding: '1rem',
+                            padding: '.75rem',
                             textAlign: 'center',
                             border: '2px solid',
-                            borderColor: action.disabled ? '#cbd5e0' : '#e2e8f0',
+                            borderColor: action.disabled ? '#cbd5e0' : '#3b82f6',
                             borderRadius: '8px',
                             cursor: action.disabled ? 'not-allowed' : 'pointer',
                             backgroundColor: action.disabled ? '#f7fafc' : 'white',
@@ -290,7 +293,7 @@ export default function ActionButton( { onActionComplete }: ActionButtonsProps )
                             display: 'flex',
                             flexDirection: 'column',
                             alignItems: 'center',
-                            gap: '10px',
+                            gap: '.5rem',
                             position: 'relative',
                             opacity: action.disabled ? 0.6 : 1,
                             '&:hover': action.disabled ? {} : {
@@ -389,7 +392,7 @@ export default function ActionButton( { onActionComplete }: ActionButtonsProps )
             {/* Current Status Display */ }
             <Box
                 sx={ {
-                    backgroundColor: '#f7fafc',
+                    backgroundColor: 'background.cardItem',
                     padding: '12px 16px',
                     borderRadius: '8px',
                     border: '1px solid #e2e8f0',

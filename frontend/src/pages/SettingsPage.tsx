@@ -10,7 +10,6 @@ import {
     Tabs,
     Tab,
     Card,
-    Alert,
     styled,
     useTheme as useMuiTheme,
 } from '@mui/material';
@@ -87,15 +86,6 @@ const Settings = () => {
                     Manage your account settings and preferences
                 </Typography>
             </Paper>
-
-            {/* Role-based notification */ }
-            <Alert severity="info" sx={ { mb: 3 } }>
-                You are logged in as
-
-                with access to
-
-                permissions.
-            </Alert>
 
             {/* Settings Content */ }
             <Paper sx={ { borderRadius: 2, overflow: 'hidden' } }>

@@ -16,6 +16,7 @@ preloadCriticalRoutes();
 import RootLayout from "./pages/RootLayout.tsx";
 import AuthLayout from "./pages/AuthLayout.tsx";
 import LoginForm from "./components/auth/LoginForm.tsx";
+import LoadingSpinner from "./components/LoadingSpinner.tsx";
 import { CustomThemeProvider } from "./contexts/ThemeContext.tsx";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -36,12 +37,6 @@ const TermsOfService = lazy(() => import("./pages/legalRequirements/TermsOfServi
 const AccessibilityStatement = lazy(() => import("./pages/legalRequirements/AccessibilityStatement.tsx"));
 const ContactPage = lazy(() => import("./pages/legalRequirements/ContactPage.tsx"));
 
-// Loading component
-const LoadingSpinner = () => (
-    <div style={ { display: 'flex', justifyContent: 'center', padding: '2rem' } }>
-        Loading...
-    </div>
-);
 
 function App() {
     const router = createBrowserRouter([
@@ -61,7 +56,7 @@ function App() {
                 {
                     path: "/dashboard",
                     element: (
-                        <Suspense fallback={ <LoadingSpinner/> }>
+                        <Suspense fallback={ <div> <LoadingSpinner/> </div> }>
                             <HomePage/>
                         </Suspense>
                     ),

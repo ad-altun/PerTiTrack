@@ -17,20 +17,9 @@ export default function TodaysSummary() {
         // These options ensure the data is always fresh
         refetchOnMountOrArgChange: true,
         refetchOnFocus: true,
-        // Optional: poll every 60 seconds for live updates
-        pollingInterval: 60000,
+        // Optional: poll every 180 seconds for live updates
+        pollingInterval: 180000,
     });
-
-    // DEBUG: Log when data changes to see if it's updating
-    // useEffect(() => {
-    //     console.log('TodaySummary Data Updated:', {
-    //         breakTime: todaySummary?.breakTime,
-    //         workingTime: todaySummary?.workingTime,
-    //         flexTime: todaySummary?.flexTime,
-    //         status: todaySummary?.status,
-    //         timestamp: new Date().toLocaleTimeString()
-    //     });
-    // }, [todaySummary]);
 
     const breakTime = todaySummary?.breakTime || "00:00:00";
     const workingTime = todaySummary?.workingTime || "00:00:00";
@@ -235,16 +224,22 @@ export default function TodaysSummary() {
             {/* Header with Refresh Button */ }
             <Box
                 sx={{
-                    background: 'linear-gradient(135deg, #4299e1 0%, #3182ce 100%)',
-                    color: 'white',
-                    p: 2.5,
+                    // background: 'linear-gradient(135deg, #4299e1 0%, #3182ce 100%)',
+                    backgroundColor: 'background.cardSection',
+                    color: 'text.primary',
+                    p: '10px 20px',
+                    gap: 1,
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
                 }}
             >
-                <Typography variant="h6" sx={{ fontWeight: 600, display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <Schedule />
+                <Schedule />
+                <Typography variant="h6"
+                            sx={{ fontWeight: 600, display: 'flex', width: '100%',
+                                alignItems: 'center', gap: 1, paddingBottom: '0px',
+                                borderBottom: '2px solid', borderColor: 'border.main',
+                            }}>
                     Today's Summary
                 </Typography>
 
@@ -276,6 +271,7 @@ export default function TodaysSummary() {
                             <Refresh
                                 fontSize="small"
                                 sx={{
+                                    color: (isRefreshing || isFetching) ? 'text.muted' : 'primary.light',
                                     animation: (isRefreshing || isFetching) ? 'spin 1s linear infinite' : 'none',
                                     '@keyframes spin': {
                                         '0%': { transform: 'rotate(0deg)' },
@@ -332,25 +328,24 @@ export default function TodaysSummary() {
             )}
 
             {/* Summary Content */ }
-            <Box sx={{ p: 3 }}>
+            <Box sx={{ p: 3, backgroundColor: 'background.cardSection' }}>
                 <Grid container spacing={2}>
                     {summaryItems.map((item, index) => (
                         <Grid sx={{ xs: 12, width: '100%' }} key={index}>
                             <Box
                                 sx={{
                                     display: 'flex',
-                                    // flexDirection: 'row',
                                     alignItems: 'center',
                                     justifyContent: 'space-between',
                                     p: 2,
-                                    backgroundColor: item.highlight ? '#f0f9ff' : '#f8fafc',
+                                    backgroundColor: 'background.cardItem',
                                     borderRadius: 2,
                                     border: item.highlight ? '2px solid #bfdbfe' : '1px solid #e2e8f0',
                                     transition: 'all 0.3s ease',
                                     position: 'relative',
                                     overflow: 'hidden',
                                     '&:hover': {
-                                        backgroundColor: item.highlight ? '#e0f2fe' : '#f1f5f9',
+                                        backgroundColor: item.highlight ? '#e0f2fe' : '#e0f2fe',
                                         transform: 'translateY(-1px)',
                                         boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
                                     },

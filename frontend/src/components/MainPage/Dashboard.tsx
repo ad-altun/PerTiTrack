@@ -12,12 +12,15 @@ export default function Dashboard() {
             sx={{
                 padding: '20px',
                 marginTop: 0,
+                bgColor: '#f5f5f5',
+                background: 'background.default',
             }}
         >
             <WelcomeSection />
 
             {/* Main Content - Following the HTML design layout */}
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+            <Box sx={{
+                display: 'flex', flexDirection: 'column', gap: '20px' }}>
                 {/* Booking Container */}
                 <Box sx={{ display: 'flex', gap: '20px' }}>
                     {/* Left Panel - Booking Actions */}

@@ -1,9 +1,10 @@
 import Dashboard from "../components/MainPage/Dashboard.tsx";
+import { Paper } from "@mui/material";
 
 export default function HomePage() {
  return (
-  <div>
-    <Dashboard />
-  </div>
+    <Paper sx={{ backgroundColor: 'background.default' }}>
+        <Dashboard />
+    </Paper>
  );
 };
