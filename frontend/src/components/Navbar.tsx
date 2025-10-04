@@ -38,7 +38,7 @@ const Navbar = () => {
     const handleSettingsClick = () => {
         handleMenuClose();
         navigate('/account-settings');
-    }
+    };
 
     const isActiveRoute = ( route: string ) => {
         return location.pathname === route || activePage?.toLowerCase() === route.replace('/', '');
@@ -54,7 +54,7 @@ const Navbar = () => {
             justifyContent="space-between"
             alignItems="center"
             sx={ {
-                backgroundColor: "#373748", // dark gray background for navbar
+                bgcolor: "background.navBar",
                 px: 2,
                 py: 1,
             } }
@@ -65,9 +65,12 @@ const Navbar = () => {
                     onClick={ () => navigateTo('/dashboard') }
                     sx={ {
                         mr: 1,
-                        backgroundColor: isActiveRoute('/dashboard') || isActiveRoute('/') ? "#4a5568" : "transparent",
-                        color: "white",
-                        "&:hover": { backgroundColor: "#4a5568", color: "white" },
+                        backgroundColor:
+                            isActiveRoute('/dashboard') ||
+                            isActiveRoute('/') ?
+                                "navItem.active" : "navItem.default",
+                        color: "text.header",
+                        "&:hover": { backgroundColor: "navItem.hover", fontWeight: "bold", },
                         textTransform: 'none',
                     } }
                 >
@@ -76,9 +79,10 @@ const Navbar = () => {
                 <Button
                     onClick={ () => navigateTo('/timesheet') }
                     sx={ {
-                        backgroundColor: isActiveRoute('/timesheet') ? "#4a5568" : "transparent",
-                        color: "white",
-                        "&:hover": { backgroundColor: "#4a5568", color: "white" },
+                        backgroundColor:
+                            isActiveRoute('/timesheet') ? "navItem.active" : "navItem.default",
+                        color: "text.header",
+                        "&:hover": { backgroundColor: "navItem.hover" },
                         textTransform: 'none',
                     } }
                 >
@@ -88,14 +92,19 @@ const Navbar = () => {
 
             {/* Right side - avatar */ }
             <Box display="flex" alignItems="center">
-                <IconButton onClick={ handleMenuOpen } color="inherit">
-                    <Avatar sx={ { width: 28, height: 28, mr: 1 } }>
+                <IconButton onClick={ handleMenuOpen }
+                            sx={ {
+                                textTransform: 'none', borderRadius: '9px', paddingInline: '20px',
+                                "&:hover": { backgroundColor: "navItem.hover", color: "text.header" },
+                            } }>
+                    <Avatar sx={ { width: 28, height: 28, mr: 1, color: "text.header", } }>
                         { userName.charAt(0) }
                     </Avatar>
-                    <Typography variant="body2" sx={ { color: "white", mr: 0.5 } }>
+                    <Typography variant="body2"
+                                sx={ { color: "text.header", mr: 0.5 } }>
                         { userName }
                     </Typography>
-                    <ArrowDropDownIcon sx={ { color: "white" } }/>
+                    <ArrowDropDownIcon sx={ { color: "text.header" } }/>
                 </IconButton>
 
                 <Menu
@@ -103,7 +112,8 @@ const Navbar = () => {
                     open={ Boolean(anchorEl) }
                     onClose={ handleMenuClose }
                 >
-                    <MenuItem onClick={ handleSettingsClick }>Account settings</MenuItem>
+                    <MenuItem onClick={ handleSettingsClick }
+                    >Account settings</MenuItem>
                     {/*<MenuItem onClick={ handleMenuClose }>Change account</MenuItem>*/ }
                     <MenuItem onClick={ handleLogout }>Logout</MenuItem>
                 </Menu>

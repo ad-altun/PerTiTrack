@@ -11,7 +11,7 @@ const WelcomeSection: React.FC = () => {
         <Paper
             elevation={2}
             sx={{
-                backgroundColor: 'white',
+                backgroundColor: 'background.paper',
                 padding: '20px',
                 marginBottom: '20px',
                 borderRadius: '8px',
@@ -22,7 +22,7 @@ const WelcomeSection: React.FC = () => {
                 variant="h4"
                 component="h1"
                 sx={{
-                    color: '#2d3748',
+                    color: '#text.secondary',
                     fontSize: '24px',
                     marginBottom: '10px',
                     fontWeight: 'normal',
@@ -34,7 +34,7 @@ const WelcomeSection: React.FC = () => {
             <Typography
                 variant="body1"
                 sx={{
-                    color: '#4a5568',
+                    color: '#text.secondary',
                     marginBottom: '5px',
                 }}
             >
@@ -44,7 +44,7 @@ const WelcomeSection: React.FC = () => {
             <Typography
                 variant="body1"
                 sx={{
-                    color: '#4a5568',
+                    color: '#text.secondary',
                     marginBottom: '5px',
                 }}
             >

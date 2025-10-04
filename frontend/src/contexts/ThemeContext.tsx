@@ -67,21 +67,102 @@ export const CustomThemeProvider = ({ children }: ThemeProviderProps) => {
                 ? {
                     primary: { main: "#4F46E5", light: "#6366F1", dark: "#3730A3" },
                     secondary: { main: "#10B981", light: "#34D399", dark: "#065F46" },
-                    background: { default: "#F9FAFB", paper: "#FFFFFF" },
-                    text: { primary: "#111827", secondary: "#4B5563" },
-                    error: { main: "#EF4444" },
-                    warning: { main: "#F59E0B" },
-                    success: { main: "#22C55E" },
+                    background: {
+                        default: "#f8fafc", // body
+                        paper: "white",
+                        appBar: "linear-gradient(0deg, #1e40af, #1e3a8a)",
+                        navBar: "#1e293b",
+                        sectionHeader: '#e0e7ff',
+                        cardItem: '#f7fafc',
+                        protocolHeader: '#e2e8f0',
+                        cardSection: '#fff',
+                    },
+                    text: {
+                        primary: "#2d3748",
+                        secondary: "#4a5568",
+                        muted: "#64748b",
+                        header: "white",
+                        hover: '#cbd5e1',
+                    },
+                    error: { main: "#EF4444", light: "#FCA5A5", dark: "#B91C1C" },
+                    warning: { main: "#F59E0B", light: "#FCD34D", dark: "#B45309" },
+                    success: { main: "#22C55E", light: "#86EFAC", dark: "#15803D" },
+                    info: { main: "#3B82F6", light: "#93C5FD", dark: "#1E40AF" },
+                    divider: "#E5E7EB",
+                    action: {
+                        active: "#4B5563",
+                        hover: "rgba(79, 70, 229, 0.08)",
+                        selected: "rgba(79, 70, 229, 0.12)",
+                        disabled: "#9CA3AF",
+                        disabledBackground: "#F3F4F6",
+                    },
+                    border: {
+                        light: '#334155',
+                        main: '#cbd5e0',
+                        dark: '#9CA3AF',
+                    },
+                    shadow: {
+                        light: 'rgba(0,0,0,0.15)',
+                        main: '#9CA3AF',
+                        dark: '#9CA3AF',
+                    },
+                    navItem: {
+                        default: "#334155",
+                        hover: "#475569",
+                        active: "#2563eb",
+                    }
                 }
                 : {
+                    // Dark mode colors
                     primary: { main: "#818CF8", light: "#A5B4FC", dark: "#4338CA" },
                     secondary: { main: "#34D399", light: "#6EE7B7", dark: "#065F46" },
-                    background: { default: "#0F172A", paper: "#1E293B" },
-                    text: { primary: "#F9FAFB", secondary: "#9CA3AF" },
-                    error: { main: "#F87171" },
-                    warning: { main: "#FBBF24" },
-                    success: { main: "#4ADE80" },
+                    background: {
+                        default: "#0F172A",
+                        paper: "#1E293B",
+                        appBar: "linear-gradient(0deg, #1e40af, #1e3a8a)",
+                        // navBar: "#2d3748",
+                        navBar: "#0f172a",
+                        sectionHeader: "#334155",
+                        protocolHeader: '#e2e8f0',
+                        cardItem: '#f7fafc',
+                        cardSection: '#334155',
+                    },
+                    text: {
+                        primary: "#F9FAFB",
+                        secondary: "#cbd5e1",
+                        header: "#f1f5f9",
+                        hover: '#4a5568',
+                    },
+                    error: { main: "#F87171", light: "#FCA5A5", dark: "#B91C1C" },
+                    warning: { main: "#FBBF24", light: "#FCD34D", dark: "#B45309" },
+                    success: { main: "#4ADE80", light: "#86EFAC", dark: "#15803D" },
+                    info: { main: "#60A5FA", light: "#93C5FD", dark: "#1E40AF" },
+                    divider: "#334155",
+                    action: {
+                        active: "#94A3B8",
+                        hover: "rgba(129, 140, 248, 0.12)",
+                        selected: "rgba(129, 140, 248, 0.16)",
+                        disabled: "#475569",
+                        disabledBackground: "#334155",
+                    },
+                    border: {
+                        light: '#bebfbf',
+                        main: '#475569',
+                        dark: '#9CA3AF',
+                    },
+                    shadow: {
+                        light: 'rgba(0,0,0,0.08)',
+                        main: '#9CA3AF',
+                        dark: '#9CA3AF',
+                    },
+                    navItem: {
+                        default: "#1e293b",
+                        hover: "#334155",
+                        active: "#3b82f6",
+                        text: '#e2e8f0',
+                    }
                 }),
+
         },
         typography: {
             fontFamily: "'Inter', 'Roboto', 'Helvetica', 'Arial', sans-serif",
@@ -144,6 +225,16 @@ export const CustomThemeProvider = ({ children }: ThemeProviderProps) => {
                     },
                 },
             },
+            MuiMenuItem: {
+                styleOverrides: {
+                    root: {
+                        borderRadius: "80px",
+                        boxShadow: "0 2px 6px rgba(0,0,0,0.05)",
+                        color: actualMode === "light" ? "text.secondary" : "#f1f5f9",
+                        textTransform: 'none',
+                    }
+                }
+            },
             MuiChip: {
                 styleOverrides: {
                     root: {
@@ -156,6 +247,53 @@ export const CustomThemeProvider = ({ children }: ThemeProviderProps) => {
                 styleOverrides: {
                     root: {
                         borderRadius: "12px",
+                        backgroundImage: "none",
+                        boxShadow: '2px 4px 6px rgba(0,0,0,0.15)',
+                    },
+                },
+            },
+            MuiTableHead: {
+                styleOverrides: {
+                    root: {
+                        backgroundColor: actualMode === "light" ? "#F3F4F6" : "#1E293B",
+                    },
+                },
+            },
+            MuiTableCell: {
+                styleOverrides: {
+                    head: {
+                        backgroundColor: actualMode === "light" ? "#F3F4F6" : "#1E293B",
+                        color: actualMode === "light" ? "#374151" : "#E5E7EB",
+                        fontWeight: 600,
+                    },
+                    body: {
+                        borderColor: actualMode === "light" ? "#E5E7EB" : "#334155",
+                    },
+                },
+            },
+            MuiTableRow: {
+                styleOverrides: {
+                    root: {
+                        "&:nth-of-type(even)": {
+                            backgroundColor: actualMode === "light" ? "#F9FAFB" : "#0F172A",
+                        },
+                        "&:hover": {
+                            backgroundColor: actualMode === "light" ? "#F3F4F6" : "#1E293B",
+                        },
+                    },
+                },
+            },
+            MuiDialog: {
+                styleOverrides: {
+                    paper: {
+                        backgroundColor: actualMode === "light" ? "#FFFFFF" : "#1E293B",
+                    },
+                },
+            },
+            MuiAlert: {
+                styleOverrides: {
+                    root: {
+                        borderRadius: "8px",
                     },
                 },
             },

@@ -25,32 +25,42 @@ export default function ProtocolFilters( { onDateChange, isRecordLoading }: Prot
         }
     };
 
-    const handleCalendarClick = ( event: React.MouseEvent<HTMLButtonElement, MouseEvent> ) => {
-        if ( !isRecordLoading ) {
-            setOpenCalendar(true);
-        }
-    }
-
     return (
         <Box
             sx={ {
-                padding: '15px 20px',
-                backgroundColor: '#f7fafc',
-                borderBottom: '1px solid #e2e8f0',
+                padding: '10px 20px',
                 display: 'flex',
                 alignItems: 'center',
+                justifyContent: 'space-between',
                 gap: '15px',
+                width: '100%',
                 flexWrap: 'wrap',
+                borderBottom: '2px solid', borderColor: 'border.main'
             } }
         >
+            <Box sx={{
+                color: 'text.primary',
+                padding: '10px 20px',
+            }} >
+                <Typography
+                    variant="h6" component="div"
+                    sx={ {
+                        fontWeight: 600,
+                        color: 'text.secondary',
+                    } }
+                >
+                    Booking List:
+                </Typography>
+            </Box>
             {/* Filter Group - Date */ }
-            <Box sx={ { display: 'flex', alignItems: 'center', gap: '10px' } }>
+            <Box sx={ {
+                display: 'flex', alignItems: 'center', gap: '2rem',
+            } }>
                 <Typography
                     variant="body2"
                     sx={ {
                         fontWeight: 600,
-                        color: '#4a5568',
-                        minWidth: '80px',
+                        color: 'text.secondary',
                     } }
                 >
                     Time Period:
@@ -58,15 +68,16 @@ export default function ProtocolFilters( { onDateChange, isRecordLoading }: Prot
                 <DatePicker
                     value={ selectedDate }
                     onChange={ handleDateChange }
-                    onOpen={() => setOpenCalendar(true)}
-                    onClose={() => setOpenCalendar(false)}
-                    disabled={isRecordLoading}
+                    onOpen={ () => setOpenCalendar(true) }
+                    onClose={ () => setOpenCalendar(false) }
+                    disabled={ isRecordLoading }
                     slotProps={ {
                         textField: {
                             size: "small",
                             onClick: () => setOpenCalendar(true),
                             sx: {
-                                backgroundColor: "white",
+                                backgroundColor: "text.cardItem",
+                                color: "text.secondary",
                                 minWidth: 150,
                                 cursor: isRecordLoading ? 'wait' : 'pointer',
                                 '& .MuiOutlinedInput-root': {
@@ -88,19 +99,19 @@ export default function ProtocolFilters( { onDateChange, isRecordLoading }: Prot
                         }
                     } }
                 />
-                {isRecordLoading && (
+                { isRecordLoading && (
                     <Typography
                         variant="caption"
-                        sx={{
+                        sx={ {
                             color: '#718096',
                             fontStyle: 'italic',
                             ml: 1,
                             mt: 2,
-                        }}
+                        } }
                     >
                         Loading records...
                     </Typography>
-                )}
+                ) }
             </Box>
         </Box>
     );

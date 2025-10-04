@@ -55,7 +55,7 @@ export default function ProtocolTable() {
     const [ deleteDialogOpen, setDeleteDialogOpen ] = useState(false);
     const [ recordToDelete, setRecordToDelete ] = useState<FormattedProtocolEntry | null>(null);
 
-    const handleDateChange = (date: string) => {
+    const handleDateChange = ( date: string ) => {
         setSelectedDate(date);
     };
 
@@ -151,7 +151,7 @@ export default function ProtocolTable() {
     if ( isRecordLoading && !protocols.length ) {
         return (
             <>
-                <ProtocolFilters onDateChange={handleDateChange} isRecordLoading={true} />
+                <ProtocolFilters onDateChange={ handleDateChange } isRecordLoading={ true }/>
                 <Box display="flex" justifyContent="center" p={ 4 }>
                     <CircularProgress/>
                 </Box>
@@ -159,27 +159,28 @@ export default function ProtocolTable() {
         );
     }
 
-    if ( error ) {
-        return (
-            <>
-                <ProtocolFilters onDateChange={handleDateChange} isRecordLoading={isFetching} />
-                <Alert severity="error" sx={ { m: 2 } }>
-                    Failed to load today's time records. Please try again.
-                </Alert>
-            </>
-        );
-    }
-
     return (
         <>
-            {/* Protocol Filters */}
-            <ProtocolFilters onDateChange={handleDateChange} isRecordLoading={ isFetching } />
-            {/* Table Container with Loading Overlay */}
-            <Box sx={{ position: 'relative' }}>
-                {/* Loading Overlay - shown during date changes */}
-                {isFetching && protocols.length > 0 && (
+            <Box
+                sx={ {
+                    backgroundColor: 'background.cardSection',
+                    width: '100%',
+                    borderBottom: '2px solid', borderColor: 'border.main',
+                } }
+            >
+                {/* Protocol Filters */ }
+                <ProtocolFilters onDateChange={ handleDateChange } isRecordLoading={ isFetching }/>
+            </Box>
+
+            {/* Table Container with Loading Overlay */ }
+            <Box sx={ {
+                backgroundColor: 'background.cardSection',
+                position: 'relative',
+            } }>
+                {/* Loading Overlay - shown during date changes */ }
+                { isFetching && protocols.length > 0 && (
                     <Box
-                        sx={{
+                        sx={ {
                             position: 'absolute',
                             top: 0,
                             left: 0,
@@ -192,151 +193,180 @@ export default function ProtocolTable() {
                             justifyContent: 'center',
                             zIndex: 1000,
                             borderRadius: '4px',
-                        }}
+                        } }
                     >
                         <Box
-                            sx={{
+                            sx={ {
                                 display: 'flex',
                                 flexDirection: 'column',
                                 alignItems: 'center',
                                 gap: 2,
-                                backgroundColor: 'white',
+                                backgroundColor: 'background.cardSection',
                                 padding: 3,
                                 borderRadius: 2,
                                 boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
-                            }}
+                            } }
                         >
-                            <CircularProgress size={40} />
+                            <CircularProgress size={ 40 }/>
                             <Typography variant="body2" color="text.secondary">
                                 Loading records...
                             </Typography>
                         </Box>
                     </Box>
-                )}
-            <TableContainer>
-                <Table sx={ { minWidth: 650 } }>
-                    <TableHead>
-                        <TableRow>
-                            { [ 'Date', 'Time', 'Booking', 'Terminal', 'Work Summary' ].map(( header ) => (
-                                <TableCell
-                                    key={ header }
-                                    sx={ {
-                                        backgroundColor: '#e2e8f0',
-                                        padding: '12px 8px',
-                                        fontWeight: 600,
-                                        color: '#2d3748',
-                                        borderBottom: '1px solid #cbd5e0',
-                                        fontSize: '14px',
-                                    } }
-                                >
-                                    { header }
-                                </TableCell>
-                            )) }
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        { protocols.length === 0 ? (
+                ) }
+                <TableContainer>
+                    <Table sx={ { minWidth: 650 } }>
+                        <TableHead
+                            sx={ {
+                                // borderTop: '1px solid',
+                                // borderColor: 'border.light',
+                            } }
+                        >
                             <TableRow>
-                                <TableCell colSpan={ 5 } sx={ { textAlign: 'center', py: 4 } }>
-                                    <Typography variant="body2" color="text.secondary">
-                                        No time records for today yet. Start by clocking in!
-                                    </Typography>
-                                </TableCell>
+                                { [ 'Date', 'Time', 'Booking', 'Terminal', 'Work Summary' ].map(( header ) => (
+                                    <TableCell
+                                        key={ header }
+                                        sx={ {
+                                            // backgroundColor: 'navItem.text',
+                                            backgroundColor: 'background.cardSection',
+                                            // backgroundColor: 'background.default',
+                                            padding: '12px 18px',
+                                            fontWeight: 600,
+                                            color: 'text.primary',
+                                            fontSize: '14px',
+                                            borderBottom: '1px solid #e2e8f0',
+                                        } }
+                                    >
+                                        { header }:
+                                    </TableCell>
+                                )) }
                             </TableRow>
-                        ) : (
-                            protocols.map(( protocol, index ) => (
-                                <TableRow
-                                    key={ protocol.id }
-                                    onClick={ ( event ) => handleRowClick(event, protocol) }
-                                    sx={ {
-                                        backgroundColor: index % 2 === 0 ? 'white' : '#f7fafc',
-                                        '&:hover': {
-                                            backgroundColor: '#edf2f7',
-                                            cursor: 'pointer',
-                                        },
-                                        // Visual indicator for Ctrl+Click functionality
-                                        '&:hover::after': {
-                                            content: '"Ctrl+Click to delete"',
-                                            position: 'absolute',
-                                            right: '8px',
-                                            fontSize: '11px',
-                                            color: '#666',
-                                            pointerEvents: 'none',
-                                        },
-                                        position: 'relative',
-                                    } }
-                                >
-                                    <TableCell
-                                        sx={ {
-                                            padding: '8px',
-                                            borderBottom: '1px solid #e2e8f0',
-                                            color: '#4a5568',
-                                            fontSize: '13px',
-                                        } }
-                                    >
-                                        { protocol.displayDate }
-                                    </TableCell>
-                                    <TableCell
-                                        sx={ {
-                                            padding: '8px',
-                                            borderBottom: '1px solid #e2e8f0',
-                                            color: '#4a5568',
-                                            fontSize: '13px',
-                                            fontFamily: 'monospace',
-                                        } }
-                                    >
-                                        { protocol.displayTime }
-                                    </TableCell>
-                                    <TableCell
-                                        sx={ {
-                                            padding: '8px',
-                                            borderBottom: '1px solid #e2e8f0',
-                                            fontSize: '13px',
-                                        } }
-                                    >
-                                        <Chip
-                                            label={ protocol.displayBooking }
-                                            size="small"
-                                            sx={ {
-                                                ...getBookingChipColor(protocol.displayBookingType),
-                                                fontSize: '11px',
-                                                fontWeight: 500,
-                                                height: '24px',
-                                            } }
-                                        />
-                                    </TableCell>
-                                    <TableCell
-                                        sx={ {
-                                            padding: '8px',
-                                            borderBottom: '1px solid #e2e8f0',
-                                            color: '#4a5568',
-                                            fontSize: '13px',
-                                        } }
-                                    >
-                                        { protocol.terminal }
-                                    </TableCell>
-                                    <TableCell
-                                        sx={ {
-                                            padding: '8px',
-                                            borderBottom: '1px solid #e2e8f0',
-                                            fontSize: '13px',
-                                            maxWidth: '300px',
-                                        } }
-                                        onClick={ ( e ) => e.stopPropagation() } // Prevent row click when clicking on work summary
-                                    >
-                                        <ProtocolWorkSummary
-                                            id={ protocol.id }
-                                            workSummary={ protocol.notes }
-                                            isNewRecord={ newRecordId === protocol.id }
-                                            onNotesUpdate={ () => handleNotesUpdate(protocol.id) }
-                                        />
-                                    </TableCell>
-                                </TableRow>
-                            ))
-                        ) }
-                    </TableBody>
-                </Table>
-            </TableContainer>
+                        </TableHead>
+                        <TableBody>
+                            { error ?
+                                (
+                                    <>
+                                        <Alert severity="error"
+                                               sx={ {
+                                                   display: 'flex',
+                                                   justifyContent: 'center',
+                                                   alignItems: 'center',
+                                                   width: '100%',
+                                                   marginBlock: 2 ,
+                                                   marginInline: '50%',
+                                                   padding: 1,
+                                               } }>
+                                            <Typography
+                                                variant="body1"
+                                                sx={{ paddingBlock: .5, }}
+                                            >
+                                                Failed to load today's time records. Please try again.
+                                            </Typography>
+                                        </Alert>
+                                    </>
+                                ) : (
+                                    protocols.length === 0 ? (
+                                        <TableRow>
+                                            <TableCell colSpan={ 5 } sx={ { textAlign: 'center', py: 4 } }>
+                                                <Typography variant="body2" color="text.secondary">
+                                                    No time records for today yet. Start by clocking in!
+                                                </Typography>
+                                            </TableCell>
+                                        </TableRow>
+                                    ) : (
+                                        protocols.map(( protocol, index ) => (
+                                            <TableRow
+                                                key={ protocol.id }
+                                                onClick={ ( event ) => handleRowClick(event, protocol) }
+                                                sx={ {
+                                                    backgroundColor: index % 2 === 0 ? 'white' : '#f7fafc',
+                                                    '&:hover': {
+                                                        backgroundColor: '#edf2f7',
+                                                        cursor: 'pointer',
+                                                    },
+                                                    // Visual indicator for Ctrl+Click functionality
+                                                    '&:hover::after': {
+                                                        content: '"Ctrl+Click to delete"',
+                                                        position: 'absolute',
+                                                        right: '8px',
+                                                        fontSize: '11px',
+                                                        color: '#666',
+                                                        pointerEvents: 'none',
+                                                    },
+                                                    position: 'relative',
+                                                } }
+                                            >
+                                                <TableCell
+                                                    sx={ {
+                                                        padding: '8px',
+                                                        borderBottom: '1px solid #e2e8f0',
+                                                        color: '#4a5568',
+                                                        fontSize: '13px',
+                                                    } }
+                                                >
+                                                    { protocol.displayDate }
+                                                </TableCell>
+                                                <TableCell
+                                                    sx={ {
+                                                        padding: '8px',
+                                                        borderBottom: '1px solid #e2e8f0',
+                                                        color: '#4a5568',
+                                                        fontSize: '13px',
+                                                        fontFamily: 'monospace',
+                                                    } }
+                                                >
+                                                    { protocol.displayTime }
+                                                </TableCell>
+                                                <TableCell
+                                                    sx={ {
+                                                        padding: '8px',
+                                                        borderBottom: '1px solid #e2e8f0',
+                                                        fontSize: '13px',
+                                                    } }
+                                                >
+                                                    <Chip
+                                                        label={ protocol.displayBooking }
+                                                        size="small"
+                                                        sx={ {
+                                                            ...getBookingChipColor(protocol.displayBookingType),
+                                                            fontSize: '11px',
+                                                            fontWeight: 500,
+                                                            height: '24px',
+                                                        } }
+                                                    />
+                                                </TableCell>
+                                                <TableCell
+                                                    sx={ {
+                                                        padding: '8px',
+                                                        borderBottom: '1px solid #e2e8f0',
+                                                        color: '#4a5568',
+                                                        fontSize: '13px',
+                                                    } }
+                                                >
+                                                    { protocol.terminal }
+                                                </TableCell>
+                                                <TableCell
+                                                    sx={ {
+                                                        padding: '8px',
+                                                        borderBottom: '1px solid #e2e8f0',
+                                                        fontSize: '13px',
+                                                        maxWidth: '300px',
+                                                    } }
+                                                    onClick={ ( e ) => e.stopPropagation() } // Prevent row click when clicking on work summary
+                                                >
+                                                    <ProtocolWorkSummary
+                                                        id={ protocol.id }
+                                                        workSummary={ protocol.notes }
+                                                        isNewRecord={ newRecordId === protocol.id }
+                                                        onNotesUpdate={ () => handleNotesUpdate(protocol.id) }
+                                                    />
+                                                </TableCell>
+                                            </TableRow>
+                                        )) )
+                                ) }
+                        </TableBody>
+                    </Table>
+                </TableContainer>
             </Box>
 
             {/* Delete Confirmation Dialog */ }

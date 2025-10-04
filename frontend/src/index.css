@@ -1,3 +1,33 @@
+
+/*!* Global Reset - Remove default margins and padding *!*/
+/** {*/
+/*    margin: 0;*/
+/*    padding: 0;*/
+/*    box-sizing: border-box;*/
+/*}*/
+
+/*html, body {*/
+/*    margin: 0;*/
+/*    padding: 0;*/
+/*    width: 100%;*/
+/*    height: 100%;*/
+/*    overflow-x: hidden; !* Prevent horizontal scroll *!*/
+/*}*/
+
+/*#root {*/
+/*    margin: 0;*/
+/*    padding: 0;*/
+/*    width: 100%;*/
+/*    min-height: 100vh;*/
+/*}*/
+
+/*!* Ensure main doesn't have extra margins *!*/
+/*main {*/
+/*    margin: 0;*/
+/*    padding: 0;*/
+/*    width: 100%;*/
+/*}*/
+
 /*:root {*/
 /*  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;*/
 /*  line-height: 1.5;*/
