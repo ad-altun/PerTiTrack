@@ -1,4 +1,4 @@
-import { Navigate, Outlet } from "react-router-dom";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { useAppSelector } from "../store/hook.ts";
 import Header from "../components/Header.tsx";
 import { useMemo } from "react";
@@ -9,6 +9,7 @@ import { Box } from "@mui/material";
 export default function RootLayout() {
 
     const { isAuthenticated, token } = useAppSelector((state) => state.auth);
+    const location = useLocation();
 
     const isAuthed = useMemo(() => {
         if (!isAuthenticated || !token) return false;
@@ -20,12 +21,12 @@ export default function RootLayout() {
         }
     }, [isAuthenticated, token]);
 
-    if (!isAuthed) {
-        return <Navigate to="/auth/signin" replace />;
+    if (isAuthed && location.pathname === '/') {
+        // return <Navigate to="/auth/signin" replace />;
+        return <Navigate to="/dashboard" replace />;
     }
 
     return (
-        <div>
             <Box
                 sx={{
                     display: 'flex',
@@ -33,7 +34,9 @@ export default function RootLayout() {
                     minHeight: '100vh',
                 }}
             >
-                <Header portalName="Employee Portal" />
+                {/* Only show Header if NOT on landing page (root path) when not authenticated */}
+                {!(location.pathname === "/" && !isAuthenticated) && <Header portalName="Employee Portal" />}
+                {/*<Header portalName="Employee Portal" />*/}
                 <Navbar />
                 <Box
                     component="main"
@@ -47,6 +50,5 @@ export default function RootLayout() {
                 </Box>
                 <Footer />
             </Box>
-        </div>
     );
 };

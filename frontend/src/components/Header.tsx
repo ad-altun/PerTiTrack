@@ -24,7 +24,7 @@ const Header: React.FC<HeaderProps> = ( { portalName } ) => {
                                     sx={ {
                                         fontWeight: "bold",
                                         color: "text.header" } }>
-                            timekeeper
+                            PerTiTrack
                         </Typography>
                     </Link>
                     <Box display="flex" alignItems="center" gap={ 1 }>
