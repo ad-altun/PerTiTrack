@@ -25,6 +25,7 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 const RegisterForm = lazy(() => import("./components/auth/RegisterForm.tsx"));
 const ForgotPasswordForm = lazy(() => import("./components/auth/ForgotPasswordForm.tsx"));
 const HomePage = lazy(() => import("./pages/HomePage.tsx"));
+const Dashboard = lazy(() => import("./components/MainPage/Dashboard.tsx"))
 const TimeSheetPage = lazy(() => import("./pages/TimeSheetPage.tsx"));
 const NotFoundPage = lazy(() => import("./pages/NotFoundPage.tsx"));
 const UnauthorizedPage = lazy(() => import("./pages/UnauthorizedPage.tsx"));
@@ -54,10 +55,18 @@ function App() {
                     ),
                 },
                 {
+                    path: 'home',
+                    element: (
+                        <Suspense fallback={ <div> <LoadingSpinner /> </div> } >
+                            < HomePage />
+                        </Suspense>
+                    ),
+                },
+                {
                     path: "/dashboard",
                     element: (
                         <Suspense fallback={ <div> <LoadingSpinner/> </div> }>
-                            <HomePage/>
+                            <Dashboard />
                         </Suspense>
                     ),
                 },
@@ -87,7 +96,7 @@ function App() {
             children: [
                 {
                     index: true,
-                    element: <LoginForm/>,
+                    element: <LoginForm />,
                 },
                 {
                     path: 'signin',

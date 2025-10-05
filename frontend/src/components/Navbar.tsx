@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import Box from "@mui/material/Box";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
@@ -13,7 +13,7 @@ import {
     selectUserProfileName
 } from "../store/selectors/navbarSelectors.ts";
 import { Button } from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useLocation, useNavigate } from "react-router-dom";
 
 const Navbar = () => {
     const [ anchorEl, setAnchorEl ] = React.useState<null | HTMLElement>(null);
@@ -21,6 +21,20 @@ const Navbar = () => {
 
     const activePage = useAppSelector(selectActivePage);
     const userName = useAppSelector(selectUserProfileName);
+
+    const { isAuthenticated, token } = useAppSelector(( state ) => state.auth);
+    const location = useLocation();
+
+    const isAuthed = useMemo(() => {
+        if ( !isAuthenticated || !token ) return false;
+        try {
+            const payload = JSON.parse(atob(token.split('.')[ 1 ]));
+            return payload.exp > Date.now() / 1000;
+        }
+        catch {
+            return false;
+        }
+    }, [ isAuthenticated, token ]);
 
     const handleMenuOpen = ( event: React.MouseEvent<HTMLButtonElement> ) => {
         setAnchorEl(event.currentTarget);
@@ -49,76 +63,158 @@ const Navbar = () => {
     };
 
     return (
-        <Box
-            display="flex"
-            justifyContent="space-between"
-            alignItems="center"
-            sx={ {
-                bgcolor: "background.navBar",
-                px: 2,
-                py: 1,
-            } }
-        >
-            {/* Left side - navigation */ }
-            <Box>
-                <Button
-                    onClick={ () => navigateTo('/dashboard') }
+        isAuthed ? (
+            <Box
+                display="flex"
+                justifyContent="space-between"
+                alignItems="center"
+                sx={ {
+                    bgcolor: "background.navBar",
+                    px: 2,
+                    py: 1,
+                } }
+            >
+                {/* Left side - navigation */ }
+                <Box>
+                    <Button
+                        onClick={ () => navigateTo('/dashboard') }
+                        sx={ {
+                            mr: 1,
+                            backgroundColor:
+                                isActiveRoute('/dashboard') ||
+                                isActiveRoute('/') ?
+                                    "navItem.active" : "navItem.default",
+                            color: "text.header",
+                            "&:hover": { backgroundColor: "navItem.hover", fontWeight: "bold", },
+                            textTransform: 'none',
+                        } }
+                    >
+                        Home
+                    </Button>
+                    <Button
+                        onClick={ () => navigateTo('/timesheet') }
+                        sx={ {
+                            backgroundColor:
+                                isActiveRoute('/timesheet') ? "navItem.active" : "navItem.default",
+                            color: "text.header",
+                            "&:hover": { backgroundColor: "navItem.hover" },
+                            textTransform: 'none',
+                        } }
+                    >
+                        Timesheet
+                    </Button>
+                </Box>
+
+                {/* Right side - avatar */ }
+                <Box display="flex" alignItems="center">
+                    <IconButton onClick={ handleMenuOpen }
+                                sx={ {
+                                    textTransform: 'none', borderRadius: '9px', paddingInline: '20px',
+                                    "&:hover": { backgroundColor: "navItem.hover", color: "text.header" },
+                                } }>
+                        <Avatar sx={ { width: 28, height: 28, mr: 1, color: "text.header", } }>
+                            { userName.charAt(0) }
+                        </Avatar>
+                        <Typography variant="body2"
+                                    sx={ { color: "text.header", mr: 0.5 } }>
+                            { userName }
+                        </Typography>
+                        <ArrowDropDownIcon sx={ { color: "text.header" } }/>
+                    </IconButton>
+
+                    <Menu
+                        anchorEl={ anchorEl }
+                        open={ Boolean(anchorEl) }
+                        onClose={ handleMenuClose }
+                    >
+                        <MenuItem onClick={ handleSettingsClick }
+                        >Account settings</MenuItem>
+                        {/*<MenuItem onClick={ handleMenuClose }>Change account</MenuItem>*/ }
+                        <MenuItem onClick={ handleLogout }>Logout</MenuItem>
+                    </Menu>
+                </Box>
+            </Box>
+        ) : (
+            <Box
+                display="flex"
+                justifyContent="space-between"
+                alignItems="center"
+                sx={ {
+                    // bgcolor: "background.navBar",
+                    background: "linear-gradient(0deg, #6E8CFB, #3C467B)",
+                    px: 2,
+                    py: 1,
+                } }
+            >
+                {/* Left side - navigation */ }
+                <Box>
+                    <Button
+                        onClick={ () => navigateTo('/') }
+                        sx={ {
+                            m: 1,
+                            // backgroundColor: "navItem.active",
+                            color: "text.header",
+                            "&:hover": { backgroundColor: "#6E8CFB", fontWeight: "bold", },
+                            textTransform: 'none',
+                        } }
+                    >
+                        <Typography variant="h5">
+                            PerTiTrack
+                        </Typography>
+                    </Button>
+                </Box>
+
+                {/* Right side  */ }
+                <Box
                     sx={ {
-                        mr: 1,
-                        backgroundColor:
-                            isActiveRoute('/dashboard') ||
-                            isActiveRoute('/') ?
-                                "navItem.active" : "navItem.default",
-                        color: "text.header",
-                        "&:hover": { backgroundColor: "navItem.hover", fontWeight: "bold", },
-                        textTransform: 'none',
+                        display: "flex",
+                        alignItems: "center",
+                        gap: '1rem',
+                        paddingBlock: '1rem',
                     } }
                 >
-                    HomePage
-                </Button>
-                <Button
-                    onClick={ () => navigateTo('/timesheet') }
-                    sx={ {
-                        backgroundColor:
-                            isActiveRoute('/timesheet') ? "navItem.active" : "navItem.default",
-                        color: "text.header",
-                        "&:hover": { backgroundColor: "navItem.hover" },
-                        textTransform: 'none',
-                    } }
-                >
-                    Timesheet
-                </Button>
-            </Box>
 
-            {/* Right side - avatar */ }
-            <Box display="flex" alignItems="center">
-                <IconButton onClick={ handleMenuOpen }
-                            sx={ {
-                                textTransform: 'none', borderRadius: '9px', paddingInline: '20px',
-                                "&:hover": { backgroundColor: "navItem.hover", color: "text.header" },
-                            } }>
-                    <Avatar sx={ { width: 28, height: 28, mr: 1, color: "text.header", } }>
-                        { userName.charAt(0) }
-                    </Avatar>
-                    <Typography variant="body2"
-                                sx={ { color: "text.header", mr: 0.5 } }>
-                        { userName }
-                    </Typography>
-                    <ArrowDropDownIcon sx={ { color: "text.header" } }/>
-                </IconButton>
+                    <Button
+                        onClick={ () => document.getElementById('about-section')?.scrollIntoView({
+                            behavior: 'smooth'
+                        }) }
+                        sx={ {
+                            mr: 1,
+                            // backgroundColor:
+                            //     isActiveRoute('/dashboard') ||
+                            //     isActiveRoute('/') ?
+                            //         "navItem.active" : "navItem.default",
+                            color: "text.header",
+                            "&:hover": { backgroundColor: "#6E8CFB", fontWeight: "bold", },
+                            textTransform: 'none',
+                        } }
+                    >
+                        <Typography variant="h5">
+                            About
+                        </Typography>
 
-                <Menu
-                    anchorEl={ anchorEl }
-                    open={ Boolean(anchorEl) }
-                    onClose={ handleMenuClose }
-                >
-                    <MenuItem onClick={ handleSettingsClick }
-                    >Account settings</MenuItem>
-                    {/*<MenuItem onClick={ handleMenuClose }>Change account</MenuItem>*/ }
-                    <MenuItem onClick={ handleLogout }>Logout</MenuItem>
-                </Menu>
+                    </Button>
+                    <Button
+                        onClick={ () => navigateTo('/auth/signin') }
+                        sx={ {
+                            mr: 1,
+                            // backgroundColor:
+                            //     isActiveRoute('/dashboard') ||
+                            //     isActiveRoute('/') ?
+                            //         "navItem.active" : "navItem.default",
+                            color: "text.header",
+                            "&:hover": { backgroundColor: "#6E8CFB", fontWeight: "bold", },
+                            textTransform: 'none',
+                        } }
+                    >
+                        <Typography variant="h5">
+                            Login
+                        </Typography>
+
+                    </Button>
+                </Box>
             </Box>
-        </Box>
+        )
     );
 };
 export default Navbar;

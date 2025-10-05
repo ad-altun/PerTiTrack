@@ -97,8 +97,12 @@ export default function Footer() {
                     variant="body2"
                     color="text.secondary"
                     align="center"
+                    component="div"
                 >
-                    © { currentYear } PerTiTrack. Alle Rechte vorbehalten.
+                    © { currentYear } PerTiTrack. | All rights reserved.
+                    <div style={ { margin: '5px auto', height: '1px', width: '25%',
+                        border: '1px solid', borderColor: '#ddd' } }></div>
+                    💻 Developed by Abidin Deniz Altun
                 </Typography>
             </Container>
         </Box>

@@ -246,7 +246,7 @@ export default function TodaysSummary() {
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                     {currentStatus !== 'Not Started' && (
                         <Typography variant="body2" sx={{ opacity: 0.9 }}>
-                            {new Date().toLocaleDateString('de-DE')}
+                            {/*{new Date().toLocaleDateString('de-DE')}*/}
                         </Typography>
                     )}
 
@@ -285,29 +285,31 @@ export default function TodaysSummary() {
             </Box>
 
             {/* Refresh Indicator */}
-            {(isRefreshing || isFetching) && (
-                <Box sx={{ px: 3, pt: 1 }}>
-                    <LinearProgress
-                        sx={{
-                            height: 2,
-                            borderRadius: 1,
-                            backgroundColor: '#e3f2fd',
-                            '& .MuiLinearProgress-bar': {
-                                backgroundColor: '#1976d2'
-                            }
-                        }}
-                    />
-                </Box>
-            )}
+            {/*{(isRefreshing || isFetching) && (*/}
+            {/*    <Box sx={{ px: 3, pt: 1, backgroundColor: 'background.default' }}>*/}
+            {/*        <LinearProgress*/}
+            {/*            sx={{*/}
+            {/*                height: 2,*/}
+            {/*                borderRadius: 1,*/}
+            {/*                backgroundColor: '#e3f2fd',*/}
+            {/*                '& .MuiLinearProgress-bar': {*/}
+            {/*                    backgroundColor: '#1976d2'*/}
+            {/*                }*/}
+            {/*            }}*/}
+            {/*        />*/}
+            {/*    </Box>*/}
+            {/*)}*/}
 
             {/* Progress Bar for Work Completion */ }
             {currentStatus !== 'Not Started' && (
-                <Box sx={{ px: 3, pt: 2 }}>
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-                        <Typography variant="caption" color="textSecondary">
+                <Box sx={{ px: 3, py: 2, backgroundColor: "background.cardSection" }}>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between',
+                        alignItems: 'center', mb: 1,
+                    }}>
+                        <Typography variant="caption" >
                             Daily Progress
                         </Typography>
-                        <Typography variant="caption" color="textSecondary">
+                        <Typography variant="caption">
                             {Math.round(completionPercentage)}%
                         </Typography>
                     </Box>

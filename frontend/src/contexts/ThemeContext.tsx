@@ -97,9 +97,9 @@ export const CustomThemeProvider = ({ children }: ThemeProviderProps) => {
                         disabledBackground: "#F3F4F6",
                     },
                     border: {
-                        light: '#334155',
+                        light: '#c2cad6',
                         main: '#cbd5e0',
-                        dark: '#9CA3AF',
+                        dark: '#e2e8f0',
                     },
                     shadow: {
                         light: 'rgba(0,0,0,0.15)',
@@ -148,7 +148,7 @@ export const CustomThemeProvider = ({ children }: ThemeProviderProps) => {
                     border: {
                         light: '#bebfbf',
                         main: '#475569',
-                        dark: '#9CA3AF',
+                        dark: '#e2e8f0',
                     },
                     shadow: {
                         light: 'rgba(0,0,0,0.08)',
@@ -262,12 +262,12 @@ export const CustomThemeProvider = ({ children }: ThemeProviderProps) => {
             MuiTableCell: {
                 styleOverrides: {
                     head: {
-                        backgroundColor: actualMode === "light" ? "#F3F4F6" : "#1E293B",
-                        color: actualMode === "light" ? "#374151" : "#E5E7EB",
+                        // backgroundColor: actualMode === "light" ? "#F3F4F6" : "#1E293B",
+                        // color: actualMode === "light" ? "#374151" : "#E5E7EB",
                         fontWeight: 600,
                     },
                     body: {
-                        borderColor: actualMode === "light" ? "#E5E7EB" : "#334155",
+                        // borderColor: actualMode === "light" ? "#E5E7EB" : "#334155",
                     },
                 },
             },
@@ -275,10 +275,12 @@ export const CustomThemeProvider = ({ children }: ThemeProviderProps) => {
                 styleOverrides: {
                     root: {
                         "&:nth-of-type(even)": {
-                            backgroundColor: actualMode === "light" ? "#F9FAFB" : "#0F172A",
+                            // backgroundColor: actualMode === "light" ? "#F9FAFB" : "#4f5977",
+                            // color: actualMode === "light" ? "#EF4444" : "#EF4444",
                         },
                         "&:hover": {
-                            backgroundColor: actualMode === "light" ? "#F3F4F6" : "#1E293B",
+                            // backgroundColor: actualMode === "light" ? "#F3F4F6" : "#1E293B",
+                            // color: actualMode === "light" ? "#EF4444" : "#EF4444",
                         },
                     },
                 },
