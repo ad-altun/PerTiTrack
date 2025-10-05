@@ -432,8 +432,6 @@ export default function ActionButton( { onActionComplete }: ActionButtonsProps )
                             marginTop: '4px',
                         } }
                     >
-                        {/*Started at { format(todaySummary.arrivalTime, "dd-MM-yyyy, HH:mm:ss") }*/ }
-                        Started at { todaySummary.arrivalTime }
                     </Typography>
                 ) }
             </Box>

@@ -80,17 +80,22 @@ export default function ProtocolWorkSummary( {
                 <Box sx={ { display: 'flex', flexDirection: 'column', gap: 1 } }>
                     <TextField
                         multiline
-                        rows={ 3 }
+                        rows={ 2 }
                         value={ notes }
                         onChange={ ( e ) => setNotes(e.target.value) }
                         onKeyDown={ handleKeyPress }
                         placeholder={ isNewRecord ? "Add work summary..." : "Edit work summary..." }
                         variant="outlined"
                         size="small"
-                        autoFocus={ isNewRecord }
+                        // autoFocus={ isNewRecord }
                         sx={ {
+                            border: "1px solid",
+                            borderColor: "border.dark",
+                            boxShadow: "#e2e8f0 0px 1px 2px 0px",
+                            borderRadius: '8px',
                             '& .MuiOutlinedInput-root': {
                                 fontSize: '13px',
+                                color: '#4a5568',
                             }
                         } }
                         disabled={ isLoading }

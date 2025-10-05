@@ -130,7 +130,7 @@ const BookingPanel: React.FC = () => {
                         variant="subtitle2"
                         sx={ {
                             fontWeight: 600,
-                            color: 'text.hover',
+                            color: '#4a5568',
                             marginBottom: '12px',
                         } }
                     >

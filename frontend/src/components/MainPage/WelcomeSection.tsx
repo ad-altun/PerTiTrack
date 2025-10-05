@@ -28,7 +28,7 @@ const WelcomeSection: React.FC = () => {
                     fontWeight: 'normal',
                 }}
             >
-                Welcome to timekeeper.WEB Employee Portal
+                Welcome to PerTiTrack.WEB Employee Portal
             </Typography>
 
             <Typography

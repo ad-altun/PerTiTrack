@@ -286,7 +286,7 @@ export default function ProtocolTable() {
                                                     },
                                                     // Visual indicator for Ctrl+Click functionality
                                                     '&:hover::after': {
-                                                        content: '"Ctrl+Click to delete"',
+                                                        // content: '"Ctrl+Click to delete"',
                                                         position: 'absolute',
                                                         right: '8px',
                                                         fontSize: '11px',
