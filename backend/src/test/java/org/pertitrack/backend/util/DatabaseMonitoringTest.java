@@ -65,7 +65,7 @@ class DatabaseMonitoringTest {
             assertNotNull(stats);
             assertEquals(4, stats.size());
             assertEquals(5, stats.get("activeConnections"));
-            assertEquals("10,00 MB", stats.get("databaseSize"));
+            assertEquals("10.00 MB", stats.get("databaseSize"));
             assertEquals(15, stats.get("tableCount"));
             assertEquals(2, stats.get("slowQueries"));
         }
@@ -153,7 +153,7 @@ class DatabaseMonitoringTest {
             Map<String, Object> stats = databaseMonitoring.getDatabaseStats();
 
             // Assert
-            assertEquals("1,00 GB", stats.get("databaseSize"));
+            assertEquals("1.00 GB", stats.get("databaseSize"));
         }
 
         @Test
@@ -223,7 +223,7 @@ class DatabaseMonitoringTest {
             String result = (String) method.invoke(databaseMonitoring, 1024L);
 
             // Assert
-            assertEquals("1,00 KB", result);
+            assertEquals("1.00 KB", result);
         }
 
         @Test
@@ -236,7 +236,7 @@ class DatabaseMonitoringTest {
             String result = (String) method.invoke(databaseMonitoring, 2048L);
 
             // Assert
-            assertEquals("2,00 KB", result);
+            assertEquals("2.00 KB", result);
         }
 
         @Test
@@ -249,7 +249,7 @@ class DatabaseMonitoringTest {
             String result = (String) method.invoke(databaseMonitoring, 10485760L); // 10 MB
 
             // Assert
-            assertEquals("10,00 MB", result);
+            assertEquals("10.00 MB", result);
         }
 
         @Test
@@ -262,7 +262,7 @@ class DatabaseMonitoringTest {
             String result = (String) method.invoke(databaseMonitoring, 1073741824L); // 1 GB
 
             // Assert
-            assertEquals("1,00 GB", result);
+            assertEquals("1.00 GB", result);
         }
 
         @Test
@@ -275,7 +275,7 @@ class DatabaseMonitoringTest {
             String result = (String) method.invoke(databaseMonitoring, 1099511627776L); // 1 TB
 
             // Assert
-            assertEquals("1,00 TB", result);
+            assertEquals("1.00 TB", result);
         }
 
         @Test
@@ -301,7 +301,7 @@ class DatabaseMonitoringTest {
             String result = (String) method.invoke(databaseMonitoring, 5242880L); // 5 MB
 
             // Assert
-            assertEquals("5,00 MB", result);
+            assertEquals("5.00 MB", result);
         }
 
         @Test
@@ -314,7 +314,7 @@ class DatabaseMonitoringTest {
             String result = (String) method.invoke(databaseMonitoring, 1536L); // 1.5 KB
 
             // Assert
-            assertEquals("1,50 KB", result);
+            assertEquals("1.50 KB", result);
         }
     }
 

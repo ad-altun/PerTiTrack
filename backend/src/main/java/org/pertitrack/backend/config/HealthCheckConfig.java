@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
 
+import java.util.Locale;
 import java.util.Map;
 
 
@@ -75,7 +76,7 @@ public class HealthCheckConfig {
                 return healthBuilder
                         .withDetail("application", "PerTiTrack")
                         .withDetail("status", "RUNNING")
-                        .withDetail("memoryUsage", String.format("%.2f%%", memoryUsagePercent))
+                        .withDetail("memoryUsage", String.format(Locale.US, "%.2f%%", memoryUsagePercent))
                         .withDetail("heapMemory", formatBytes(heapMemory))
                         .withDetail("freeMemory", formatBytes(freeMemory))
                         .withDetail("maxMemory", formatBytes(maxMemory))
@@ -102,8 +103,12 @@ public class HealthCheckConfig {
     }
 
     // Format bytes to human-readable format.
+    // Update formatBytes
     private String formatBytes(long bytes) {
-        return getString(bytes);
+        if (bytes < 1024) return bytes + " B";
+        int exp = (int) (Math.log(bytes) / Math.log(1024));
+        String pre = "KMGTPE".charAt(exp - 1) + "";
+        return String.format(Locale.US, "%.2f %sB", bytes / Math.pow(1024, exp), pre);
     }
 
     public static String getString(long bytes) {

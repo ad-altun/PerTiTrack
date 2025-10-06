@@ -275,7 +275,7 @@ class HealthCheckConfigTest {
             String result = (String) method.invoke(healthCheckConfig, 2048L);
 
             // Assert
-            assertEquals("2,00 KB", result);
+            assertEquals("2.00 KB", result);
         }
 
         @Test
@@ -288,7 +288,7 @@ class HealthCheckConfigTest {
             String result = (String) method.invoke(healthCheckConfig, 10485760L); // 10 MB
 
             // Assert
-            assertEquals("10,00 MB", result);
+            assertEquals("10.00 MB", result);
         }
 
         @Test
@@ -301,7 +301,7 @@ class HealthCheckConfigTest {
             String result = (String) method.invoke(healthCheckConfig, 1073741824L); // 1 GB
 
             // Assert
-            assertEquals("1,00 GB", result);
+            assertEquals("1.00 GB", result);
         }
 
         @Test

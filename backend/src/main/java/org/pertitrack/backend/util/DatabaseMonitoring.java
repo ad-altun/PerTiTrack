@@ -4,9 +4,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
-
-import static org.pertitrack.backend.config.HealthCheckConfig.getString;
 
 @Component
 public class DatabaseMonitoring {
@@ -52,7 +51,10 @@ public class DatabaseMonitoring {
     }
 
     private String formatBytes(Long bytes) {
-        return getString(bytes);
+        if (bytes < 1024) return bytes + " B";
+        int exp = (int) (Math.log(bytes) / Math.log(1024));
+        String pre = "KMGTPE".charAt(exp - 1) + "";
+        return String.format(Locale.US, "%.2f %sB", bytes / Math.pow(1024, exp), pre);
     }
 
 }
