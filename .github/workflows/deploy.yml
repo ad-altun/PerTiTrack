@@ -149,57 +149,6 @@ jobs:
   deploy:
     needs: push-to-docker-hub
     runs-on: ubuntu-latest
-    environment:
-      name: ${{ github.ref == 'refs/heads/main' }}
-      url: ${{ steps.deploy-info.outputs.app_url }}
-
     steps:
       - name: Trigger Render Deployment
-        id: trigger-deploy
-        run: |
-          response=$(curl -s -w "\n%{http_code}" -X POST "${{ steps.env-vars.outputs.deploy_hook }}")
-          http_code=$(echo "$response" | tail -n1)
-            
-           if [ "$http_code" -ne 200 ] && [ "$http_code" -ne 201 ]; then
-             echo "Deployment trigger failed with HTTP $http_code"
-             exit 1
-           fi
-            
-           echo "Deployment triggered successfully for ${{ steps.env-vars.outputs.environment }}"
-
-      - name: Wait for deployment to start
-        run: |
-          echo "Waiting 45 seconds for deployment to initialize..."
-          sleep 45
-
-      - name: Health Check with Retry
-        id: health-check
-        run: |
-          max_attempts=20
-          attempt=0
-          health_url="${{ steps.env-vars.outputs.health_check_url }}"
-          
-          echo "Starting health checks for: $health_url"
-                
-          while [ $attempt -lt $max_attempts ]; do
-            attempt=$((attempt + 1))
-            echo "Health check attempt $attempt of $max_attempts..."
-          
-            response=$(curl -s -w "\n%{http_code}" "$health_url" || echo "000")
-            http_code=$(echo "$response" | tail -n1)
-            body=$(echo "$response" | he  
-                
-            if [ "$http_code" == "200" ]; then
-              echo "Health check passed!"
-              echo "Response: $body"
-              echo "status=healthy" >> $GITHUB_OUTPUT
-              exit 0
-            fi
-                
-            echo "Health check returned HTTP $http_code, retrying in 15 seconds..."
-            sleep 15
-          done
-                
-          echo "Health check failed after $max_attempts attempts"
-          echo "status=unhealthy" >> $GITHUB_OUTPUT
-          exit 1
+        run: curl -s -X POST "${{ secrets.RENDER_DEPLOY_HOOK }}"
