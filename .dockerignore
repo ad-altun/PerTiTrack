@@ -21,7 +21,7 @@ frontend/pnpm-debug.log*
 
 # Backend
 backend/target/*
-!backend/target/taskraum.jar
+!backend/target/app.jar
 backend/.mvn
 backend/mvnw
 backend/mvnw.cmd
@@ -40,7 +40,6 @@ backend/*.log
 *.iml
 
 # OS
-**/.DS_Store
 Thumbs.db
 
 # Documentation
