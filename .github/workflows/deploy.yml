@@ -3,7 +3,6 @@ name: Deploy App
 on:
   push:
     branches: [main]
-  workflow_dispatch:
 
 env:
   NODE_VERSION: '22'
@@ -26,14 +25,11 @@ jobs:
         run: |
           npm ci
           npm run build
-        env:
-          NODE_ENV: production
 
       - uses: actions/upload-artifact@v4
         with:
           name: frontend-build
           path: frontend/dist/
-          retention-days: 1
 
   build-backend:
     runs-on: ubuntu-latest
