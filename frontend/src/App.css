@@ -1,51 +1,51 @@
-/* CSS Custom Properties for consistent theming */
-:root {
-    color-scheme: light;
-}
+/*!* CSS Custom Properties for consistent theming *!*/
+/*:root {*/
+/*    color-scheme: light;*/
+/*}*/
 
-[data-theme="dark"] {
-    color-scheme: dark;
-}
+/*[data-theme="dark"] {*/
+/*    color-scheme: dark;*/
+/*}*/
 
-/* Custom scrollbar that adapts to theme */
-::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-}
+/*!* Custom scrollbar that adapts to theme *!*/
+/*::-webkit-scrollbar {*/
+/*    width: 8px;*/
+/*    height: 8px;*/
+/*}*/
 
-/* Dark mode scrollbar for Firefox */
-[data-theme="dark"] {
-    scrollbar-color: #4a5568 #2d3748;
-}
+/*!* Dark mode scrollbar for Firefox *!*/
+/*[data-theme="dark"] {*/
+/*    scrollbar-color: #4a5568 #2d3748;*/
+/*}*/
 
-/* Apply animation during theme transitions */
-.theme-transition * {
-    animation: theme-switch 0.3s ease-in-out;
-}
+/*!* Apply animation during theme transitions *!*/
+/*.theme-transition * {*/
+/*    animation: theme-switch 0.3s ease-in-out;*/
+/*}*/
 
-/* Ensure images look good in dark mode */
-[data-theme="dark"] img:not([data-theme-ignore]) {
-    filter: brightness(0.9) contrast(1.1);
-}
+/*!* Ensure images look good in dark mode *!*/
+/*[data-theme="dark"] img:not([data-theme-ignore]) {*/
+/*    filter: brightness(0.9) contrast(1.1);*/
+/*}*/
 
-/* Dark mode logo adjustments if needed */
-[data-theme="dark"] .logo {
-    filter: invert(1) brightness(0.9);
-}
+/*!* Dark mode logo adjustments if needed *!*/
+/*[data-theme="dark"] .logo {*/
+/*    filter: invert(1) brightness(0.9);*/
+/*}*/
 
-/* Code blocks or pre-formatted text */
-[data-theme="dark"] pre,
-[data-theme="dark"] code {
-    background-color: #1e2028;
-    color: #e2e8f0;
-    border: 1px solid #3a3a3a;
-}
+/*!* Code blocks or pre-formatted text *!*/
+/*[data-theme="dark"] pre,*/
+/*[data-theme="dark"] code {*/
+/*    background-color: #1e2028;*/
+/*    color: #e2e8f0;*/
+/*    border: 1px solid #3a3a3a;*/
+/*}*/
 
-/* Table striping that works with themes */
-[data-theme="dark"] .MuiTableRow-root:nth-of-type(even) {
-    background-color: rgba(255, 255, 255, 0.02);
-}
+/*!* Table striping that works with themes *!*/
+/*[data-theme="dark"] .MuiTableRow-root:nth-of-type(even) {*/
+/*    background-color: rgba(255, 255, 255, 0.02);*/
+/*}*/
 
-[data-theme="light"] .MuiTableRow-root:nth-of-type(even) {
-    background-color: rgba(0, 0, 0, 0.02);
-}
+/*[data-theme="light"] .MuiTableRow-root:nth-of-type(even) {*/
+/*    background-color: rgba(0, 0, 0, 0.02);*/
+/*}*/

@@ -17,7 +17,7 @@ export const useLogout = () => {
             console.error('Logout failed: ', error);
         } finally {
             dispatch(clearCredentials());
-            navigate('/auth/signin');
+            navigate('/');
         }
     }, [ logoutMutation, dispatch, navigate ]);
     return {
