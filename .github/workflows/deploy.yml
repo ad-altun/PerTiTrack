@@ -1,50 +1,35 @@
-name: "Deploy App"
+name: Deploy App
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
   workflow_dispatch:
-    inputs:
-      environment:
-        description: 'Deployment environment'
-        required: true
-        type: choice
-        options:
-          - main
+
+env:
+  NODE_VERSION: '22'
+  JAVA_VERSION: '21'
 
 jobs:
   build-frontend:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Git Repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Node.js environment
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
           cache-dependency-path: frontend/package-lock.json
 
-      - name: Cache Frontend Dependencies
-        uses: actions/cache@v4
-        with:
-          path: frontend/node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('frontend/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
-
-      - name: Install Dependencies
-        working-directory: frontend
-        run: npm ci
-
       - name: Build Frontend
         working-directory: frontend
-        run: npm run build
+        run: |
+          npm ci
+          npm run build
+        env:
+          NODE_ENV: production
 
-      - name: Upload Frontend Artifact
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4
         with:
           name: frontend-build
           path: frontend/dist/
@@ -53,40 +38,24 @@ jobs:
   build-backend:
     runs-on: ubuntu-latest
     needs: build-frontend
-
     steps:
-      - name: Checkout Git Repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+      - uses: actions/checkout@v4
 
-      - name: Download Frontend Build
-        uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v4
         with:
           name: frontend-build
           path: backend/src/main/resources/static
 
-      - name: Setup JDK
-        uses: actions/setup-java@v4
+      - uses: actions/setup-java@v4
         with:
-          java-version: '21'
-          distribution: 'temurin'
-          cache: 'maven'
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: temurin
+          cache: maven
 
-      - name: Cache Maven Dependencies
-        uses: actions/cache@v4
-        with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('backend/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-maven-
+      - name: Build with Maven
+        run: mvn -B -DskipTests clean package --file backend/pom.xml
 
-      - name: Build with maven
-        run: mvn -B -DskipTests package --file backend/pom.xml
-        env:
-          MAVEN_OPTS: "-Xmx2048m"
-
-      - name: Verify JAR exists
+      - name: Verify JAR
         run: |
           if [ ! -f backend/target/app.jar ]; then
             echo "Error: app.jar not found!"
@@ -94,11 +63,11 @@ jobs:
           fi
           ls -lh backend/target/app.jar
 
-      - name: Upload Backend Artifact
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4
         with:
           name: app.jar
           path: backend/target/app.jar
+          retention-days: 1
 
   push-to-docker-hub:
     runs-on: ubuntu-latest
@@ -106,49 +75,52 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Download Backend JAR
-        uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v4
         with:
           name: app.jar
           path: backend/target
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+      - uses: docker/setup-buildx-action@v3
 
-      - name: Login to DockerHub
-        uses: docker/login-action@v3
+      - uses: docker/login-action@v3
         with:
-          username: ${{secrets.DOCKERHUB_USERNAME}}
-          password: ${{secrets.DOCKERHUB_PASSWORD}}
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
-      - name: Extract metadata
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ${{ secrets.DOCKERHUB_IMAGE }}
-          tags: |
-            type=raw,value=latest,enable={{is_default_branch}}
-            type=sha,prefix={{branch}}-
-            type=ref,event=branch
-
-      - name: Build and Push Docker image
-        uses: docker/build-push-action@v6
+      - uses: docker/build-push-action@v6
         with:
           context: .
           file: ./Dockerfile
+          platforms: linux/amd64
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=registry,ref=${{ secrets.DOCKERHUB_IMAGE }}:latest
-          cache-to: type=registry,ref=${{ secrets.DOCKERHUB_IMAGE }}:latest,mode=max
-          build-args: |
-            BUILD_DATE=${{ github.event.head_commit.timestamp }}
-            VCS_REF=${{ github.sha }}
+          tags: |
+            ${{ secrets.DOCKERHUB_IMAGE }}:latest
+            ${{ secrets.DOCKERHUB_IMAGE }}:${{ github.sha }}
+          cache-from: type=registry,ref=${{ secrets.DOCKERHUB_IMAGE }}:buildcache
+          cache-to: type=registry,ref=${{ secrets.DOCKERHUB_IMAGE }}:buildcache,mode=max
 
-# name: deploy-to-render
   deploy:
     needs: push-to-docker-hub
     runs-on: ubuntu-latest
     steps:
       - name: Trigger Render Deployment
-        run: curl -s -X POST "${{ secrets.RENDER_DEPLOY_HOOK }}"
+        run: |
+          response=$(curl -s -w "\n%{http_code}" -X POST "${{ secrets.RENDER_DEPLOY_HOOK }}")
+          http_code=$(echo "$response" | tail -n1)
+          
+          if [ "$http_code" -ne 200 ] && [ "$http_code" -ne 201 ]; then
+            echo "Deployment failed with HTTP $http_code"
+            exit 1
+          fi
+          
+          echo "Deployment triggered successfully"
+
+      - name: Wait for Deployment
+        run: sleep 30
+
+      - name: Summary
+        run: |
+          echo "## Deployment Summary" >> $GITHUB_STEP_SUMMARY
+          echo "- **Commit**: \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Branch**: ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Triggered by**: @${{ github.actor }}" >> $GITHUB_STEP_SUMMARY
