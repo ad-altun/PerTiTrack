@@ -35,6 +35,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -1766,5 +1767,243 @@ class TimeRecordServiceTest {
             // Assert
             assertFalse(result);
         }
+    }
+
+    @Nested
+    class CreateTimeRecordsTests {
+
+        @Test
+        void createTimeRecords_WithValidRequests_CreatesAndReturnsAllRecords() {
+            // Arrange
+            List<TimeRecordRequest> requests = TimeRecordServiceTest.this.getTimeRecordRequests();
+
+            TimeRecord savedEntity1 = new TimeRecord();
+            ReflectionTestUtils.setField(savedEntity1, "id", "tr-1");
+            TimeRecord savedEntity2 = new TimeRecord();
+            ReflectionTestUtils.setField(savedEntity2, "id", "tr-2");
+
+            TimeRecordResponse response1 = new TimeRecordResponse(
+                    "tr-1", employeeId, "John", "Doe",
+                    LocalDate.of(2024, 1, 15), LocalDateTime.of(2024, 1, 15, 9, 0),
+                    TimeRecord.RecordType.CLOCK_IN, TimeRecord.LocationType.OFFICE,
+                    "Morning clock in", false,
+                    LocalDateTime.now(), LocalDateTime.now()
+            );
+
+            TimeRecordResponse response2 = new TimeRecordResponse(
+                    "tr-2", employeeId, "John", "Doe",
+                    LocalDate.of(2024, 1, 15), LocalDateTime.of(2024, 1, 15, 12, 0),
+                    TimeRecord.RecordType.BREAK_START, TimeRecord.LocationType.OFFICE,
+                    "Lunch break", false,
+                    LocalDateTime.now(), LocalDateTime.now()
+            );
+
+            when(employeeRepository.findById(employeeId))
+                    .thenReturn(Optional.of(testEmployee));
+            when(timeRecordMapper.toEntity(any(TimeRecordRequest.class), eq(testEmployee)))
+                    .thenReturn(new TimeRecord());
+            when(timeRecordRepository.save(any(TimeRecord.class)))
+                    .thenReturn(savedEntity1, savedEntity2);
+            when(timeRecordMapper.toResponse(any(TimeRecord.class)))
+                    .thenReturn(response1, response2);
+
+            // Act
+            List<TimeRecordResponse> results = timeRecordService.createTimeRecords(requests);
+
+            // Assert
+            assertNotNull(results);
+            assertEquals(2, results.size());
+            assertEquals("tr-1", results.get(0).id());
+            assertEquals("tr-2", results.get(1).id());
+            verify(employeeRepository, times(2)).findById(employeeId);
+            verify(timeRecordRepository, times(2)).save(any(TimeRecord.class));
+            verify(timeRecordMapper, times(2)).toResponse(any(TimeRecord.class));
+        }
+
+        @Test
+        void createTimeRecords_WithEmptyList_ReturnsEmptyList() {
+            // Arrange
+            List<TimeRecordRequest> emptyRequests = Collections.emptyList();
+
+            // Act
+            List<TimeRecordResponse> results = timeRecordService.createTimeRecords(emptyRequests);
+
+            // Assert
+            assertNotNull(results);
+            assertTrue(results.isEmpty());
+            verify(employeeRepository, never()).findById(any());
+            verify(timeRecordRepository, never()).save(any());
+        }
+
+        @Test
+        void createTimeRecords_WithInvalidEmployeeId_ThrowsEmployeeNotFoundException() {
+            // Arrange
+            TimeRecordRequest request = new TimeRecordRequest(
+                    "invalid-emp-id",
+                    LocalDate.of(2024, 1, 15),
+                    LocalDateTime.of(2024, 1, 15, 9, 0),
+                    TimeRecord.RecordType.CLOCK_IN,
+                    TimeRecord.LocationType.OFFICE,
+                    "Morning clock in",
+                    false
+            );
+
+            List<TimeRecordRequest> requests = List.of(request);
+
+            when(employeeRepository.findById("invalid-emp-id"))
+                    .thenReturn(Optional.empty());
+
+            // Act & Assert
+            assertThrows(EmployeeNotFoundException.class, () -> {
+                timeRecordService.createTimeRecords(requests);
+            });
+
+            verify(employeeRepository).findById("invalid-emp-id");
+            verify(timeRecordRepository, never()).save(any());
+        }
+
+        @Test
+        void createTimeRecords_WithMultipleDifferentEmployees_CreatesAllRecords() {
+            // Arrange
+            String employeeId2 = "emp-456";
+            Employee testEmployee2 = new Employee();
+            ReflectionTestUtils.setField(testEmployee2, "id", employeeId2);
+            testEmployee2.setFirstName("Jane");
+            testEmployee2.setLastName("Smith");
+
+            List<TimeRecordRequest> requests = getTimeRecordRequests(employeeId2);
+
+            TimeRecord savedEntity1 = new TimeRecord();
+            TimeRecord savedEntity2 = new TimeRecord();
+
+            TimeRecordResponse response1 = new TimeRecordResponse(
+                    "tr-1", employeeId, "John", "Doe",
+                    LocalDate.of(2024, 1, 15), LocalDateTime.of(2024, 1, 15, 9, 0),
+                    TimeRecord.RecordType.CLOCK_IN, TimeRecord.LocationType.OFFICE,
+                    "Employee 1 clock in", false,
+                    LocalDateTime.now(), LocalDateTime.now()
+            );
+
+            TimeRecordResponse response2 = new TimeRecordResponse(
+                    "tr-2", employeeId2, "Jane", "Smith",
+                    LocalDate.of(2024, 1, 15), LocalDateTime.of(2024, 1, 15, 9, 15),
+                    TimeRecord.RecordType.CLOCK_IN, TimeRecord.LocationType.HOME,
+                    "Employee 2 clock in", false,
+                    LocalDateTime.now(), LocalDateTime.now()
+            );
+
+            when(employeeRepository.findById(employeeId))
+                    .thenReturn(Optional.of(testEmployee));
+            when(employeeRepository.findById(employeeId2))
+                    .thenReturn(Optional.of(testEmployee2));
+            when(timeRecordMapper.toEntity(any(TimeRecordRequest.class), any(Employee.class)))
+                    .thenReturn(new TimeRecord());
+            when(timeRecordRepository.save(any(TimeRecord.class)))
+                    .thenReturn(savedEntity1, savedEntity2);
+            when(timeRecordMapper.toResponse(any(TimeRecord.class)))
+                    .thenReturn(response1, response2);
+
+            // Act
+            List<TimeRecordResponse> results = timeRecordService.createTimeRecords(requests);
+
+            // Assert
+            assertNotNull(results);
+            assertEquals(2, results.size());
+            verify(employeeRepository).findById(employeeId);
+            verify(employeeRepository).findById(employeeId2);
+            verify(timeRecordRepository, times(2)).save(any(TimeRecord.class));
+        }
+
+        @Test
+        void createTimeRecords_WithSingleRequest_WorksCorrectly() {
+            // Arrange
+            TimeRecordRequest request = new TimeRecordRequest(
+                    employeeId,
+                    LocalDate.of(2024, 1, 15),
+                    LocalDateTime.of(2024, 1, 15, 9, 0),
+                    TimeRecord.RecordType.CLOCK_IN,
+                    TimeRecord.LocationType.OFFICE,
+                    "Single record",
+                    false
+            );
+
+            List<TimeRecordRequest> requests = List.of(request);
+
+            TimeRecord savedEntity = new TimeRecord();
+            TimeRecordResponse response = new TimeRecordResponse(
+                    "tr-1", employeeId, "John", "Doe",
+                    LocalDate.of(2024, 1, 15), LocalDateTime.of(2024, 1, 15, 9, 0),
+                    TimeRecord.RecordType.CLOCK_IN, TimeRecord.LocationType.OFFICE,
+                    "Single record", false,
+                    LocalDateTime.now(), LocalDateTime.now()
+            );
+
+            when(employeeRepository.findById(employeeId))
+                    .thenReturn(Optional.of(testEmployee));
+            when(timeRecordMapper.toEntity(any(TimeRecordRequest.class), eq(testEmployee)))
+                    .thenReturn(new TimeRecord());
+            when(timeRecordRepository.save(any(TimeRecord.class)))
+                    .thenReturn(savedEntity);
+            when(timeRecordMapper.toResponse(any(TimeRecord.class)))
+                    .thenReturn(response);
+
+            // Act
+            List<TimeRecordResponse> results = timeRecordService.createTimeRecords(requests);
+
+            // Assert
+            assertNotNull(results);
+            assertEquals(1, results.size());
+            assertEquals("tr-1", results.get(0).id());
+            verify(employeeRepository, times(1)).findById(employeeId);
+            verify(timeRecordRepository, times(1)).save(any(TimeRecord.class));
+        }
+    }
+
+    private List<TimeRecordRequest> getTimeRecordRequests() {
+        TimeRecordRequest request1 = new TimeRecordRequest(
+                employeeId,
+                LocalDate.of(2024, 1, 15),
+                LocalDateTime.of(2024, 1, 15, 9, 0),
+                TimeRecord.RecordType.CLOCK_IN,
+                TimeRecord.LocationType.OFFICE,
+                "Morning clock in",
+                false
+        );
+
+        TimeRecordRequest request2 = new TimeRecordRequest(
+                employeeId,
+                LocalDate.of(2024, 1, 15),
+                LocalDateTime.of(2024, 1, 15, 12, 0),
+                TimeRecord.RecordType.BREAK_START,
+                TimeRecord.LocationType.OFFICE,
+                "Lunch break",
+                false
+        );
+
+        return Arrays.asList(request1, request2);
+    }
+
+    private List<TimeRecordRequest> getTimeRecordRequests(String employeeId2) {
+        TimeRecordRequest request1 = new TimeRecordRequest(
+                employeeId,
+                LocalDate.of(2024, 1, 15),
+                LocalDateTime.of(2024, 1, 15, 9, 0),
+                TimeRecord.RecordType.CLOCK_IN,
+                TimeRecord.LocationType.OFFICE,
+                "Employee 1 clock in",
+                false
+        );
+
+        TimeRecordRequest request2 = new TimeRecordRequest(
+                employeeId2,
+                LocalDate.of(2024, 1, 15),
+                LocalDateTime.of(2024, 1, 15, 9, 15),
+                TimeRecord.RecordType.CLOCK_IN,
+                TimeRecord.LocationType.HOME,
+                "Employee 2 clock in",
+                false
+        );
+
+        return Arrays.asList(request1, request2);
     }
 }

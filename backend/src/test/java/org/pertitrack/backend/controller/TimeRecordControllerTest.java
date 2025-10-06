@@ -318,6 +318,162 @@ class TimeRecordControllerTest {
         verify(timeRecordService).deleteTimeRecord(timeRecordId);
     }
 
+    // Add these test methods to TimeRecordControllerTest.java
+
+    @Test
+    @WithMockUser
+    void createTimeRecords_WithValidRequests_ShouldCreateAndReturnAllRecords() throws Exception {
+        // Given
+        List<TimeRecordRequest> requests = Arrays.asList(
+                new TimeRecordRequest(
+                        "emp1",
+                        LocalDate.of(2024, 1, 15),
+                        LocalDateTime.of(2024, 1, 15, 9, 0),
+                        TimeRecord.RecordType.CLOCK_IN,
+                        TimeRecord.LocationType.OFFICE,
+                        "Morning clock in",
+                        false
+                ),
+                new TimeRecordRequest(
+                        "emp1",
+                        LocalDate.of(2024, 1, 15),
+                        LocalDateTime.of(2024, 1, 15, 12, 0),
+                        TimeRecord.RecordType.BREAK_START,
+                        TimeRecord.LocationType.OFFICE,
+                        "Lunch break",
+                        false
+                )
+        );
+
+        List<TimeRecordResponse> responses = Arrays.asList(
+                createTimeRecordResponse("1", "emp1"),
+                createTimeRecordResponse("2", "emp1")
+        );
+
+        when(timeRecordService.createTimeRecords(anyList())).thenReturn(responses);
+
+        // When & Then
+        mockMvc.perform(post("/api/timetrack/time-records/batch")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(requests)))
+                .andExpect(status().isCreated())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.length()").value(2))
+                .andExpect(jsonPath("$[0].id").value("1"))
+                .andExpect(jsonPath("$[1].id").value("2"));
+
+        verify(timeRecordService).createTimeRecords(anyList());
+    }
+
+    @Test
+    @WithMockUser
+    void createTimeRecords_WithEmptyList_ShouldReturnEmptyList() throws Exception {
+        // Given
+        List<TimeRecordRequest> requests = Collections.emptyList();
+        when(timeRecordService.createTimeRecords(anyList())).thenReturn(Collections.emptyList());
+
+        // When & Then
+        mockMvc.perform(post("/api/timetrack/time-records/batch")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(requests)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$").isEmpty());
+
+        verify(timeRecordService).createTimeRecords(anyList());
+    }
+
+    @Test
+    @WithMockUser
+    void createTimeRecords_WithInvalidEmployeeId_ShouldReturnBadRequest() throws Exception {
+        // Given
+        List<TimeRecordRequest> requests = List.of(
+                new TimeRecordRequest(
+                        "invalid-emp",
+                        LocalDate.of(2024, 1, 15),
+                        LocalDateTime.of(2024, 1, 15, 9, 0),
+                        TimeRecord.RecordType.CLOCK_IN,
+                        TimeRecord.LocationType.OFFICE,
+                        "Morning clock in",
+                        false
+                )
+        );
+
+        when(timeRecordService.createTimeRecords(anyList()))
+                .thenThrow(new EmployeeNotFoundException("Employee not found: ", "invalid-emp"));
+
+        // When & Then
+        mockMvc.perform(post("/api/timetrack/time-records/batch")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(requests)))
+                .andExpect(status().isBadRequest());
+
+        verify(timeRecordService).createTimeRecords(anyList());
+    }
+
+    @Test
+    @WithMockUser
+    void createTimeRecords_WithMultipleDifferentEmployees_ShouldCreateAll() throws Exception {
+        // Given
+        List<TimeRecordRequest> requests = Arrays.asList(
+                new TimeRecordRequest(
+                        "emp1",
+                        LocalDate.of(2024, 1, 15),
+                        LocalDateTime.of(2024, 1, 15, 9, 0),
+                        TimeRecord.RecordType.CLOCK_IN,
+                        TimeRecord.LocationType.OFFICE,
+                        "Employee 1 clock in",
+                        false
+                ),
+                new TimeRecordRequest(
+                        "emp2",
+                        LocalDate.of(2024, 1, 15),
+                        LocalDateTime.of(2024, 1, 15, 9, 15),
+                        TimeRecord.RecordType.CLOCK_IN,
+                        TimeRecord.LocationType.HOME,
+                        "Employee 2 clock in",
+                        false
+                )
+        );
+
+        List<TimeRecordResponse> responses = Arrays.asList(
+                createTimeRecordResponse("1", "emp1"),
+                createTimeRecordResponse("2", "emp2")
+        );
+
+        when(timeRecordService.createTimeRecords(anyList())).thenReturn(responses);
+
+        // When & Then
+        mockMvc.perform(post("/api/timetrack/time-records/batch")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(requests)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.length()").value(2))
+                .andExpect(jsonPath("$[0].employeeId").value("emp1"))
+                .andExpect(jsonPath("$[1].employeeId").value("emp2"));
+
+        verify(timeRecordService).createTimeRecords(anyList());
+    }
+
+    @Test
+    @WithMockUser
+    void createTimeRecords_WithInvalidData_ShouldReturnBadRequest() throws Exception {
+        // Given - malformed JSON
+        String invalidJson = "[{\"employeeId\": \"emp1\", \"recordDate\": \"invalid-date\"}]";
+
+        // When & Then
+        mockMvc.perform(post("/api/timetrack/time-records/batch")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(invalidJson))
+                .andExpect(status().isBadRequest());
+
+        verify(timeRecordService, never()).createTimeRecords(anyList());
+    }
+
     private TimeRecordResponse createTimeRecordResponse(String id, String employeeId) {
         return new TimeRecordResponse(
                 id,

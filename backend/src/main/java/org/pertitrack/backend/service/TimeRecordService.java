@@ -24,6 +24,7 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -273,6 +274,23 @@ public class TimeRecordService {
         TimeRecord timeRecord = timeRecordMapper.toEntity(request, employee);
         TimeRecord savedTimeRecord = timeRecordRepository.save(timeRecord);
         return timeRecordMapper.toResponse(savedTimeRecord);
+    }
+
+    @Transactional
+    public List<TimeRecordResponse> createTimeRecords(List<TimeRecordRequest> requests) {
+        List<TimeRecordResponse> responses = new ArrayList<>();
+
+        for (TimeRecordRequest request : requests) {
+            Employee employee = employeeRepository.findById(request.employeeId())
+                    .orElseThrow(() -> new EmployeeNotFoundException(
+                            "Employee not found with id: ", request.employeeId()));
+
+            TimeRecord timeRecord = timeRecordMapper.toEntity(request, employee);
+            TimeRecord savedTimeRecord = timeRecordRepository.save(timeRecord);
+            responses.add(timeRecordMapper.toResponse(savedTimeRecord));
+        }
+
+        return responses;
     }
 
     @Transactional
