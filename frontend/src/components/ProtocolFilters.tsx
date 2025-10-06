@@ -71,6 +71,8 @@ export default function ProtocolFilters( { onDateChange, isRecordLoading }: Prot
                     onOpen={ () => setOpenCalendar(true) }
                     onClose={ () => setOpenCalendar(false) }
                     disabled={ isRecordLoading }
+                    maxDate={ dayjs() }
+                    minDate={ dayjs().subtract(2, 'year') }
                     slotProps={ {
                         textField: {
                             size: "small",
