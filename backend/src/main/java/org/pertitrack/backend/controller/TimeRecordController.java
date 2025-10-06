@@ -89,6 +89,17 @@ public class TimeRecordController {
         }
     }
 
+    @PostMapping("/batch")
+    public ResponseEntity<List<TimeRecordResponse>> createTimeRecords(
+            @Valid @RequestBody List<TimeRecordRequest> requests) {
+        try {
+            List<TimeRecordResponse> timeRecords = timeRecordService.createTimeRecords(requests);
+            return ResponseEntity.status(HttpStatus.CREATED).body(timeRecords);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<TimeRecordResponse> updateTimeRecord(
             @PathVariable String id,
