@@ -4,6 +4,7 @@ import org.pertitrack.backend.security.AuthEntryPointJwt;
 import org.pertitrack.backend.security.AuthTokenFilter;
 import org.pertitrack.backend.security.CustomAccessDeniedHandler;
 import org.pertitrack.backend.security.UserDetailsServiceImpl;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -31,6 +32,9 @@ public class WebSecurityConfig {
     private final AuthEntryPointJwt unauthorizedHandler;
     private final AuthTokenFilter authenticationJwtTokenFilter;
 
+    @Value("${app.cors.allowed-origins}")
+    private String allowedOrigins;
+
     public WebSecurityConfig(UserDetailsServiceImpl userDetailsService,
                              AuthEntryPointJwt unauthorizedHandler,
                              AuthTokenFilter authenticationJwtTokenFilter) {
@@ -50,8 +54,10 @@ public class WebSecurityConfig {
                         .accessDeniedHandler(customAccessDeniedHandler))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth ->
-                        auth.requestMatchers("/auth/**", "/api/auth/**").permitAll()
-                                .requestMatchers("/", "/index.html", "/assets/**", "/favicon.svg").permitAll()
+                        auth.requestMatchers("/auth/**").permitAll()
+                                .requestMatchers("/", "/index.html", "/assets/**").permitAll()
+                                .requestMatchers("/{path:^(?!auth|api|assets|index\\.html)[^\\.]*}",
+                                        "/**/{path:^(?!auth|api|assets)[^\\.]*}").permitAll()
                                 .anyRequest().authenticated()
                 )
                 .userDetailsService(userDetailsService)
@@ -78,8 +84,7 @@ public class WebSecurityConfig {
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        configuration.setAllowedOriginPatterns(List.of("http://localhost:5173"));
-
+        configuration.setAllowedOriginPatterns(List.of(allowedOrigins.split(",")));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
         configuration.setAllowCredentials(true);
