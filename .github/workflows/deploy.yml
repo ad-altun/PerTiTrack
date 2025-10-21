@@ -111,9 +111,6 @@ jobs:
           
           echo "Deployment triggered successfully"
 
-      - name: Wait for Deployment
-        run: sleep 30
-
       - name: Summary
         run: |
           echo "## Deployment Summary" >> $GITHUB_STEP_SUMMARY
