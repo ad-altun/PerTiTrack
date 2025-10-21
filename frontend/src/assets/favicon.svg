@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <!-- Background Circle -->
+  <circle cx="256" cy="256" r="240" fill="#4F46E5" />
+  
+  <!-- Track/Path Elements -->
+  <g transform="translate(256, 256)">
+    <!-- Outer tracking ring -->
+    <circle cx="0" cy="0" r="140" fill="none" stroke="#E0E7FF" stroke-width="20" opacity="0.5"/>
+    <circle cx="0" cy="0" r="140" fill="none" stroke="#818CF8" stroke-width="20" 
+            stroke-dasharray="220 220" stroke-dashoffset="-55" stroke-linecap="round"/>
+    
+    <!-- Middle tracking ring -->
+    <circle cx="0" cy="0" r="90" fill="none" stroke="#E0E7FF" stroke-width="16" opacity="0.4"/>
+    <circle cx="0" cy="0" r="90" fill="none" stroke="#A5B4FC" stroke-width="16" 
+            stroke-dasharray="140 140" stroke-dashoffset="-35" stroke-linecap="round"/>
+    
+    <!-- Inner tracking ring -->
+    <circle cx="0" cy="0" r="45" fill="none" stroke="#E0E7FF" stroke-width="12" opacity="0.3"/>
+    <circle cx="0" cy="0" r="45" fill="none" stroke="#C7D2FE" stroke-width="12" 
+            stroke-dasharray="70 70" stroke-dashoffset="-17" stroke-linecap="round"/>
+  </g>
+  
+  <!-- Center Point/Target -->
+  <circle cx="256" cy="256" r="25" fill="#FFFFFF"/>
+  <circle cx="256" cy="256" r="15" fill="#4F46E5"/>
+  
+  <!-- Tracking Dots -->
+  <circle cx="356" cy="156" r="12" fill="#FBBF24" opacity="0.9"/>
+  <circle cx="396" cy="256" r="12" fill="#34D399" opacity="0.9"/>
+  <circle cx="356" cy="356" r="12" fill="#F87171" opacity="0.9"/>
+</svg>
