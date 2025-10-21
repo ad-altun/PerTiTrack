@@ -99,9 +99,9 @@ jobs:
     needs: push-to-docker-hub
     runs-on: ubuntu-latest
     steps:
-      - name: Trigger Render Deployment
+      - name: Trigger Coolify Deployment
         run: |
-          response=$(curl -s -w "\n%{http_code}" -X POST "${{ secrets.RENDER_DEPLOY_HOOK }}")
+          response=$(curl -s -w "\n%{http_code}" -X GET "${{ secrets.COOLIFY_WEBHOOK_URL }}")
           http_code=$(echo "$response" | tail -n1)
           
           if [ "$http_code" -ne 200 ] && [ "$http_code" -ne 201 ]; then
@@ -110,9 +110,6 @@ jobs:
           fi
           
           echo "Deployment triggered successfully"
-
-      - name: Wait for Deployment
-        run: sleep 30
 
       - name: Summary
         run: |
