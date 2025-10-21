@@ -106,12 +106,12 @@ jobs:
           -H "Authorization: Bearer ${{ secrets.COOLIFY_API_TOKEN }}" \
           "${{ secrets.COOLIFY_API_URL }}")
           http_code=$(echo "$response" | tail -n1)
-          
+
           if [ "$http_code" -ne 200 ] && [ "$http_code" -ne 201 ]; then
             echo "Deployment failed with HTTP $http_code"
             exit 1
           fi
-          
+
           echo "Deployment triggered successfully"
 
       - name: Summary
