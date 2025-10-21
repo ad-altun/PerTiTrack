@@ -12,20 +12,25 @@ export default function FeaturesSection() {
             description: 'Effortlessly track working hours with intuitive clock-in/clock-out system. Monitor breaks, overtime, and daily activities in real-time with precision.',
         },
         {
-            icon: Assessment,
-            title: 'Reports & Analytics',
-            description: 'Generate comprehensive timesheet reports and gain insights into work patterns. Export data for payroll and project management with ease.',
-        },
-        {
             icon: EventNote,
             title: 'Absence Management',
             description: 'Request and manage vacations, sick leaves, and other absences. View your team\'s availability calendar at a glance for better planning.',
+        },
+        {
+            icon: Assessment,
+            title: 'Reports & Analytics',
+            description: 'Generate comprehensive timesheet reports and gain insights into work patterns. Export data for payroll and project management with ease.',
         },
     ];
 
     return (
         <Box
+            id="features-section"
             sx={ {
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                minHeight: '100dvh',
                 py: { xs: 8, md: 12 },
                 backgroundColor: 'background.default',
                 position: 'relative',
@@ -67,7 +72,6 @@ export default function FeaturesSection() {
                     <Typography
                         variant="h2"
                         sx={ {
-                            fontSize: { xs: '2rem', md: '2.75rem' },
                             fontWeight: 700,
                             mb: 2,
                             color: 'text.primary',
@@ -111,18 +115,19 @@ export default function FeaturesSection() {
                 <Grid
                     container
                     rowSpacing={ 8 }
-                    columnSpacing={ 20 }
+                    columnSpacing={{ xs: 10, md: 20 }}
                     sx={ {
                         mt: 2,
                     } }
                     columns={ { xs: 1, sm: 2, md: 3 } }
                     wrap={ 'nowrap' }
-                    direction={{ xs: 'column', md: 'row' }}
+                    direction={{ xs: 'column', lg: 'row' }}
+                    alignItems={{ xs: 'center',  }}
                 >
                     { features.map(( feature, index ) => (
                         <Grid
                             key={ index }
-                            sx={ { xs: '12', md: 4 } }
+                            sx={ { xs: 12, md: 6 } }
                         >
                             <FeatureCard
                                 icon={ feature.icon }

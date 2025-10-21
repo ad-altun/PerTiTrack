@@ -166,9 +166,12 @@ export const CustomThemeProvider = ({ children }: ThemeProviderProps) => {
         },
         typography: {
             fontFamily: "'Inter', 'Roboto', 'Helvetica', 'Arial', sans-serif",
-            h1: { fontWeight: 700, fontSize: "2rem" },
-            h2: { fontWeight: 600, fontSize: "1.75rem" },
-            h3: { fontWeight: 600, fontSize: "1.5rem" },
+            h1: { fontWeight: 700, fontSize: "2rem" },      // 32px instead 96px
+            h2: { fontWeight: 600, fontSize: "1.75rem" },   // 28px instead 60px
+            h3: { fontWeight: 600, fontSize: "1.5rem" },    // 24px instead 48px
+            h4: { fontWeight: 600, fontSize: "1.25rem" },    // 20px instead 34px
+            h5: { fontWeight: 600, fontSize: "1.125rem" },  // 18px ...
+            h6: { fontWeight: 600, fontSize: "1rem" },      // 16 px ...
             body1: { fontSize: "0.95rem", lineHeight: 1.6 },
             button: { textTransform: "none", fontWeight: 600 },
         },
