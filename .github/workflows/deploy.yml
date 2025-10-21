@@ -3,6 +3,7 @@ name: Deploy App
 on:
   push:
     branches: [main]
+  workflow_dispatch:
 
 env:
   NODE_VERSION: '22'
@@ -101,7 +102,9 @@ jobs:
     steps:
       - name: Trigger Coolify Deployment
         run: |
-          response=$(curl -s -w "\n%{http_code}" -X GET "${{ secrets.COOLIFY_WEBHOOK_URL }}")
+          response=$(curl -s -w "\n%{http_code}" -X POST \
+          -H "Authorization: Bearer ${{ secrets.COOLIFY_API_TOKEN }}" \
+          "${{ secrets.COOLIFY_API_URL }}")
           http_code=$(echo "$response" | tail -n1)
           
           if [ "$http_code" -ne 200 ] && [ "$http_code" -ne 201 ]; then
