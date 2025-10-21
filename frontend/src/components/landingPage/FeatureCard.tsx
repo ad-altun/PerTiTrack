@@ -16,8 +16,8 @@ export default function FeatureCard({ icon: Icon, title, description, delay = 0 
             elevation={0}
             sx={{
                 minWidth: '20rem',
-                maxWidth: '35rem',
-                p: 4,
+                maxWidth: '30rem',
+                p: { xs: 4, sm: 3,   },
                 height: '100%',
                 display: 'flex',
                 flexDirection: 'column',
@@ -76,9 +76,9 @@ export default function FeatureCard({ icon: Icon, title, description, delay = 0 
             <Box
                 className="feature-icon"
                 sx={{
-                    width: 80,
-                    height: 80,
-                    borderRadius: '20px',
+                    width: '4rem',
+                    height: '4rem',
+                    borderRadius: '2rem',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -92,7 +92,7 @@ export default function FeatureCard({ icon: Icon, title, description, delay = 0 
             >
                 <Icon
                     sx={{
-                        fontSize: 40,
+                        fontSize: '2.5rem',
                         color: theme.palette.mode === 'light'
                             ? '#2563eb'
                             : '#60a5fa',

@@ -12,8 +12,8 @@ import {
     selectActivePage,
     selectUserProfileName
 } from "../store/selectors/navbarSelectors.ts";
-import { Button } from "@mui/material";
-import { Navigate, useLocation, useNavigate } from "react-router-dom";
+import { Button, Container } from "@mui/material";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const Navbar = () => {
     const [ anchorEl, setAnchorEl ] = React.useState<null | HTMLElement>(null);
@@ -136,83 +136,114 @@ const Navbar = () => {
             </Box>
         ) : (
             <Box
-                display="flex"
-                justifyContent="space-between"
-                alignItems="center"
                 sx={ {
-                    // bgcolor: "background.navBar",
+                    position: "sticky",
+                    top: 0,
+                    zIndex: 1000,
                     background: "linear-gradient(0deg, #6E8CFB, #3C467B)",
-                    px: 2,
-                    py: 1,
                 } }
             >
-                {/* Left side - navigation */ }
-                <Box>
-                    <Button
-                        onClick={ () => navigateTo('/') }
+                <Container>
+                    <Box
                         sx={ {
-                            m: 1,
-                            // backgroundColor: "navItem.active",
-                            color: "text.header",
-                            "&:hover": { backgroundColor: "#6E8CFB", fontWeight: "bold", },
-                            textTransform: 'none',
+                            display: "flex",
+                            justifyContent: { xs: "center", sm: "space-between" },
+                            alignItems: "flex-end",
+                            paddingTop: '.5rem',
+                            my: '.25rem',
                         } }
                     >
-                        <Typography variant="h5">
-                            PerTiTrack
-                        </Typography>
-                    </Button>
-                </Box>
+                        {/* Left side - navigation */ }
+                        <Box>
+                            <Button
+                                onClick={ () => document.getElementById('hero-section')?.scrollIntoView({
+                                    behavior: 'smooth'
+                                }) }
+                                sx={ {
+                                    color: "text.header",
+                                    "&:hover": { backgroundColor: "#6E8CFB", fontWeight: "bold", },
+                                    textTransform: 'none',
+                                } }
+                            >
+                                <Typography
+                                    sx={ {
+                                        typography: { xs: 'h6', sm: 'h5' },
+                                        fontWeight: 'bold',
+                                    } }
+                                >
+                                    PerTiTrack
+                                </Typography>
+                            </Button>
+                        </Box>
 
-                {/* Right side  */ }
-                <Box
-                    sx={ {
-                        display: "flex",
-                        alignItems: "center",
-                        gap: '1rem',
-                        paddingBlock: '1rem',
-                    } }
-                >
+                        {/* Right side  */ }
+                        <Box
+                            sx={ {
+                                display: "flex",
+                                alignItems: "center",
+                                gap: { xs: '0', sm: '1rem' },
+                            } }
+                        >
+                            <Button
+                                onClick={ () => document.getElementById('features-section')?.scrollIntoView({
+                                    behavior: 'smooth'
+                                }) }
+                                sx={ {
+                                    color: "text.header",
+                                    "&:hover": { backgroundColor: "#6E8CFB", fontWeight: "bold", },
+                                    textTransform: 'none',
+                                } }
+                            >
+                                <Typography
+                                    sx={ {
+                                        typography: { xs: 'h6', sm: 'h5' },
+                                        fontWeight: 'bold',
+                                    } }
+                                >
+                                    Features
+                                </Typography>
+                            </Button>
+                            <Button
+                                onClick={ () => document.getElementById('about-section')?.scrollIntoView({
+                                    behavior: 'smooth'
+                                }) }
+                                sx={ {
+                                    color: "text.header",
+                                    "&:hover": { backgroundColor: "#6E8CFB", fontWeight: "bold", },
+                                    textTransform: 'none',
+                                } }
+                            >
+                                <Typography
+                                    sx={ {
+                                        typography: { xs: 'h6', sm: 'h5' },
+                                        fontWeight: 'bold',
+                                    } }
+                                >
+                                    About
+                                </Typography>
+                            </Button>
+                            <Button
+                                onClick={ () => navigateTo('/auth/signin') }
+                                sx={ {
+                                    color: "text.header",
+                                    "&:hover": { backgroundColor: "#6E8CFB", fontWeight: "bold", },
+                                    textTransform: 'none',
+                                } }
+                            >
+                                <Typography
+                                    sx={ {
+                                        typography: { xs: 'h6', sm: 'h5' },
+                                        fontWeight: 'bold',
+                                    } }
+                                >
+                                    Login
+                                </Typography>
 
-                    <Button
-                        onClick={ () => document.getElementById('about-section')?.scrollIntoView({
-                            behavior: 'smooth'
-                        }) }
-                        sx={ {
-                            mr: 1,
-                            // backgroundColor:
-                            //     isActiveRoute('/dashboard') ||
-                            //     isActiveRoute('/') ?
-                            //         "navItem.active" : "navItem.default",
-                            color: "text.header",
-                            "&:hover": { backgroundColor: "#6E8CFB", fontWeight: "bold", },
-                            textTransform: 'none',
-                        } }
-                    >
-                        <Typography variant="h5">
-                            About
-                        </Typography>
+                            </Button>
+                        </Box>
 
-                    </Button>
-                    <Button
-                        onClick={ () => navigateTo('/auth/signin') }
-                        sx={ {
-                            mr: 1,
-                            // backgroundColor:
-                            //     isActiveRoute('/dashboard') ||
-                            //     isActiveRoute('/') ?
-                            //         "navItem.active" : "navItem.default",
-                            color: "text.header",
-                            "&:hover": { backgroundColor: "#6E8CFB", fontWeight: "bold", },
-                            textTransform: 'none',
-                        } }
-                    >
-                        <Typography variant="h5">
-                            Login
-                        </Typography>
-
-                    </Button>
-                </Box>
+                    </Box>
+                </Container>
             </Box>
         )
     );
