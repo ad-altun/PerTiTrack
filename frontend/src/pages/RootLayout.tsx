@@ -22,19 +22,19 @@ export default function RootLayout() {
     }, [isAuthenticated, token]);
 
     if (isAuthed && location.pathname === '/') {
-        // return <Navigate to="/auth/signin" replace />;
         return <Navigate to="/dashboard" replace />;
     }
 
+    // not authenticated - show landing page
     return (
             <Box
                 sx={{
                     display: 'flex',
                     flexDirection: 'column',
-                    minHeight: '100vh',
+                    minHeight: '100dvh',
                 }}
             >
-                {/* Only show Header if NOT on landing page (root path) when not authenticated */}
+                {/* Only show Header if NOT on the landing page (root path) when not authenticated */}
                 {!(location.pathname === "/" && !isAuthenticated) && <Header portalName="Employee Portal" />}
                 {/*<Header portalName="Employee Portal" />*/}
                 <Navbar />

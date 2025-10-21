@@ -36,8 +36,13 @@ export default function HeroSection() {
 
     return (
         <Box
+            id="hero-section"
             sx={{
                 position: 'relative',
+                minHeight: '100dvh',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
                 background: theme.palette.mode === 'light'
                     ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
                     : 'linear-gradient(135deg, #4338ca 0%, #312e81 100%)',
@@ -116,7 +121,6 @@ export default function HeroSection() {
                     <Typography
                         variant="h1"
                         sx={{
-                            fontSize: { xs: '2.5rem', md: '3.5rem', lg: '4rem' },
                             fontWeight: 700,
                             mb: 2,
                             textShadow: '0 2px 20px rgba(0,0,0,0.2)',

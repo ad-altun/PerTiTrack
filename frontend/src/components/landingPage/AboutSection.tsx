@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Box, Container, Typography, Tabs, Tab, useTheme, Grid, Chip } from '@mui/material';
 import { Flag, CheckCircle, Security, Code } from '@mui/icons-material';
 
@@ -76,7 +76,9 @@ export default function AboutSection() {
         <Box
             id="about-section"
             sx={{
-                py: { xs: 8, md: 12 },
+                minHeight: '100dvh',
+                margin: '0 auto',
+                py: { xs: 8, lg: 12, },
                 backgroundColor: theme.palette.mode === 'light' ? '#ffffff' : 'background.paper',
             }}
         >
@@ -86,7 +88,7 @@ export default function AboutSection() {
                     <Typography
                         variant="h2"
                         sx={{
-                            fontSize: { xs: '2rem', md: '2.75rem' },
+                            // fontSize: { xs: '2rem', md: '2.75rem' },
                             fontWeight: 700,
                             mb: 2,
                             color: 'text.primary',
@@ -110,247 +112,263 @@ export default function AboutSection() {
                 </Box>
 
                 {/* Tabs Container */}
-                <Box
-                    sx={{
-                        backgroundColor: theme.palette.mode === 'light' ? '#f8fafc' : '#1e293b',
-                        borderRadius: 3,
-                        overflow: 'hidden',
-                        boxShadow: theme.palette.mode === 'light'
-                            ? '0 4px 12px rgba(0,0,0,0.08)'
-                            : '0 4px 12px rgba(0,0,0,0.4)',
-                    }}
-                >
-                    {/* Tabs */}
-                    <Tabs
-                        value={activeTab}
-                        onChange={handleTabChange}
-                        variant="scrollable"
-                        scrollButtons="auto"
+                <Container maxWidth="lg" >
+                    <Box
                         sx={{
-                            backgroundColor: theme.palette.mode === 'light' ? '#e2e8f0' : '#0f172a',
-                            borderBottom: `1px solid ${theme.palette.divider}`,
-                            '& .MuiTab-root': {
-                                minHeight: 64,
-                                textTransform: 'none',
-                                fontSize: '1rem',
-                                fontWeight: 600,
-                                color: 'text.secondary',
-                                '&.Mui-selected': {
-                                    color: 'primary.main',
-                                },
-                            },
-                            '& .MuiTabs-indicator': {
-                                height: 3,
-                                borderRadius: '3px 3px 0 0',
-                            },
+                            backgroundColor: theme.palette.mode === 'light' ? '#f8fafc' : '#1e293b',
+                            borderRadius: 3,
+                            overflow: 'hidden',
+                            boxShadow: theme.palette.mode === 'light'
+                                ? '0 4px 12px rgba(0,0,0,0.08)'
+                                : '0 4px 12px rgba(0,0,0,0.4)',
                         }}
                     >
-                        <Tab icon={<Flag />} iconPosition="start" label="Our Mission" />
-                        <Tab icon={<CheckCircle />} iconPosition="start" label="Why Choose Us" />
-                        <Tab icon={<Security />} iconPosition="start" label="Security" />
-                        <Tab icon={<Code />} iconPosition="start" label="Technology" />
-                    </Tabs>
+                        {/* Tabs */}
+                        <Tabs
+                            value={activeTab}
+                            onChange={handleTabChange}
+                            variant="scrollable"
+                            scrollButtons="auto"
+                            sx={{
+                                backgroundColor: theme.palette.mode === 'light' ? '#e2e8f0' : '#0f172a',
+                                borderBottom: `1px solid ${theme.palette.divider}`,
+                                '& .MuiTab-root': {
+                                    minHeight: 64,
+                                    textTransform: 'none',
+                                    fontSize: '1rem',
+                                    fontWeight: 600,
+                                    color: 'text.secondary',
+                                    '&.Mui-selected': {
+                                        color: 'primary.main',
+                                    },
+                                },
+                                '& .MuiTabs-indicator': {
+                                    height: 3,
+                                    borderRadius: '3px 3px 0 0',
+                                },
+                            }}
+                        >
+                            <Tab icon={<Flag />} iconPosition="start" label="Our Mission" />
+                            <Tab icon={<CheckCircle />} iconPosition="start" label="Why Choose Us" />
+                            <Tab icon={<Security />} iconPosition="start" label="Security" />
+                            <Tab icon={<Code />} iconPosition="start" label="Technology" />
+                        </Tabs>
 
-                    {/* Tab Panels */}
-                    <Box sx={{
-                        p: { xs: 3, md: 4 },
-                    }}>
-                        {/* Mission Tab */}
-                        <TabPanel value={activeTab} index={0}>
-                            <Typography variant="h4" sx={{ fontWeight: 600, mb: 3, color: 'text.primary' }}>
-                                Our Mission
-                            </Typography>
-                            <Typography variant="body1" sx={{ mb: 3, color: 'text.secondary', lineHeight: 1.8 }}>
-                                Our mission is to empower organizations with cutting-edge time management tools
-                                that simplify workforce administration and enhance productivity. We believe accurate
-                                time tracking is the foundation of fair compensation and efficient project management.
-                            </Typography>
-                            <Typography variant="body1" sx={{ mb: 4, color: 'text.secondary', lineHeight: 1.8 }}>
-                                PerTiTrack helps businesses of all sizes streamline workforce management, ensure
-                                accurate payroll calculations, and maintain compliance with labor regulations.
-                            </Typography>
+                        {/* Tab Panels */}
+                        <Box sx={{
+                            p: { xs: 3, md: 4 }, textAlign: 'center'
 
-                            <Grid container spacing={3} sx={{ mt: 2 }}>
-                                {[
-                                    { icon: '🎯', title: 'Accuracy', desc: 'Precise time tracking down to the second' },
-                                    { icon: '🤝', title: 'Reliability', desc: '99.9% uptime guarantee for your business' },
-                                    { icon: '💡', title: 'Innovation', desc: 'Continuous improvement and feature updates' },
-                                ].map((item, idx) => (
-                                    <Grid key={idx}
-                                        sx={{ xs:'12', md:'4' }}>
-                                        <Box
-                                            sx={{
-                                                textAlign: 'center',
-                                                p: 3,
-                                                backgroundColor: theme.palette.mode === 'light' ? '#ffffff' : '#0f172a',
-                                                borderRadius: 2,
-                                                border: `1px solid ${theme.palette.divider}`,
-                                            }}
+                        }}>
+                            {/* Mission Tab */}
+                            <TabPanel value={activeTab} index={0}>
+                                <Typography variant="h4" sx={{ fontWeight: 600, mb: 3, color: 'text.primary' }}>
+                                    Our Mission
+                                </Typography>
+                                <Typography variant="body1" sx={{ mb: 3, color: 'text.secondary', lineHeight: 1.8 }}>
+                                    Our mission is to empower organizations with cutting-edge time management tools
+                                    that simplify workforce administration and enhance productivity. We believe accurate
+                                    time tracking is the foundation of fair compensation and efficient project management.
+                                </Typography>
+                                <Typography variant="body1" sx={{ mb: 4, color: 'text.secondary', lineHeight: 1.8 }}>
+                                    PerTiTrack helps businesses of all sizes streamline workforce management, ensure
+                                    accurate payroll calculations, and maintain compliance with labor regulations.
+                                </Typography>
+
+                                <Grid container spacing={3} sx={{ mt: 2, display: 'flex', justifyContent: 'center', }}>
+                                    {[
+                                        { icon: '🎯', title: 'Accuracy', desc: 'Precise time tracking down to the second' },
+                                        { icon: '🤝', title: 'Reliability', desc: '99.9% uptime guarantee for your business' },
+                                        { icon: '💡', title: 'Innovation', desc: 'Continuous improvement and feature updates' },
+                                    ].map((item, idx) => (
+                                        <Grid key={idx}
+                                              sx={{ xs:'12', md:'4' }}>
+                                            <Box
+                                                sx={{
+                                                    textAlign: 'center',
+                                                    p: 3,
+                                                    backgroundColor: theme.palette.mode === 'light' ? '#ffffff' : '#0f172a',
+                                                    borderRadius: 2,
+                                                    border: `1px solid ${theme.palette.divider}`,
+                                                }}
+                                            >
+                                                <Typography variant="h3" sx={{ mb: 1 }}>{item.icon}</Typography>
+                                                <Typography variant="h6" sx={{ fontWeight: 600, mb: 1 }}>{item.title}</Typography>
+                                                <Typography variant="body2" sx={{ color: 'text.secondary' }}>{item.desc}</Typography>
+                                            </Box>
+                                        </Grid>
+                                    ))}
+                                </Grid>
+                            </TabPanel>
+
+                            {/* Features Tab */}
+                            <TabPanel value={activeTab} index={1}>
+                                <Typography variant="h4" sx={{ fontWeight: 600, mb: 4, color: 'text.primary', textAlign: 'center' }}>
+                                    Why Choose PerTiTrack
+                                </Typography>
+                                <Grid container spacing={2}
+                                      sx={{
+                                          display: 'flex',
+                                          flexDirection: { xs: 'column', md: 'row' },
+                                          justifyContent: 'center',
+                                          paddingBlock: '.5rem',
+                                          alignItems: 'center',
+                                      }}
+                                >
+                                    {features.map((feature, idx) => (
+                                        <Grid key={idx}
+                                              sx={{ xs:'12', md:'6', minWidth: '15rem',
+                                                  maxWidth: '30rem', width: '100%',
+                                              }}
                                         >
-                                            <Typography variant="h3" sx={{ mb: 1 }}>{item.icon}</Typography>
-                                            <Typography variant="h6" sx={{ fontWeight: 600, mb: 1 }}>{item.title}</Typography>
-                                            <Typography variant="body2" sx={{ color: 'text.secondary' }}>{item.desc}</Typography>
-                                        </Box>
-                                    </Grid>
-                                ))}
-                            </Grid>
-                        </TabPanel>
-
-                        {/* Features Tab */}
-                        <TabPanel value={activeTab} index={1}>
-                            <Typography variant="h4" sx={{ fontWeight: 600, mb: 3, color: 'text.primary' }}>
-                                Why Choose PerTiTrack
-                            </Typography>
-                            <Grid container spacing={2}
-                                  sx={{
-                                      display: 'flex',
-                                      justifyContent: 'space-between',
-                                  }}
-                            >
-                                {features.map((feature, idx) => (
-                                    <Grid key={idx}
-                                          sx={{ xs:'12', md:'6', minWidth: '30rem' }}
-                                    >
-                                        <Box
-                                            sx={{
-                                                display: 'flex',
-                                                gap: 2,
-                                                p: 2.5,
-                                                backgroundColor: theme.palette.mode === 'light' ? '#ffffff' : '#0f172a',
-                                                borderRadius: 2,
-                                                border: `1px solid ${theme.palette.divider}`,
-                                                transition: 'all 0.3s ease',
-                                                '&:hover': {
-                                                    borderColor: 'primary.main',
-                                                    transform: 'translateX(4px)',
-                                                },
-                                            }}
-                                        >
-                                            <CheckCircle sx={{ color: 'success.main', fontSize: 28, flexShrink: 0 }} />
                                             <Box
                                                 sx={{
                                                     display: 'flex',
                                                     flexDirection: 'column',
-                                                    justifyContent:'center',
-
+                                                    alignItems: 'center',
+                                                    gap: 2,
+                                                    p: 2.5,
+                                                    backgroundColor: theme.palette.mode === 'light' ? '#ffffff' : '#0f172a',
+                                                    borderRadius: 2,
+                                                    border: `1px solid ${theme.palette.divider}`,
+                                                    transition: 'all 0.3s ease',
+                                                    '&:hover': {
+                                                        borderColor: 'primary.main',
+                                                        transform: 'translateX(4px)',
+                                                    },
                                                 }}
                                             >
-                                                <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 0.5 }}>
-                                                    {feature.title}
-                                                </Typography>
+                                                <CheckCircle sx={{ color: 'success.main', }} />
+                                                <Box
+                                                    sx={{
+                                                        display: 'flex',
+                                                        flexDirection: 'column',
+                                                        justifyContent:'center',
+
+                                                    }}
+                                                >
+                                                    <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 0.5 }}>
+                                                        {feature.title}
+                                                    </Typography>
+                                                    <Typography variant="body2" sx={{ color: 'text.secondary', lineHeight: 1.6 }}>
+                                                        {feature.desc}
+                                                    </Typography>
+                                                </Box>
+                                            </Box>
+                                        </Grid>
+                                    ))}
+                                </Grid>
+                            </TabPanel>
+
+                            {/* Security Tab */}
+                            <TabPanel value={activeTab} index={2}>
+                                <Typography variant="h4" sx={{ fontWeight: 600, mb: 2, color: 'text.primary', }}>
+                                    Enterprise-Grade Security
+                                </Typography>
+                                <Typography variant="body1" sx={{ mb: 4, color: 'text.secondary', lineHeight: 1.8, }}>
+                                    Security is our top priority. We protect employee time data with the highest standards,
+                                    ensuring compliance and preventing unauthorized access.
+                                </Typography>
+
+                                <Grid container spacing={3}
+                                      sx={{
+                                          display: 'flex',
+                                          flexDirection: { xs: 'column', md: 'row' },
+                                          justifyContent: 'center',
+                                          paddingBlock: '.5rem',
+                                          alignItems: 'center',
+                                      }}
+                                >
+                                    {securityFeatures.map((item, idx) => (
+                                        <Grid key={idx}
+                                              sx={{ xs:'12', md:'6', }}
+                                        >
+                                            <Box
+                                                sx={{
+                                                    p: 3,
+                                                    backgroundColor: theme.palette.mode === 'light' ? '#ffffff' : '#0f172a',
+                                                    borderRadius: 2,
+                                                    border: `1px solid ${theme.palette.divider}`,
+                                                    textAlign: 'center',
+                                                    width: '100%',
+                                                    maxWidth: '25rem',
+                                                }}
+                                            >
+                                                <Typography variant="h3" sx={{ mb: 2 }}>{item.icon}</Typography>
+                                                <Typography variant="h6" sx={{ fontWeight: 600, mb: 1 }}>{item.title}</Typography>
                                                 <Typography variant="body2" sx={{ color: 'text.secondary', lineHeight: 1.6 }}>
-                                                    {feature.desc}
+                                                    {item.desc}
                                                 </Typography>
                                             </Box>
-                                        </Box>
-                                    </Grid>
-                                ))}
-                            </Grid>
-                        </TabPanel>
+                                        </Grid>
+                                    ))}
+                                </Grid>
+                            </TabPanel>
 
-                        {/* Security Tab */}
-                        <TabPanel value={activeTab} index={2}>
-                            <Typography variant="h4" sx={{ fontWeight: 600, mb: 2, color: 'text.primary' }}>
-                                Enterprise-Grade Security
-                            </Typography>
-                            <Typography variant="body1" sx={{ mb: 4, color: 'text.secondary', lineHeight: 1.8 }}>
-                                Security is our top priority. We protect employee time data with the highest standards,
-                                ensuring compliance and preventing unauthorized access.
-                            </Typography>
-
-                            <Grid container spacing={3}
-                                  sx={{
-                                      display: 'flex',
-                                      flexDirection: { xs: 'column', md: 'row' },
-                                      justifyContent: 'space-between',
-                                      flexWrap: 'nowrap',
-                                  }}
+                            {/* Technology Tab */}
+                            <TabPanel value={activeTab} index={3}
                             >
-                                {securityFeatures.map((item, idx) => (
-                                    <Grid key={idx}
-                                          sx={{ xs:'12', md:'6', minWidth: '15rem', maxWidth: '35rem', }}
-                                    >
-                                        <Box
-                                            sx={{
-                                                p: 3,
-                                                backgroundColor: theme.palette.mode === 'light' ? '#ffffff' : '#0f172a',
-                                                borderRadius: 2,
-                                                border: `1px solid ${theme.palette.divider}`,
-                                                textAlign: 'center',
-                                            }}
-                                        >
-                                            <Typography variant="h3" sx={{ mb: 2 }}>{item.icon}</Typography>
-                                            <Typography variant="h6" sx={{ fontWeight: 600, mb: 1 }}>{item.title}</Typography>
-                                            <Typography variant="body2" sx={{ color: 'text.secondary', lineHeight: 1.6 }}>
-                                                {item.desc}
-                                            </Typography>
-                                        </Box>
-                                    </Grid>
-                                ))}
-                            </Grid>
-                        </TabPanel>
+                                <Typography variant="h4" sx={{ fontWeight: 600, mb: 2, color: 'text.primary', }}>
+                                    Built with Modern Technology
+                                </Typography>
+                                <Typography variant="body1" sx={{ mb: 4, color: 'text.secondary', lineHeight: 1.8, }}>
+                                    PerTiTrack uses cutting-edge technologies to ensure performance, reliability,
+                                    and scalability for businesses of all sizes.
+                                </Typography>
 
-                        {/* Technology Tab */}
-                        <TabPanel value={activeTab} index={3}
-                        >
-                            <Typography variant="h4" sx={{ fontWeight: 600, mb: 2, color: 'text.primary' }}>
-                                Built with Modern Technology
-                            </Typography>
-                            <Typography variant="body1" sx={{ mb: 4, color: 'text.secondary', lineHeight: 1.8 }}>
-                                PerTiTrack uses cutting-edge technologies to ensure performance, reliability,
-                                and scalability for businesses of all sizes.
-                            </Typography>
-
-                            <Grid container spacing={3}
-                                  sx={{
-                                      display: 'flex',
-                                      flexDirection: { xs: 'column', md: 'row' },
-                                      justifyContent: 'space-between',
-                                      flexWrap: 'nowrap',
-                                  }}
-                            >
-                                {[
-                                    { title: 'Frontend', items: techStack.frontend, color: '#3b82f6' },
-                                    { title: 'Backend', items: techStack.backend, color: '#10b981' },
-                                    { title: 'Quality & Deployment', items: techStack.quality, color: '#f59e0b' },
-                                ].map((category, idx) => (
-                                    <Grid key={idx}
-                                          sx={{ xs:'12' }}
-                                    >
-                                        <Box
-                                            sx={{
-                                                p: 3,
-                                                backgroundColor: theme.palette.mode === 'light' ? '#ffffff' : '#0f172a',
-                                                borderRadius: 2, maxWidth: '30rem',
-                                                borderLeft: `4px solid ${category.color}`,
-                                            }}
+                                <Grid container spacing={3}
+                                      sx={{
+                                          display: 'flex',
+                                          flexDirection: { xs: 'column', md: 'row' },
+                                          justifyContent: 'center',
+                                          paddingBlock: '.5rem',
+                                          alignItems: 'center',
+                                      }}
+                                >
+                                    {[
+                                        { title: 'Frontend', items: techStack.frontend, color: '#3b82f6' },
+                                        { title: 'Backend', items: techStack.backend, color: '#10b981' },
+                                        { title: 'Quality & Deployment', items: techStack.quality, color: '#f59e0b' },
+                                    ].map((category, idx) => (
+                                        <Grid key={idx}
+                                              sx={{ xs:'12' }}
                                         >
-                                            <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, color: category.color }}>
-                                                {category.title}
-                                            </Typography>
-                                            <Box sx={{
-                                                display: 'flex', flexWrap: 'wrap', gap: 1,
-                                                flexDirection: 'column', maxWidth: '20rem'
-                                            }}>
-                                                {category.items.map((item, itemIdx) => (
-                                                    <Chip
-                                                        key={itemIdx}
-                                                        label={item}
-                                                        size="small"
-                                                        sx={{
-                                                            backgroundColor: theme.palette.mode === 'light' ? '#f1f5f9' : '#1e293b',
-                                                            fontWeight: 500,
-                                                        }}
-                                                    />
-                                                ))}
+                                            <Box
+                                                sx={{
+                                                    p: 3,
+                                                    backgroundColor: theme.palette.mode === 'light' ? '#ffffff' : '#0f172a',
+                                                    borderRadius: 2, maxWidth: '30rem',
+                                                    borderLeft: `4px solid ${category.color}`,
+                                                }}
+                                            >
+                                                <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, color: category.color }}>
+                                                    {category.title}
+                                                </Typography>
+                                                <Box sx={{
+                                                    display: 'flex', flexWrap: 'wrap', gap: 1,
+                                                    flexDirection: 'column', maxWidth: '20rem',
+                                                    alignItems: 'flex-start'
+                                                }}>
+                                                    {category.items.map((item, itemIdx) => (
+                                                        <Chip
+                                                            key={itemIdx}
+                                                            label={item}
+                                                            size="small"
+                                                            sx={{
+                                                                backgroundColor: theme.palette.mode === 'light' ? '#f1f5f9' : '#1e293b',
+                                                                fontWeight: 500, textAlign: 'left'
+                                                            }}
+                                                        />
+                                                    ))}
+                                                </Box>
                                             </Box>
-                                        </Box>
-                                    </Grid>
-                                ))}
-                            </Grid>
-                        </TabPanel>
+                                        </Grid>
+                                    ))}
+                                </Grid>
+                            </TabPanel>
+                        </Box>
                     </Box>
-                </Box>
+
+                </Container>
             </Container>
         </Box>
     );
