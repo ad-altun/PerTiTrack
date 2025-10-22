@@ -1,410 +1,310 @@
 # PerTiTrack - Personnel Time Tracking System
 
-[![Java](https://img.shields.io/badge/Java-21-orange.svg)](https://www.oracle.com/java/)
-[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5.5-brightgreen.svg)](https://spring.io/projects/spring-boot)
-[![React](https://img.shields.io/badge/React-19-blue.svg)](https://reactjs.org/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue.svg)](https://www.typescriptlang.org/)
-[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-17-blue.svg)](https://www.postgresql.org/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+> Capstone Project - [Neue Fische Java Development Bootcamp](https://www.neuefische.de/bootcamp/java-development)
 
-> **Capstone Project** - [Neue Fische Java Development Bootcamp](https://www.neuefische.de/bootcamp/java-development)
+A full-stack web application for employee time tracking, absence management, and workforce analytics. Built with Spring Boot and React.
 
-A comprehensive, enterprise-grade web application for managing employee time tracking, absence requests, and workforce analytics. Built with modern technologies and best practices for scalability, security, and maintainability.
-
-## Live Demo
-
-### **[Try PerTiTrack Live](https://www.pertitrack.denizaltun.de/)**
+**[Live Demo](https://www.pertitrack.denizaltun.de/)**
 
 ### Demo Credentials
 - **Demo credentials and instructions are here:** [ReadMe-Demo](docs/README-DEMO.md)
 
 ---
 
-## Table of Contents
+## Tech Stack
 
-- [Features](#features)
-- [Tech Stack](#tech-stack)
-- [Architecture](#architecture)
-- [Getting Started](#getting-started)
-- [API Documentation](#api-documentation)
-- [Security](#security)
-- [Testing](#testing)
-- [Deployment](#deployment)
-- [Screenshots](#screenshots)
-- [Future Enhancements](#future-enhancements)
-- [Contributing](#contributing)
-- [License](#license)
-- [Contact](#contact)
+<table>
+<tr>
+<td width="25%">
+
+**Frontend**
+- ![React](https://img.shields.io/badge/-React-61DAFB?logo=react&logoColor=black&style=flat)
+- ![TypeScript](https://img.shields.io/badge/-TypeScript-3178C6?logo=typescript&logoColor=white&style=flat)
+- ![Vite](https://img.shields.io/badge/-Vite-646CFF?logo=vite&logoColor=white&style=flat)
+- ![Redux](https://img.shields.io/badge/-Redux-764ABC?logo=redux&logoColor=white&style=flat)
+- ![MUI](https://img.shields.io/badge/-MUI-007FFF?logo=mui&logoColor=white&style=flat)
+
+</td>
+<td width="25%">
+
+**Backend**
+- ![Spring Boot](https://img.shields.io/badge/-Spring%20Boot-6DB33F?logo=springboot&logoColor=white&style=flat)
+- ![Java](https://img.shields.io/badge/-Java%2021-007396?logo=openjdk&logoColor=white&style=flat)
+- ![Maven](https://img.shields.io/badge/-Maven-C71A36?logo=apachemaven&logoColor=white&style=flat)
+- ![PostgreSQL](https://img.shields.io/badge/-PostgreSQL-4169E1?logo=postgresql&logoColor=white&style=flat)
+
+</td>
+<td width="25%">
+
+**Testing**
+- ![JUnit5](https://img.shields.io/badge/-JUnit5-25A162?logo=junit5&logoColor=white&style=flat)
+- ![Mockito](https://img.shields.io/badge/-Mockito-C5D9C8?logoColor=black&style=flat)
+- ![H2](https://img.shields.io/badge/-H2%20Database-0000BB?logoColor=white&style=flat)
+- ![Spring Test](https://img.shields.io/badge/-Spring%20Test-6DB33F?logo=spring&logoColor=white&style=flat)
+
+</td>
+<td width="25%">
+
+**DevOps**
+- ![Docker](https://img.shields.io/badge/-Docker-2496ED?logo=docker&logoColor=white&style=flat)
+- ![GitHub Actions](https://img.shields.io/badge/-GitHub%20Actions-2088FF?logo=githubactions&logoColor=white&style=flat)
+- ![Coolify](https://img.shields.io/badge/-Coolify-6B46C1?logoColor=white&style=flat)
+- ![SonarQube](https://img.shields.io/badge/-SonarQube-4E9BCD?logo=sonarqube&logoColor=white&style=flat)
+
+</td>
+</tr>
+</table>
 
 ---
 
 ## Features
 
-### Time Management
-- **Quick Clock In/Out** - One-click time tracking with automatic timestamp recording
-- **Break Management** - Track break periods with start/end timestamps
-- **Location-Based Tracking** - Office, home office, and business trip locations
-- **Real-Time Status** - View current working status and today's summary at a glance
-- **Manual Time Entry** - Add or correct time records with proper validation
+### Currently Available
 
-### Absence Management
-- **Vacation Requests** - Submit and manage vacation requests with approval workflow
-- **Sick Leave Tracking** - Record sick days with configurable approval requirements
-- **Multiple Absence Types** - Supports 9+ predefined absence types (vacation, personal, maternity, bereavement, etc.)
-- **Balance Tracking** - Monitor vacation balance and time-off accrual
-- **Calendar View** - Visual representation of yearly history and upcoming absences
+| Feature | Description | Status |
+|---------|-------------|--------|
+| **Time Tracking** | Clock in/out with automatic timestamp recording | ✅ Complete |
+| **Break Management** | Track break periods (start/end) | ✅ Complete |
+| **Location Tracking** | Office, home office, business trip | ✅ Complete |
+| **Today's Summary** | Real-time dashboard with working time, breaks, flex time | ✅ Complete |
+| **JWT Authentication** | Secure token-based authentication | ✅ Complete |
+| **Employee Role** | Basic employee access and time tracking | ✅ Complete |
 
-### Reports & Analytics
-- **Work Pattern Analysis** - Analyze working hours, overtime, and break patterns
-- **Today's Summary** - Real-time dashboard showing arrival, departure, working time, breaks, and flex time
+### In Development
 
-### Security & Compliance
-- **JWT Authentication** - Secure token-based authentication with 15-minute expiration
-- **Role-Based Access Control (RBAC)** - Three-tier access system (Admin, Manager, Employee)
-- **Auto Session Timeout** - 15-minute inactivity timeout for security
-- **Data Encryption** - Encrypted data transmission and storage
-- **Audit Trail** - Complete logging of all time record actions
-
----
-
-## Tech Stack
-
-### Frontend
-- **Framework:** React 19 with TypeScript
-- **Build Tool:** Vite
-- **State Management:** Redux Toolkit with RTK Query
-- **Form Handling:** React Hook Form with Zod validation (v4.1.5)
-- **UI Library:** Material-UI (MUI)
-- **HTTP Client:** RTK Query (built on Redux Toolkit)
-
-### Backend
-- **Framework:** Spring Boot 3.5.5
-- **Language:** Java 21
-- **Build Tool:** Maven
-- **Security:** Spring Security with JWT
-- **Data Access:** Spring Data JPA / Hibernate
-
-### Database
-- **Production:** PostgreSQL 17
-- **Testing:** H2 in-memory database
-- **Connection Pooling:** HikariCP
-
-### DevOps & Quality
-- **Deployment:** Render (Web Service + PostgreSQL)
-- **Containerization:** Docker with multi-stage builds
-- **CI/CD:** GitHub Actions
-- **Code Quality:** SonarQube Cloud (Backend only)
-- **Health Monitoring:** Spring Boot Actuator
-- **Version Control:** Git / GitHub
+| Feature | Description | Status |
+|---------|-------------|--------|
+| **Absence Management** | Vacation/sick leave requests and approvals | 🚧 In Progress |
+| **Manager Role** | Team oversight and approval workflows | 🚧 Planned |
+| **Admin Role** | User management and system configuration | 🚧 Planned |
+| **Reports & Analytics** | Timesheet exports and workforce analytics | 🚧 Planned |
+| **Calendar View** | Visual team availability calendar | 🚧 Planned |
 
 ---
 
 ## Architecture
 
-### System Architecture
+### System Overview
 
 ```
-                                    ┌─────────────────────────────────────────────────────────────┐
-                                    │                      Client Browser                         │
-                                    │                   (React + TypeScript)                      │
-                                    └────────────────────────────┬────────────────────────────────┘
-                                                                 │ HTTPS / REST API
-                                                                 │ JWT Token Auth
-                                    ┌────────────────────────────▼────────────────────────────────┐
-                                    │                     API Gateway Layer                       │
-                                    │                    (Spring Security + CORS)                 │
-                                    └────────────────────────┬────────────────────────────────────┘
-                                                             │
-                                            ┌────────────────┼──────────────┐───────────────┐         
-                                            │                │              │               │         
-                                    ┌───────▼───────┐ ┌──────▼─────┐ ┌──────▼──────┐ ┌──────▼──────┐
-                                    │  Auth Service │ │   Time     │ │  Absence    │ │  Absence    │
-                                    │               │ │  Service   │ │  Service    │ │  Service    │
-                                    └───────┬───────┘ └────────────┘┬└─────────────┘ └──────┬──────┘
-                                            │                       │                       │
-                                            └───────────────────────┼───────────────────────┘
-                                                                    │
-                                                      ┌─────────────▼───────────────┐
-                                                      │   Repository Layer (JPA)    │
-                                                      └──────────────┬──────────────┘
-                                                                     │
-                                                      ┌──────────────▼──────────────┐
-                                                      │     PostgreSQL Database     │
-                                                      │     (Schemas: app_users,    │
-                                                      │      app_timetrack)         │
-                                                      └─────────────────────────────┘
+┌─────────────┐
+│   Browser   │
+│ React + TS  │
+└──────┬──────┘
+       │ REST API + JWT
+┌──────▼──────┐
+│   Spring    │
+│  Security   │
+└──────┬──────┘
+       │
+┌──────▼──────┐
+│  Business   │
+│   Layer     │
+└──────┬──────┘
+       │
+┌──────▼──────┐
+│ Spring JPA  │
+└──────┬──────┘
+       │
+┌──────▼──────┐
+│ PostgreSQL  │
+└─────────────┘
 ```
 
-### Database Schema
+### Database Structure
 
-The application uses a multi-schema PostgreSQL database:
+<table>
+<tr>
+<th>Schema</th>
+<th>Tables</th>
+<th>Purpose</th>
+</tr>
+<tr>
+<td><code>app_users</code></td>
+<td>
+• <code>users</code><br>
+• <code>user_roles</code><br>
+• <code>user_sessions</code>
+</td>
+<td>Authentication & Authorization</td>
+</tr>
+<tr>
+<td><code>app_personnel</code></td>
+<td>
+• <code>employees</code>
+</td>
+<td>Employee Profiles</td>
+</tr>
+<tr>
+<td><code>app_timetrack</code></td>
+<td>
+• <code>time_records</code><br>
+• <code>absence_types</code><br>
+• <code>absences</code><br>
+• <code>work_schedules</code>
+</td>
+<td>Time Tracking & Absences</td>
+</tr>
+</table>
 
-- **app_users** - User authentication and authorization
-    - `users` - User accounts
-    - `user_roles` - Role definitions with permissions
-
-- **app_personnel** - Time tracking and absence da
-    - `employees` - Employee profiles
-
-- **app_timetrack** - Time tracking and absence data
-    - `time_records` - Clock in/out, break records
-    - `absence_types` - Configurable absence categories
-    - `absences` - Absence requests and approvals
+**Key Relationships:**
+- `users` → `employees` (one-to-one)
+- `employees` → `time_records` (one-to-many)
+- `employees` → `absences` (one-to-many)
+- `absence_types` → `absences` (one-to-many)
 
 ---
 
-## Getting Started
+## Quick Start
 
 ### Prerequisites
+- Java 21+
+- Node.js 18+
+- PostgreSQL 17+
+- Maven 3.8+
 
-- **Java 21** or higher
-- **Node.js 18+** and npm/yarn
-- **PostgreSQL 17+** (or Docker for local development)
-- **Maven 3.8+**
-- **Git**
-
-### Local Development Setup
-
-#### 1. Clone the Repository
+### Setup
 
 ```bash
+# Clone repository
 git clone https://github.com/ad-altun/PerTiTrack.git
 cd PerTiTrack
-```
 
-#### 2. Database Setup
-
-**Option A: Using Docker Compose**
-
-```bash
+# Database (Docker)
 docker-compose up -d
-```
 
-**Option B: Manual PostgreSQL Setup**
-
-```sql
-CREATE DATABASE pertitrack;
-CREATE USER admin WITH PASSWORD 'admin';
-GRANT ALL PRIVILEGES ON DATABASE pertitrack TO admin;
-```
-
-#### 3. Backend Configuration
-
-Create `backend/src/main/resources/application-dev.properties`:
-
-```properties
-# Database
-SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5431/pertitrack
-SPRING_DATASOURCE_USERNAME=admin
-SPRING_DATASOURCE_PASSWORD=admin
-
-# JWT
-JWT_SECRET=your-256-bit-secret-key-here-minimum-32-characters
-
-# CORS
-CORS_ALLOWED_ORIGINS=http://localhost:5173
-```
-
-#### 4. Start the Backend
-
-```bash
+# Backend
 cd backend
-mvn clean install
-mvn spring-boot:run -Dspring-boot.run.profiles=dev
-```
+mvn spring-boot:run
 
-Backend will run on `http://localhost:8080`
-
-#### 5. Start the Frontend
-
-```bash
+# Frontend (new terminal)
 cd frontend
-npm install
-npm run dev
+npm install && npm run dev
 ```
 
-Frontend will run on `http://localhost:5173`
+**Environment Variables:**
 
-### Environment Variables
-
-#### Backend (.env or application.properties)
-```properties
+```env
+# Backend (.env or application-dev.properties)
 SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5431/pertitrack
 SPRING_DATASOURCE_USERNAME=admin
 SPRING_DATASOURCE_PASSWORD=admin
-JWT_SECRET=your-secret-key-minimum-32-characters
+JWT_SECRET=your-256-bit-secret-minimum-32-chars
 CORS_ALLOWED_ORIGINS=http://localhost:5173
-```
 
-#### Frontend (.env)
-```bash
+# Frontend (.env)
 VITE_API_BASE_URL=http://localhost:8080/api
 ```
 
 ---
 
-## API Documentation
+## API Overview
 
-### Authentication Endpoints
+**Base URL:** `http://localhost:8080/api`
 
-#### Register User
-```http
-POST /auth/signup
-Content-Type: application/json
+### Authentication
 
-{
-  "email": "user@example.com",
-  "password": "securePassword123",
-  "firstName": "John",
-  "lastName": "Doe"
-}
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/auth/signup` | POST | Register new user |
+| `/auth/signin` | POST | Login and get JWT token |
+
+### Time Records
+
+| Endpoint | Method | Auth | Description |
+|----------|--------|------|-------------|
+| `/api/time-records/quick-clock-in` | POST | ✓ | Clock in |
+| `/api/time-records/quick-clock-out` | POST | ✓ | Clock out |
+| `/api/time-records/quick-break-start` | POST | ✓ | Start break |
+| `/api/time-records/quick-break-end` | POST | ✓ | End break |
+| `/api/time-records/today` | GET | ✓ | Get today's summary |
+| `/api/time-records/current-status` | GET | ✓ | Get current work status |
+
+**Example Request:**
+
+```bash
+curl -X POST http://localhost:8080/api/auth/signin \
+  -H "Content-Type: application/json" \
+  -d '{"email": "user@example.com", "password": "password"}'
 ```
 
-#### Login
-```http
-POST /auth/signin
-Content-Type: application/json
+**Example Response:**
 
-{
-  "email": "user@example.com",
-  "password": "securePassword123"
-}
-```
-
-**Response:**
 ```json
 {
-  "token": "eyJhbGciOiJIUzI1...",
+  "token": "eyJhbGciOiJIUzI1NiJ9...",
   "type": "Bearer",
-  "id": "user-id",
-  "email": "user@example.com",
-  "firstName": "John",
-  "lastName": "Doe",
-  "roles": ["ROLE_EMPLOYEE"],
-  "employeeId": "employee-id",
-  "employeeNumber": "E001"
+  "roles": ["ROLE_EMPLOYEE"]
 }
 ```
 
-### Time Record Endpoints
-
-#### Clock In
-```http
-POST /api/time-records/quick-clock-in
-Authorization: Bearer {token}
-Content-Type: application/json
-
-{
-  "recordType": "CLOCK_IN",
-  "notes": "Starting work"
-}
-```
-
-#### Get Today's Summary
-```http
-GET /api/time-records/today
-Authorization: Bearer {token}
-```
-
-**Response:**
-```json
-{
-  "arrivalTime": "08:30",
-  "departureTime": "17:00",
-  "totalWorkingTime": "08:30",
-  "totalBreakTime": "00:30",
-  "netWorkingTime": "08:00",
-  "flexTime": "00:00",
-  "isWorking": false,
-  "isOnBreak": false
-}
-```
-
-#### Get Current Status
-```http
-GET /api/time-records/current-status
-Authorization: Bearer {token}
-```
-
-### Health Check
-
-```http
-GET /actuator/health
-```
-
-**Response:**
-```json
-{
-  "status": "UP",
-  "components": {
-    "database": {
-      "status": "UP",
-      "details": {
-        "database": "Connected",
-        "responseTime": "12ms",
-        "status": "OPERATIONAL"
-      }
-    }
-  }
-}
-```
+*For detailed API documentation, see [docs/api.md](docs/api.md)*
 
 ---
 
 ## Security
 
-### Authentication Flow
+### Authentication & Authorization
 
-1. User submits credentials via `/auth/signin`
-2. Backend validates credentials using Spring Security
-3. JWT token generated with 15-minute expiration
-4. Token returned to client and stored in Redux state
-5. Client includes token in Authorization header for all requests
-6. Backend validates token on each request via `AuthTokenFilter`
-7. Auto-logout on token expiration
+<table>
+<tr>
+<td width="40%"><strong>Feature</strong></td>
+<td><strong>Implementation</strong></td>
+</tr>
+<tr>
+<td>Password Encryption</td>
+<td>BCrypt with strength 12</td>
+</tr>
+<tr>
+<td>Token Type</td>
+<td>JWT with HMAC SHA-256</td>
+</tr>
+<tr>
+<td>Token Expiration</td>
+<td>15 minutes</td>
+</tr>
+<tr>
+<td>Session Management</td>
+<td>Stateless (JWT-based)</td>
+</tr>
+<tr>
+<td>Authorization</td>
+<td>Role-based access control (RBAC)</td>
+</tr>
+</table>
 
-### Security Features
+### Role Permissions
 
-- **Password Encryption:** BCrypt with strength 12
-- **JWT Tokens:** HMAC SHA-256 signed tokens
-- **CORS Protection:** Configurable allowed origins
-- **SQL Injection Prevention:** Parameterized queries via JPA
-- **XSS Protection:** Input sanitization and output encoding
-- **Session Management:** Stateless JWT-based sessions
-- **Role-Based Authorization:** Three-tier role system
-
-### Roles & Permissions
-
-| Role | Permissions                                                                |
-|------|----------------------------------------------------------------------------|
-| **ADMIN** | Full system access, user management, role management, system configuration |
-| **MANAGER** | Employee oversight, time approval, absence approval                        |
-| **EMPLOYEE** | Time tracking, profile view, absence requests, personal notes              |
+| Role | Status | Permissions |
+|------|--------|-------------|
+| **EMPLOYEE** | ✅ Active | Time tracking, profile view, personal reports |
+| **MANAGER** | 🚧 Planned | Employee oversight, approvals, team reports |
+| **ADMIN** | 🚧 Planned | User management, system config, all access |
 
 ---
 
 ## Testing
 
-### Backend Testing
+### Backend Tests
 
 ```bash
 cd backend
-mvn test
+mvn test                    # Run all tests
+mvn test -Dtest=AuthServiceTest  # Run specific test
 ```
 
 **Test Coverage:**
-- Unit tests for services and controllers
-- Integration tests with H2 database
-- Security configuration tests
-- Repository layer tests
+- Unit tests with JUnit 5 and Mockito
+- Integration tests with H2 in-memory database
+- Test profiles for isolated environments
 
-**Key Test Classes:**
-- `AuthServiceTest` - Authentication and registration
-- `TimeRecordServiceTest` - Time tracking business logic
-- `EmployeeServiceTest` - Employee management
-- `DatabaseMonitoringTest` - Health checks
+**Key Test Suites:**
+- `AuthServiceTest` - Authentication flows
+- `TimeRecordServiceTest` - Business logic validation
+- `EmployeeServiceTest` - CRUD operations
+- `DatabaseMonitoringTest` - Health check functionality
 
-### Frontend Testing
+### Frontend Tests
 
 ```bash
 cd frontend
@@ -415,40 +315,50 @@ npm run test
 
 ## Deployment
 
-### Render Deployment
+### Infrastructure
 
-The application is deployed on Render using the following services:
+**Self-hosted on Hetzner Cloud VPS via Coolify**
 
-1. **Web Service** (Backend + Frontend)
-    - Docker container with multi-stage build
-    - Auto-deployment from GitHub main branch
-    - Health checks via `/actuator/health`
+- Application: Docker container on VPS
+- Database: PostgreSQL on same VPS
+- Reverse Proxy: Managed by Coolify
+- SSL: Automatic via Coolify/Let's Encrypt
 
-2. **PostgreSQL Database**
-    - Managed PostgreSQL instance
-    - Automatic backups
-    - Connection pooling
+### CI/CD Pipeline
 
-### Deployment Process
+**GitHub Actions workflow:**
 
-1. **Push to GitHub** triggers GitHub Actions workflow
-2. **Docker Build** creates optimized multi-stage image
-    - Stage 1: Maven build with dependencies
-    - Stage 2: Frontend build with Vite
-    - Stage 3: Runtime image with JRE 21
-3. **Push to Docker Hub** with latest tag
-4. **Trigger Render Deployment** via webhook
-5. **Health Check** validates deployment success
+1. **Build Frontend** (Node 22)
+   - Install dependencies
+   - Build React app
+   - Upload artifacts
 
-### Deployment Configuration
+2. **Build Backend** (Java 21)
+   - Download frontend build
+   - Copy to `src/main/resources/static`
+   - Maven package (skip tests in CI)
+   - Upload `app.jar`
 
-**Environment Variables on Render:**
+3. **Docker Build & Push**
+   - Create multi-stage image
+   - Push to Docker Hub with tags:
+     - `latest`
+     - `{commit-sha}`
+
+4. **Deploy to Coolify**
+   - Trigger deployment via webhook
+   - Coolify pulls latest image
+   - Zero-downtime rolling update
+
+**Manual Deployment:**
+
 ```bash
-SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-host:5432/pertitrack
-SPRING_DATASOURCE_USERNAME=render_user
-SPRING_DATASOURCE_PASSWORD=secure_password
-JWT_SECRET=production-secret-key-256-bits
-CORS_ALLOWED_ORIGINS=https://your-app.onrender.com
+# Build and push
+docker build -t your-image:latest .
+docker push your-image:latest
+
+# Deploy via Coolify API
+curl -X POST -H "Authorization: Bearer $TOKEN" $COOLIFY_WEBHOOK_URL
 ```
 
 ---
@@ -463,45 +373,40 @@ CORS_ALLOWED_ORIGINS=https://your-app.onrender.com
 
 ---
 
-## Future Enhancements
+## Future Roadmap
 
-### Short-term Goals (Q4 2025)
-- [ ] **Timesheet Page** - Review and analyze yearly work and absence records
-- [ ] **Absence Management** - Request or approve absences support for employees or managers
-- [ ] **Timesheet Analytics** - Analyze timesheets with charts and graphs
+### Q4 2025
+- [ ] Complete absence management module
+- [ ] Implement manager role and approval workflows
+- [ ] Complete TimeSheet page
+- [ ] Mobile-responsive improvements
 
-### Medium-term Goals (Q1-Q2 2026)
-- [ ] **Multi-language Support** - i18n with German, English, Turkish
-- [ ] **Calendar Integration** - Google Calendar / Outlook sync
-- [ ] **Geolocation** - GPS-based clock in/out verification
-- [ ] **Team Dashboard** - Manager view with team analytics
+### Q1-Q2 2026
+- [ ] Admin panel for user management
+- [ ] Calendar view for team availability
+- [ ] Geolocation - GPS-based clock in/out verification
 
-### Long-term Vision (2026+)
-- [ ] **AI-Powered Insights** - Predictive analytics for workforce planning
-- [ ] **Integration Hub** - Connect with Slack, Microsoft Teams, SAP
-- [ ] **Shift Planning** - Advanced scheduling and shift management
-- [ ] **Payroll Integration** - Direct integration with payroll systems
-- [ ] **Compliance Engine** - Automated labor law compliance checking
+### 2026+
+- [ ] Multi-language support (DE, EN)
+- [ ] Integration with Discord, Slack, Microsoft Teams
+- [ ] AI-powered insights
+- [ ] Email notifications for approvals
+- [ ] Integration with payroll systems
 
 ---
 
-## Contributing
+## Project Stats
 
-This is a portfolio project, but feedback and suggestions are welcome!
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+![GitHub repo size](https://img.shields.io/github/repo-size/ad-altun/PerTiTrack)
+![GitHub last commit](https://img.shields.io/github/last-commit/ad-altun/PerTiTrack)
+![GitHub language count](https://img.shields.io/github/languages/count/ad-altun/PerTiTrack)
+![GitHub top language](https://img.shields.io/github/languages/top/ad-altun/PerTiTrack)
 
 ---
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE.md) file for details.
-
----
+MIT License - see [LICENSE](LICENSE) file for details.
 
 ## Contact
 
@@ -509,17 +414,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE.md) f
 
 - GitHub: [@ad-altun](https://github.com/ad-altun)
 - LinkedIn: [Abidin Deniz Altun](https://www.linkedin.com/in/abidin-deniz-altun-46906a71/)
-
----
-
-## Project Stats
-
-![GitHub repo size](https://img.shields.io/github/repo-size/ad-altun/PerTiTrack)
-![GitHub language count](https://img.shields.io/github/languages/count/ad-altun/PerTiTrack)
-![GitHub top language](https://img.shields.io/github/languages/top/ad-altun/PerTiTrack)
-![GitHub last commit](https://img.shields.io/github/last-commit/ad-altun/PerTiTrack)
+- Email: contact@denizaltun.de
 
 ---
 
 ⭐ **Star this repository** if you find it helpful!
-
