@@ -96,6 +96,18 @@ jobs:
           cache-from: type=registry,ref=${{ secrets.DOCKERHUB_IMAGE }}:buildcache
           cache-to: type=registry,ref=${{ secrets.DOCKERHUB_IMAGE }}:buildcache,mode=max
 
+  # Deployment workflow for PerTiTrack
+  #
+  # IMPORTANT: Cloudflare Proxy Configuration
+  # If deployment fails with HTTP 403 errors from GitHub Actions while working from local (Postman/curl):
+  # - Check Cloudflare DNS settings for coolify.denizaltun.de
+  # - Ensure the record is set to "DNS only" (gray cloud), NOT "Proxied" (orange cloud)
+  # - Cloudflare's proxy can block automated requests from GitHub Actions IPs while allowing browser traffic
+  #
+  # Debug steps if needed:
+  # 1. Verify secrets are loaded: Check COOLIFY_API_TOKEN and COOLIFY_API_URL exist
+  # 2. Get GitHub Runner IP: curl -s https://api.ipify.org
+  # 3. Test API with verbose output: curl -v -X POST -H "Authorization: Bearer $TOKEN" $URL
   deploy:
     needs: push-to-docker-hub
     runs-on: ubuntu-latest
