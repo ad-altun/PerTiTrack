@@ -331,6 +331,10 @@ export const CustomThemeProvider = ( { children }: ThemeProviderProps ) => {
                         backgroundColor: actualMode === "light"
                             ? "rgba(0, 0, 0, 0.11)"
                             : "rgba(129, 140, 248, 0.2)",
+                        animation: `$pulse 2s ease-in-out 0.5s infinite`,
+                    },
+                    wave: {
+                        animationDuration: "2s", // Slower animation (default is ~1.5s)
                     },
                 },
             },

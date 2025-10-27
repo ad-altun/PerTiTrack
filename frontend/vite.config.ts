@@ -34,7 +34,7 @@ export default defineConfig({
                     'mui-icons': [ '@mui/icons-material' ],
 
                     // Date/Time (if you add these)
-                    // 'date': [ 'date-fns', 'dayjs', 'moment' ], // whichever you use
+                    'date': [ 'dayjs', ],
 
                     // Other utilities (if you add these)
                     // 'utils': [ 'lodash', 'uuid', 'classnames' ]

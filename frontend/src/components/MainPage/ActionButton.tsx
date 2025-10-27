@@ -398,10 +398,10 @@ export default function ActionButton( { onActionComplete }: ActionButtonsProps )
             <Box
                 sx={ {
                     backgroundColor: 'background.cardItem',
-                    padding: '12px 16px',
+                    padding: '8px 16px',
                     borderRadius: '8px',
                     border: '1px solid #e2e8f0',
-                    marginBottom: '1rem',
+                    marginBottom: '.1rem',
                 } }
             >
                 <Typography
@@ -418,7 +418,7 @@ export default function ActionButton( { onActionComplete }: ActionButtonsProps )
                         sx={ {
                             color: currentStatus?.isWorking ? '#38a169' :
                                 currentStatus?.isOnBreak ? '#ed8936' :
-                                    !currentStatus?.isWorking ? '#e53e3e' : '#718096',
+                                    !currentStatus?.isWorking ? '#718096' : '#718096',
                             fontWeight: 600,
                         } }
                     >
