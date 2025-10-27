@@ -1,0 +1,414 @@
+/* ==================== ABSENCE TABLE STYLES ==================== */
+
+/* Table Container */
+.absence-table-container {
+    border-collapse: collapse;
+    width: 100%;
+    font-size: 0.85rem;
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* ==================== TABLE HEADER ==================== */
+.table-header {
+    background: #f8f8f8;
+    border-bottom: 2px solid #ddd;
+}
+
+.table-header th {
+    padding: 0.75rem 0.25rem;
+    text-align: center;
+    font-weight: 600;
+    border-right: 1px solid #ddd;
+    font-size: 0.8rem;
+    color: #333;
+}
+
+/* First header cell (year) - special styling */
+.table-header th:first-child {
+    background: #2563eb;
+    /*background: #3b82f6;*/
+    color: white;
+    text-align: left;
+    padding-left: 1rem;
+    width: 100px;
+    border-right: 1px solid #d32f2f;
+}
+
+.table-header th:last-child {
+    border-right: none;
+}
+
+/* ==================== TABLE BODY & ROWS ==================== */
+.month-row {
+    border-bottom: 1px solid #eee;
+    transition: background-color 0.2s ease;
+}
+
+.month-row:nth-child(even) {
+    background: #fafafa;
+}
+
+.month-row:hover {
+    background-color: #f5f5f5;
+}
+
+/* Month name cell (row header) */
+.month-row th {
+    text-align: left;
+    /*padding-left: 1rem;*/
+    font-weight: 600;
+    color: #666;
+    background: #f8f8f8;
+    width: 100px;
+    border-right: 1px solid #ddd;
+    padding: 0.35rem .75rem;
+}
+
+.month-row:nth-child(even) th {
+    background: #fafafa;
+}
+
+/* Regular cells (days) */
+.month-row td {
+    padding-block: 0.25rem;
+    border-right: 1px solid #eee;
+    text-align: center;
+    height: 30px;
+    min-width: 35px;
+    vertical-align: middle;
+    position: relative;
+    font-weight: 500;
+}
+
+.month-row td:last-child {
+    border-right: none;
+}
+
+/* ==================== ABSENCE TYPE BADGES ==================== */
+.absence-badge {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+    white-space: nowrap;
+    color: #666;
+}
+
+/* LIGHT MODE - Subtle backgrounds with darker text */
+/* Vacation (UR - Urlaub) */
+.absence-vacation {
+    background-color: #fce4ec;
+    color: #c2185b;
+}
+
+/* Business Trip (FT - Dienstreise) */
+.absence-business {
+    background-color: #ffe0b2;
+    color: #e65100;
+}
+
+/* Flexible Time (FT) */
+.absence-flex {
+    background-color: #e3f2fd;
+    color: #1565c0;
+}
+
+/* Working Time (ZT) */
+.absence-zt {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+}
+
+/* Sick Leave (KR) */
+.absence-sick {
+    background-color: #ffebee;
+    color: #b71c1c;
+}
+
+/* Public Holiday (FT) */
+.absence-holiday {
+    /*background-color: #fff3e0;*/
+    /*color: #e65100;*/
+}
+
+/* DARK MODE - Inverted colors */
+@media (prefers-color-scheme: dark) {
+    .absence-vacation {
+        background-color: #880e4f;
+        color: #ff80ab;
+    }
+
+    .absence-business {
+        background-color: #bf360c;
+        color: #ffb74d;
+    }
+
+    .absence-flex {
+        background-color: #0d47a1;
+        color: #64b5f6;
+    }
+
+    .absence-zt {
+        background-color: #1b5e20;
+        color: #81c784;
+    }
+
+    .absence-sick {
+        background-color: #b71c1c;
+        color: #ef5350;
+    }
+
+    .absence-holiday {
+        /*background-color: #e65100;*/
+        /*color: #ffb74d;*/
+    }
+}
+
+/* Weekend - subtle highlight */
+.weekend {
+    background-color: #7989a3 !important;
+    opacity: 0.8;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    padding: 0.25rem;
+}
+
+@media (prefers-color-scheme: dark) {
+    .weekend {
+        /*background-color: #4a3728 !important;*/
+        opacity: 0.6;
+    }
+}
+
+/* No absence - default */
+.no-absence {
+    color: #999;
+    font-weight: 400;
+}
+
+@media (prefers-color-scheme: dark) {
+    .no-absence {
+        color: #666;
+    }
+}
+
+/* ==================== LEGEND ==================== */
+.legend-section {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background: #f8f8f8;
+    border-radius: 4px;
+}
+
+.legend-title {
+    font-weight: 600;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    color: #333;
+}
+
+.legend-items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.legend-color {
+    width: 24px;
+    height: 24px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+}
+
+.legend-item span {
+    font-size: 0.9rem;
+    color: #666;
+}
+
+/* ==================== CONTROLS ==================== */
+.controls {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+}
+
+.control-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.control-group label {
+    font-weight: 500;
+    color: #666;
+    min-width: 80px;
+}
+
+.control-group select,
+.control-group input {
+    padding: 0.5rem;
+    border: 2px solid #ddd;
+    border-radius: 4px;
+    background: white;
+    min-width: 200px;
+    font-size: 0.95rem;
+}
+
+.control-group select:focus,
+.control-group input:focus {
+    outline: none;
+    border-color: #e53e3e;
+    box-shadow: 0 0 0 3px rgba(229, 62, 62, 0.1);
+}
+
+/* ==================== RESPONSIVE DESIGN ==================== */
+
+/* Tablet (768px - 1199px) */
+@media (max-width: 1199px) {
+    .absence-table-container {
+        font-size: 0.75rem;
+    }
+
+    .table-header th {
+        padding: 0.5rem 0.15rem;
+        font-size: 0.75rem;
+    }
+
+    .month-row th {
+        padding: 0.4rem 0.75rem;
+        width: 80px;
+    }
+
+    .month-row td {
+        padding: 0.4rem 0.15rem;
+        height: 35px;
+    }
+
+    .table-header th:first-child {
+        width: 80px;
+        padding-left: 0.75rem;
+    }
+
+    .controls {
+        gap: 1rem;
+    }
+
+    .legend-items {
+        gap: 1.5rem;
+    }
+}
+
+/* Mobile (below 768px) */
+@media (max-width: 767px) {
+    .absence-table-container {
+        font-size: 0.65rem;
+        border-radius: 4px;
+    }
+
+    .table-header th {
+        padding: 0.4rem 0.1rem;
+        font-size: 0.65rem;
+    }
+
+    .month-row th {
+        padding: 0.3rem 0.5rem;
+        width: 70px;
+        font-size: 0.75rem;
+    }
+
+    .month-row td {
+        padding: 0.3rem 0.1rem;
+        height: 32px;
+        font-size: 0.6rem;
+    }
+
+    .table-header th:first-child {
+        width: 70px;
+        padding-left: 0.5rem;
+        font-size: 0.7rem;
+    }
+
+    .controls {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: stretch;
+    }
+
+    .control-group {
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+
+    .control-group select,
+    .control-group input {
+        min-width: 100%;
+        width: 100%;
+    }
+
+    .legend-section {
+        padding: 1rem;
+    }
+
+    .legend-items {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .legend-item {
+        justify-content: space-between;
+    }
+
+    /* Make table scrollable on mobile */
+    .absence-table-wrapper {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+}
+
+/* ==================== ACCESSIBILITY & INTERACTIONS ==================== */
+.month-row:focus-within {
+    background-color: #e3f2fd;
+}
+
+.month-row td:focus {
+    outline: 2px solid #1976d2;
+    outline-offset: -2px;
+}
+
+/* Print styles */
+@media print {
+    .absence-table-container {
+        box-shadow: none;
+        border: 1px solid #ddd;
+    }
+
+    .controls,
+    .legend-section {
+        display: none;
+    }
+}
+
+/* ==================== UTILITY CLASSES ==================== */
+.table-loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.table-error {
+    border: 2px solid #d32f2f;
+}

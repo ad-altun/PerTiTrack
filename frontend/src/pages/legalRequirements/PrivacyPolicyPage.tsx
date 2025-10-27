@@ -1,4 +1,4 @@
-import { Box, Typography, Paper, Divider, Alert } from "@mui/material";
+import { Box, Typography, Paper, Divider } from "@mui/material";
 
 export default function PrivacyPolicyPage() {
 
@@ -32,14 +32,14 @@ export default function PrivacyPolicyPage() {
                     <Typography variant="body1" paragraph>
                         <strong>Abidin Deniz Altun</strong>
                         <br/>
-                        [Straße und Hausnummer]
+
                         <br/>
                         89518 Heidenheim an der Brenz
                         <br/>
                         Deutschland
                         <br/>
                         <br/>
-                        E-Mail: ada.altun@gmail.com
+                        E-Mail: contact@denizaltun.de
                         <br/>
                     </Typography>
                 </Box>

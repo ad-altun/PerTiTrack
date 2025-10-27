@@ -42,7 +42,7 @@ export default function ImpressumPage() {
                         Kontakt
                     </Typography>
                     <Typography variant="body1" paragraph>
-                        <strong>E-Mail:</strong> adaltun@web.de
+                        <strong>E-Mail:</strong> contact@denizaltun.de
                         <br/>
                     </Typography>
                 </Box>
@@ -92,27 +92,4 @@ export default function ImpressumPage() {
         </>
     );
 };
-// <div>
-//     <h1>Impressum</h1>
-//
-//     <p>Angaben gem&auml;&szlig; &sect; 5 TMG</p>
-//     <p>Angaben gemäß § 5 TMG</p>
-//
-//     <p>Abidin Deniz Altun<br />
-//         Liststr. 44<br />
-//         89518 Heidenheim an der Brenz</p>
-//
-//     <h2>Kontakt</h2>
-//     <p>E-Mail: mustermann@musterfirma.de</p>
-//
-//     Verantwortlich für den Inhalt nach § 18 Abs. 2 MStV:
-//     Abidin Deniz Altun, Liststr. 44, 89518 Heidenheim an der Brenz
-//
-//     <h2>Haftungsausschluss: </h2>
-//     <p>
-//         Dies ist eine private Portfolio-Webanwendung, die ausschließlich
-//         zu Demonstrations- und Bewerbungszwecken betrieben wird.
-//         Es handelt sich nicht um ein kommerzielles Angebot.
-//     </p>
-//
-// </div>
+

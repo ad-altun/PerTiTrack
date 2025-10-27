@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useAppSelector } from "../../store/hook.ts";
 import ActionButton from "./ActionButton.tsx";
-import WorkflowButtonGroup from "./WorkflowButtonGroup.tsx";
 import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
 import { Alert, Box, Paper } from "@mui/material";
@@ -47,15 +46,15 @@ const BookingPanel: React.FC = () => {
     };
 
     // Handle workflow actions
-    const handleWorkflowClick = () => {
-        console.log('Workflow clicked - Open workflow management');
-        // TODO: Implement workflow management, open modal
-    };
-
-    const handleBalanceClick = () => {
-        console.log('Balance clicked - Open balance view');
-        // TODO: Implement balance/flextime view
-    };
+    // const handleWorkflowClick = () => {
+    //     console.log('Workflow clicked - Open workflow management');
+    //     // TODO: Implement workflow management, open modal
+    // };
+    //
+    // const handleBalanceClick = () => {
+    //     console.log('Balance clicked - Open balance view');
+    //     // TODO: Implement balance/flextime view
+    // };
 
     const localDate = new Date().toISOString().slice(0, 10);
     const localTime = dynamicLocalTime;
@@ -94,130 +93,133 @@ const BookingPanel: React.FC = () => {
                     sx={ {
                         color: 'text.primary',
                         padding: '10px 20px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
                     } }
                 >
                     <Typography variant="h6" component="div"
                                 sx={ {
                                     fontWeight: 600, width: '100%',
-                                    borderBottom: '2px solid', borderColor: 'border.main'
+                                    borderBottom: '2px solid', borderColor: 'border.main',
+                                    color: 'text.primary',
+                                    padding: '10px 20px',
                                 } }>
                         Booking Panel
                     </Typography>
                 </Box>
 
-                {/* Current Info Section */ }
-                <Box
-                    sx={ {
-                        // backgroundColor: 'background.default',
-                        margin: '10px 20px 0px 20px',
-                        padding: '20px',
-                        border: '1px solid',
-                        borderColor: '#e2e8f0',
-                        borderRadius: '12px',
-                        backgroundColor: 'background.cardItem',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        flex: 1,
-                        overflow: 'auto',
-                        maxHeight: '400px',
-                        minHeight: '175px',
-                    } }
+                <Box sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                }}
                 >
-                    <Typography
-                        variant="subtitle2"
-                        sx={ {
-                            fontWeight: 600,
-                            color: '#4a5568',
-                            marginBottom: '12px',
-                        } }
-                    >
-                        Current Information
-                    </Typography>
-
-                    {/* Info Grid */ }
+                    {/* Current Info Section */ }
                     <Box
                         sx={ {
-                            display: 'grid',
-                            gridTemplateColumns: { xs: '1fr', sm: '1fr' },
-                            gap: '12px',
+                            // backgroundColor: 'background.default',
+                            margin: '10px 20px 0px 20px',
+                            padding: '20px',
+                            border: '1px solid',
+                            borderColor: '#e2e8f0',
+                            borderRadius: '12px',
+                            backgroundColor: 'background.cardItem',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            flex: 1,
+                            overflow: 'auto',
+                            maxHeight: { xs: '225px', md: '400px' },
+                            minHeight: '175px',
                         } }
                     >
-                        { [
-                            { label: 'Local Date', value: localDate },
-                            { label: 'Local Time', value: localTime },
-                            {
-                                label: 'Last Booking',
-                                value: isDataLoading ? 'Loading...' : lastBookingTypeText[ lastBookingType ],
-                                isLoading: isDataLoading
-                            },
-                        ].map(( info, index ) => (
-                            <Box
-                                key={ index }
+                        {/* Info Grid */ }
+                        <Box
+                            sx={ {
+                                display: 'flex',
+                                flexDirection: 'column',
+                                gap: '.5rem',
+                            } }
+                        >
+                            <Typography
+                                variant="subtitle2"
                                 sx={ {
-                                    display: 'flex',
-                                    justifyContent: 'space-between',
-                                    alignItems: 'center',
-                                    padding: '8px 12px',
-                                    opacity: info.isLoading ? 0.7 : 1,
-                                    borderBottom: '2px solid', borderColor: 'border.light',
+                                    fontWeight: 600,
+                                    color: '#4a5568',
                                 } }
                             >
-                                <Typography
-                                    variant="caption"
+                                Current Information
+                            </Typography>
+                            { [
+                                { label: 'Local Date', value: localDate },
+                                { label: 'Local Time', value: localTime },
+                                {
+                                    label: 'Last Booking',
+                                    value: isDataLoading ? 'Loading...' : lastBookingTypeText[ lastBookingType ],
+                                    isLoading: isDataLoading
+                                },
+                            ].map(( info, index ) => (
+                                <Box
+                                    key={ index }
                                     sx={ {
-                                        fontWeight: 500,
-                                        color: '#718096',
-                                        fontSize: '0.75rem',
+                                        display: 'flex',
+                                        justifyContent: 'space-between',
+                                        alignItems: 'center',
+                                        padding: '8px 12px',
+                                        opacity: info.isLoading ? 0.7 : 1,
+                                        borderBottom: '2px solid', borderColor: 'border.light',
                                     } }
                                 >
-                                    { info.label }:
-                                </Typography>
-                                <Typography
-                                    variant="caption"
-                                    sx={ {
-                                        color: '#2d3748',
-                                        fontWeight: 500,
-                                        fontSize: '0.75rem',
-                                        fontFamily: info.label.includes('Time') ? 'monospace' : 'inherit',
-                                        fontStyle: info.isLoading ? 'italic' : 'normal',
-                                    } }
-                                >
-                                    { info.value }
-                                </Typography>
-                            </Box>
-                        )) }
+                                    <Typography
+                                        variant="caption"
+                                        sx={ {
+                                            fontWeight: 500,
+                                            color: '#718096',
+                                            fontSize: '0.75rem',
+                                        } }
+                                    >
+                                        { info.label }:
+                                    </Typography>
+                                    <Typography
+                                        variant="caption"
+                                        sx={ {
+                                            color: '#2d3748',
+                                            fontWeight: 500,
+                                            fontSize: '0.75rem',
+                                            fontFamily: info.label.includes('Time') ? 'monospace' : 'inherit',
+                                            fontStyle: info.isLoading ? 'italic' : 'normal',
+                                        } }
+                                    >
+                                        { info.value }
+                                    </Typography>
+                                </Box>
+                            )) }
+                        </Box>
                     </Box>
-                </Box>
 
-                {/* Action Buttons */ }
-                <Box sx={ {
-                    padding: '20px',
-                } }>
-                    <ActionButton onActionComplete={ handleActionComplete }/>
+                    {/* Action Buttons */ }
+                    <Box sx={ {
+                        padding: '20px',
+                    } }>
+                        <ActionButton onActionComplete={ handleActionComplete }/>
 
-                    <Divider sx={ { margin: '10px 0' } }/>
+                        <Divider sx={ { margin: '10px 0' } }/>
 
-                    {/* Workflow Actions */ }
-                    <Typography
-                        variant="subtitle2"
-                        sx={ {
-                            fontWeight: 600,
-                            color: 'text.secondary',
-                            marginBottom: '16px',
-                        } }
-                    >
-                        Additional Actions
-                    </Typography>
+                        {/* Workflow Actions */ }
+                        {/*<Typography*/}
+                        {/*    variant="subtitle2"*/}
+                        {/*    sx={ {*/}
+                        {/*        fontWeight: 600,*/}
+                        {/*        color: 'text.secondary',*/}
+                        {/*        marginBottom: '16px',*/}
+                        {/*    } }*/}
+                        {/*>*/}
+                        {/*    Additional Actions*/}
+                        {/*</Typography>*/}
 
-                    <WorkflowButtonGroup
-                        onWorkflowClick={ handleWorkflowClick }
-                        onBalanceClick={ handleBalanceClick }
-                        activeButton={ null }
-                        disabledButtons={ [] }
-                    />
+                        {/*<WorkflowButtonGroup*/}
+                        {/*    onWorkflowClick={ handleWorkflowClick }*/}
+                        {/*    onBalanceClick={ handleBalanceClick }*/}
+                        {/*    activeButton={ null }*/}
+                        {/*    disabledButtons={ [] }*/}
+                        {/*/>*/}
+                    </Box>
                 </Box>
             </Paper>
 

@@ -25,6 +25,7 @@ export default function FeatureCard({ icon: Icon, title, description, delay = 0 
                 textAlign: 'center',
                 position: 'relative',
                 border: `1px solid ${theme.palette.divider}`,
+                boxShadow: '2px 4px 6px rgba(0,0,0,0.15)',
                 backgroundColor: theme.palette.mode === 'light'
                     ? 'rgba(255,255,255,0.8)'
                     : 'rgba(30,41,59,0.8)',

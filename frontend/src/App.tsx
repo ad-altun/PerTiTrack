@@ -22,13 +22,14 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 
 // lazy load heavy/rarely used components
 const RegisterForm = lazy(() => import("./components/auth/RegisterForm.tsx"));
-const ForgotPasswordForm = lazy(() => import("./components/auth/ForgotPasswordForm.tsx"));
+// const ForgotPasswordForm = lazy(() => import("./components/auth/ForgotPasswordForm.tsx"));
 const HomePage = lazy(() => import("./pages/HomePage.tsx"));
-const Dashboard = lazy(() => import("./components/MainPage/Dashboard.tsx"))
+const Dashboard = lazy(() => import("./components/MainPage/Dashboard.tsx"));
 const TimeSheetPage = lazy(() => import("./pages/TimeSheetPage.tsx"));
 const NotFoundPage = lazy(() => import("./pages/NotFoundPage.tsx"));
 const UnauthorizedPage = lazy(() => import("./pages/UnauthorizedPage.tsx"));
 const SettingsPage = lazy(() => import("./pages/SettingsPage.tsx"));
+const AbsenceCalendarPage = lazy(() => import("./pages/AbsenceCalendarPage.tsx"));
 
 const LegalLayout = lazy(() => import("./pages/legalRequirements/LegalLayout.tsx"));
 const ImpressumPage = lazy(() => import("./pages/legalRequirements/ImpressumPage.tsx"));
@@ -36,14 +37,15 @@ const PrivacyPolicyPage = lazy(() => import("./pages/legalRequirements/PrivacyPo
 const TermsOfService = lazy(() => import("./pages/legalRequirements/TermsOfService.tsx"));
 const AccessibilityStatement = lazy(() => import("./pages/legalRequirements/AccessibilityStatement.tsx"));
 const ContactPage = lazy(() => import("./pages/legalRequirements/ContactPage.tsx"));
-
+const LandingLayout = lazy(() => import("./pages/LandingLayout.tsx"));
 
 function App() {
     const router = createBrowserRouter([
-        // main application routes
+
+        // landing page layout
         {
             path: "/",
-            element: <RootLayout/>,
+            element: <LandingLayout/>,
             children: [
                 {
                     index: true,
@@ -56,32 +58,46 @@ function App() {
                 {
                     path: 'home',
                     element: (
-                        <Suspense fallback={ <div> <LoadingSpinner /> </div> } >
-                            < HomePage />
+                        <Suspense fallback={ <div><LoadingSpinner/></div> }>
+                            < HomePage/>
+                        </Suspense>
+                    ),
+                },
+            ],
+        },
+        // main application routes
+        {
+            element: <RootLayout/>,
+            children: [
+                {
+                    path: "dashboard",
+                    element: (
+                        <Suspense fallback={ <div><LoadingSpinner/></div> }>
+                            <Dashboard/>
                         </Suspense>
                     ),
                 },
                 {
-                    path: "/dashboard",
+                    path: 'timesheet',
                     element: (
-                        <Suspense fallback={ <div> <LoadingSpinner/> </div> }>
-                            <Dashboard />
-                        </Suspense>
-                    ),
-                },
-                {
-                    path: '/timesheet',
-                    element: (
-                        <Suspense fallback={<div> <LoadingSpinner /> </div>} >
-                            <TimeSheetPage />
+                        <Suspense fallback={ <div><LoadingSpinner/></div> }>
+                            <TimeSheetPage/>
                         </Suspense>
                     )
                 },
                 {
-                    path: "/account-settings",
+                    path: 'absence-calendar',
                     element: (
-                        <Suspense fallback={<div> <LoadingSpinner/> </div>} >
-                            <SettingsPage />
+                        <Suspense fallback={ <div><LoadingSpinner/></div> }>
+                            <AbsenceCalendarPage/>
+                        </Suspense>
+                    )
+                },
+                {
+                    path: "account-settings",
+                    element: (
+                        <Suspense fallback={ <div><LoadingSpinner/></div> }>
+                            <SettingsPage/>
                         </Suspense>
                     )
                 },
@@ -95,7 +111,7 @@ function App() {
             children: [
                 {
                     index: true,
-                    element: <LoginForm />,
+                    element: <LoginForm/>,
                 },
                 {
                     path: 'signin',
@@ -109,14 +125,15 @@ function App() {
                         </Suspense>
                     ),
                 },
-                {
-                    path: 'forgot-password',
-                    element: (
-                        <Suspense fallback={ <div><LoadingSpinner/></div> }>
-                            <ForgotPasswordForm/>
-                        </Suspense>
-                    ),
-                },
+                // route deactivated until contact form is ready
+                // {
+                //     path: 'forgot-password',
+                //     element: (
+                //         <Suspense fallback={ <div><LoadingSpinner/></div> }>
+                //             <ForgotPasswordForm/>
+                //         </Suspense>
+                //     ),
+                // },
             ]
         },
 
@@ -124,52 +141,52 @@ function App() {
         {
             path: '/legal',
             element: (
-                <Suspense fallback={<div> <LoadingSpinner /> </div>} >
-                    <LegalLayout />
+                <Suspense fallback={ <div><LoadingSpinner/></div> }>
+                    <LegalLayout/>
                 </Suspense>
             ),
             children: [
                 {
                     index: true,
-                    element: <Navigate to="/legal/impressum" replace />,
+                    element: <Navigate to="/legal/impressum" replace/>,
                 },
                 {
                     path: 'impressum',
                     element: (
-                        <Suspense fallback={<div> <LoadingSpinner /> </div>} >
-                            <ImpressumPage />
+                        <Suspense fallback={ <div><LoadingSpinner/></div> }>
+                            <ImpressumPage/>
                         </Suspense>
                     ),
                 },
                 {
                     path: 'privacy-policy',
                     element: (
-                        <Suspense fallback={<div> <LoadingSpinner /> </div>} >
-                            <PrivacyPolicyPage />
+                        <Suspense fallback={ <div><LoadingSpinner/></div> }>
+                            <PrivacyPolicyPage/>
                         </Suspense>
                     )
                 },
                 {
                     path: 'accessibility-statement',
                     element: (
-                        <Suspense fallback={<div> <LoadingSpinner /> </div>} >
-                            <AccessibilityStatement />
+                        <Suspense fallback={ <div><LoadingSpinner/></div> }>
+                            <AccessibilityStatement/>
                         </Suspense>
                     )
                 },
                 {
                     path: 'contact',
                     element: (
-                        <Suspense fallback={<div> <LoadingSpinner /> </div>} >
-                            <ContactPage />
+                        <Suspense fallback={ <div><LoadingSpinner/></div> }>
+                            <ContactPage/>
                         </Suspense>
                     )
                 },
                 {
                     path: 'terms-of-service',
                     element: (
-                        <Suspense fallback={<div> <LoadingSpinner /> </div>} >
-                            <TermsOfService />
+                        <Suspense fallback={ <div><LoadingSpinner/></div> }>
+                            <TermsOfService/>
                         </Suspense>
                     )
                 },
@@ -192,18 +209,18 @@ function App() {
         {
             path: "/unauthorized",
             element: (
-                <Suspense fallback={<div> <LoadingSpinner /></div> }>
-                    <UnauthorizedPage />
+                <Suspense fallback={ <div><LoadingSpinner/></div> }>
+                    <UnauthorizedPage/>
                 </Suspense>
             )
         },
         {
             path: "/forbidden",
             element: (
-                <Suspense fallback={ <div> <LoadingSpinner /> </div> } >
+                <Suspense fallback={ <div><LoadingSpinner/></div> }>
                     <UnauthorizedPage
                         message="You don't have permission to access this page."
-                        showHomeButton={true}
+                        showHomeButton={ true }
                     />
                 </Suspense>
             )
@@ -211,8 +228,8 @@ function App() {
         {
             path: "/404",
             element: (
-                <Suspense fallback={<div> <LoadingSpinner/> </div>} >
-                    <NotFoundPage />
+                <Suspense fallback={ <div><LoadingSpinner/></div> }>
+                    <NotFoundPage/>
                 </Suspense>
             )
         },
@@ -220,8 +237,8 @@ function App() {
         {
             path: "*",
             element: (
-                <Suspense fallback={<div> <LoadingSpinner/> </div>} >
-                    <NotFoundPage />
+                <Suspense fallback={ <div><LoadingSpinner/></div> }>
+                    <NotFoundPage/>
                 </Suspense>
             )
         },
@@ -229,7 +246,7 @@ function App() {
 
     return (
         <Provider store={ store }>
-            <CustomThemeProvider >
+            <CustomThemeProvider>
                 <LocalizationProvider dateAdapter={ AdapterDayjs }>
                     <RouterProvider router={ router }/>
                 </LocalizationProvider>

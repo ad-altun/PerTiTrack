@@ -127,7 +127,7 @@ export default function AboutSection() {
                         <Tabs
                             value={activeTab}
                             onChange={handleTabChange}
-                            variant="scrollable"
+                            variant="fullWidth"
                             scrollButtons="auto"
                             sx={{
                                 backgroundColor: theme.palette.mode === 'light' ? '#e2e8f0' : '#0f172a',
@@ -135,9 +135,11 @@ export default function AboutSection() {
                                 '& .MuiTab-root': {
                                     minHeight: 64,
                                     textTransform: 'none',
-                                    fontSize: '1rem',
+                                    fontSize: { xs: '0.875rem', sm: '1rem' },
                                     fontWeight: 600,
                                     color: 'text.secondary',
+                                    minWidth: { xs: '70px', sm: '120px' },
+                                    padding: { xs: '8px 4px', sm: '12px 16px' },
                                     '&.Mui-selected': {
                                         color: 'primary.main',
                                     },
@@ -148,10 +150,30 @@ export default function AboutSection() {
                                 },
                             }}
                         >
-                            <Tab icon={<Flag />} iconPosition="start" label="Our Mission" />
-                            <Tab icon={<CheckCircle />} iconPosition="start" label="Why Choose Us" />
-                            <Tab icon={<Security />} iconPosition="start" label="Security" />
-                            <Tab icon={<Code />} iconPosition="start" label="Technology" />
+                            <Tab
+                                icon={<Flag sx={{ fontSize: { xs: '1.25rem', sm: '1.5rem' } }} />}
+                                iconPosition="start"
+                                label={<Box component="span" sx={{ display: { xs: 'none', md: 'inline' } }}>Our Mission</Box>}
+                                aria-label="Our Mission"
+                            />
+                            <Tab
+                                icon={<CheckCircle sx={{ fontSize: { xs: '1.25rem', sm: '1.5rem' } }} />}
+                                iconPosition="start"
+                                label={<Box component="span" sx={{ display: { xs: 'none', md: 'inline' } }}>Why Choose Us</Box>}
+                                aria-label="Why Choose Us"
+                            />
+                            <Tab
+                                icon={<Security sx={{ fontSize: { xs: '1.25rem', sm: '1.5rem' } }} />}
+                                iconPosition="start"
+                                label={<Box component="span" sx={{ display: { xs: 'none', md: 'inline' } }}>Security</Box>}
+                                aria-label="Security"
+                            />
+                            <Tab
+                                icon={<Code sx={{ fontSize: { xs: '1.25rem', sm: '1.5rem' } }} />}
+                                iconPosition="start"
+                                label={<Box component="span" sx={{ display: { xs: 'none', md: 'inline' } }}>Technology</Box>}
+                                aria-label="Technology"
+                            />
                         </Tabs>
 
                         {/* Tab Panels */}

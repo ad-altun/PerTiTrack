@@ -1,14 +1,13 @@
-import { Outlet, Link } from "react-router-dom";
-import { Box, Container, AppBar, Toolbar, Typography } from "@mui/material";
-import Header from "../../components/Header";
+import { Outlet } from "react-router-dom";
+import { Box, Container } from "@mui/material";
 import Footer from "../../components/Footer.tsx";
+import Navbar from "../../components/Navbar.tsx";
 
 export default function LegalLayout() {
  return (
      <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
          {/* Simple header for legal pages */}
-         <Header portalName="Rechtliche Informationen" />
-
+         <Navbar />
          {/* Main content area */}
          <Container
              component="main"
