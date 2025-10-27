@@ -1,13 +1,10 @@
-import { useNavigate } from "react-router-dom";
-import UnderConstructionPage from "../UnderConstructionPage.tsx";
-
+import ContactSection from "../../components/ContactSection.tsx";
 
 export default function ContactPage() {
-    const navigate = useNavigate();
 
  return (
   <>
-      <UnderConstructionPage />
+      <ContactSection />
   </>
  );
 };
