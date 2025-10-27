@@ -16,7 +16,7 @@ import {
     selectUserProfileName
 } from "../store/selectors/navbarSelectors.ts";
 import { Button, Container, Divider, ListItemIcon, ListItemText } from "@mui/material";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useTheme } from "../contexts/UseTheme.tsx";
 
 
@@ -24,7 +24,6 @@ const Navbar = () => {
     const [ anchorEl, setAnchorEl ] = React.useState<null | HTMLElement>(null);
     const navigate = useNavigate();
     const [ mobileMenuAnchor, setMobileMenuAnchor ] = React.useState<null | HTMLElement>(null);
-    // const [ unauthMobileMenuAnchor, setUnauthMobileMenuAnchor ] = React.useState<null | HTMLElement>(null);
 
     const activePage = useAppSelector(selectActivePage);
     const userName = useAppSelector(selectUserProfileName);
@@ -76,11 +75,6 @@ const Navbar = () => {
         setMobileMenuAnchor(event.currentTarget);
     };
     const handleMobileMenuClose = () => setMobileMenuAnchor(null);
-
-    // const handleUnauthMobileMenuOpen = ( event: React.MouseEvent<HTMLButtonElement> ) => {
-    //     setUnauthMobileMenuAnchor(event.currentTarget);
-    // };
-    // const handleUnauthMobileMenuClose = () => setUnauthMobileMenuAnchor(null);
 
     // Get theme icon and tooltip text
     const getThemeIcon = () => {
@@ -152,15 +146,6 @@ const Navbar = () => {
                         alignItems: 'center',
                     } }
                 >
-                    {/*<Link to="/" style={ { textDecoration: "none" } }>*/ }
-                    {/*    <Typography variant="h6"*/ }
-                    {/*                sx={ {*/ }
-                    {/*                    fontWeight: "bold",*/ }
-                    {/*                    color: "text.header"*/ }
-                    {/*                } }>*/ }
-                    {/*        PerTiTrack*/ }
-                    {/*    </Typography>*/ }
-                    {/*</Link>*/ }
                     <Button
                         onClick={ () => navigateTo('/dashboard') }
                         sx={ {
@@ -381,6 +366,20 @@ const Navbar = () => {
                                     gap: 1,
                                 } }
                             >
+                                {/* Theme Toggle Button */ }
+                                <Tooltip title={ getThemeTooltip() } arrow>
+                                    <IconButton
+                                        onClick={ toggleMode }
+                                        sx={ {
+                                            color: "navbar.text",
+                                            "&:hover": {
+                                                backgroundColor: "navbar.hover",
+                                            },
+                                        } }
+                                    >
+                                        { getThemeIcon() }
+                                    </IconButton>
+                                </Tooltip>
                                 <Button
                                     onClick={ () => document.getElementById('features-section')?.scrollIntoView({
                                         behavior: 'smooth'
@@ -424,20 +423,6 @@ const Navbar = () => {
                                 >
                                     Login
                                 </Button>
-                                {/* Theme Toggle Button */ }
-                                <Tooltip title={ getThemeTooltip() } arrow>
-                                    <IconButton
-                                        onClick={ toggleMode }
-                                        sx={ {
-                                            color: "navbar.text",
-                                            "&:hover": {
-                                                backgroundColor: "navbar.hover",
-                                            },
-                                        } }
-                                    >
-                                        { getThemeIcon() }
-                                    </IconButton>
-                                </Tooltip>
                             </Box>
 
                             {/* Mobile Menu Button */}
