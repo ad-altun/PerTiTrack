@@ -13,7 +13,7 @@ export default function TermsOfService() {
          </Typography>
 
          <Alert severity="info" sx={{ mb: 4 }}>
-             <strong>Hinweis:</strong> PerTiTrack (Personnel Time Tracking) ist eine Portfolio/Showcase-Anwendung.
+             <strong>Hinweis: <i>PerTiTrack (Personnel Time Tracking) ist eine Portfolio/Showcase-Anwendung.</i></strong>
          </Alert>
 
          <Typography variant="body2" color="text.secondary" sx={{ mb: 4 }}>
@@ -36,7 +36,7 @@ export default function TermsOfService() {
                  <br />
                  89518 Heidenheim an der Brenz
                  <br />
-                 (siehe Impressum für vollständige Kontaktdaten)
+                 {/*(siehe Impressum für vollständige Kontaktdaten)*/}
              </Typography>
              <Typography variant="body1" paragraph>
                  Mit der Registrierung und Nutzung des Dienstes akzeptieren Sie diese

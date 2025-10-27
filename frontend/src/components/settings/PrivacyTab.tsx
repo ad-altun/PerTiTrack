@@ -95,7 +95,11 @@ export default function PrivacyTab({ userId }: { userId: string}) {
                 <CardHeader title="Change Password"/>
                 <CardContent >
                     <Grid component={"form"} container spacing={ 3 }
-                        onSubmit={ handleSubmit(onSubmit) } >
+                        onSubmit={ handleSubmit(onSubmit) }
+                          sx={{ display: 'flex',
+                              alignItems: 'center',
+                          }}
+                    >
                         <Grid sx={ { xs: 12 } }>
                             <TextField
                                 {...register('currentPassword')}

@@ -193,9 +193,9 @@ export default function AccessibilityStatement() {
              </Typography>
              <Box sx={{ pl: 2, mb: 2 }}>
                  <Typography variant="body1">
-                     <strong>E-Mail:</strong> [ihre-email@beispiel.de]
+                     <strong>E-Mail:</strong> contact@denizaltun.de
                      <br />
-                     <strong>Telefon:</strong> [+49 xxx xxxxxxxx] (optional)
+                     {/*<strong>Telefon:</strong> [+49 xxx xxxxxxxx] (optional)*/}
                  </Typography>
              </Box>
              <Typography variant="body2" color="text.secondary">
@@ -278,7 +278,7 @@ export default function AccessibilityStatement() {
                  Falls Sie auf Barrierefreiheitsprobleme stoßen und mit unserer Antwort nicht
                  zufrieden sind, können Sie sich an folgende Schlichtungsstelle wenden:
              </Typography>
-             <Box sx={{ p: 2, bgcolor: 'grey.50', borderRadius: 1 }}>
+             <Box sx={{ p: 2, bgcolor: 'grey.50', borderRadius: 1, color: '#666' }}>
                  <Typography variant="body2">
                      <strong>Schlichtungsstelle nach dem BGG</strong>
                      <br />

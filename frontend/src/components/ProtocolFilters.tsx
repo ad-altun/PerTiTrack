@@ -101,19 +101,19 @@ export default function ProtocolFilters( { onDateChange, isRecordLoading }: Prot
                         }
                     } }
                 />
-                { isRecordLoading && (
-                    <Typography
-                        variant="caption"
-                        sx={ {
-                            color: '#718096',
-                            fontStyle: 'italic',
-                            ml: 1,
-                            mt: 2,
-                        } }
-                    >
-                        Loading records...
-                    </Typography>
-                ) }
+                {/*{ isRecordLoading && (*/}
+                {/*    <Typography*/}
+                {/*        variant="caption"*/}
+                {/*        sx={ {*/}
+                {/*            color: '#718096',*/}
+                {/*            fontStyle: 'italic',*/}
+                {/*            ml: 1,*/}
+                {/*            mt: 2,*/}
+                {/*        } }*/}
+                {/*    >*/}
+                {/*        Loading records...*/}
+                {/*    </Typography>*/}
+                {/*) }*/}
             </Box>
         </Box>
     );

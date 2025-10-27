@@ -27,7 +27,7 @@ import {
     useQuickBreakStartMutation,
     useQuickBreakEndMutation,
     useClockInHomeMutation,
-    useClockInBusinessTripMutation, useGetTodaySummaryQuery,
+    useClockInBusinessTripMutation,
 } from '../../store/api/timetrackApi.ts';
 import { useCurrentWorkingStatus } from "../../hooks/useCurrentWorkingStatus.ts";
 import { Typography } from "@mui/material";
@@ -266,14 +266,18 @@ export default function ActionButton( { onActionComplete }: ActionButtonsProps )
         <>
             <Box
                 sx={ {
-                    display: 'grid',
-                    gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
+                    // display: 'grid',
+                    // gridTemplateColumns: 'repeat(100px, minmax(10px, 3fr))',
+                    display: 'flex',
+                    justifyContent: 'space-between',
                     gap: '1rem',
+                    flexWrap: 'noWrap',
                     marginBottom: '1rem',
                     backgroundColor: 'background.cardItem',
                     padding: '12px 16px',
                     borderRadius: '8px',
                     border: '1px solid #e2e8f0',
+                    width: '100%',
                 } }
             >
                 { availableActions.map(( action, index ) => (
@@ -294,6 +298,7 @@ export default function ActionButton( { onActionComplete }: ActionButtonsProps )
                             flexDirection: 'column',
                             alignItems: 'center',
                             gap: '.5rem',
+                            width: '100%',
                             position: 'relative',
                             opacity: action.disabled ? 0.6 : 1,
                             '&:hover': action.disabled ? {} : {

@@ -12,9 +12,9 @@ export default function WorkflowButtonGroup( {
         <Box
             sx={ {
                 display: 'grid',
-                gridTemplateColumns: { xs: '1fr 1fr', md: 'repeat(4, 1fr)' },
-                gap: '12px',
-                padding: '16px',
+                gridTemplateColumns: { xs: '1fr 1fr', md: 'repeat(2, 1fr)' },
+                gap: '2rem',
+                padding: '1rem 2rem',
                 backgroundColor: 'background.cardItem',
                 borderRadius: '12px',
                 border: '1px solid #e2e8f0',

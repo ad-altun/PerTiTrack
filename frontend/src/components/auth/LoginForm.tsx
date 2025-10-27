@@ -58,60 +58,105 @@ export default function LoginForm(): React.JSX.Element {
     return (
         <Container component="main" maxWidth="sm">
             <Box
-                sx={ {
-                    marginTop: 8,
+                sx={{
+                    minHeight: 'calc(100vh - 100px)',
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
-                } }>
-                <Paper elevation={ 3 } sx={ { padding: 4, width: '100%' } }>
-                    <Typography component="h1" variant="h5" align="center" gutterBottom>
-                        Welcome
-                    </Typography>
-                    <Typography variant={ "h6" } align={ "center" } color="text.secondary" gutterBottom>
-                        Sign in to your account
-                    </Typography>
+                    justifyContent: 'center',
+                    py: 4,
+                }}
+            >
+                <Paper
+                    elevation={3}
+                    sx={{
+                        padding: { xs: 3, sm: 4 },
+                        width: '100%',
+                        maxWidth: 450,
+                    }}
+                >
+                    <Box sx={{ mb: 3, textAlign: 'center' }}>
+                        <Typography component="h1" variant="h4" fontWeight="bold" gutterBottom>
+                            Welcome Back
+                        </Typography>
+                        <Typography variant="body1" color="text.secondary">
+                            Sign in to continue to your account
+                        </Typography>
+                    </Box>
 
-                    { error && (
-                        <Alert severity="error" sx={ { mb: 2 } }>
-                            { typeof error === 'string' ? error : 'An error occured during login' }
+                    {error && (
+                        <Alert severity="error" sx={{ mb: 3 }}>
+                            {typeof error === 'string' ? error : 'Invalid email or password'}
                         </Alert>
-                    ) }
+                    )}
 
-                    <Box component={ "form" } sx={ { mt: 1 } }
-                         onSubmit={ handleSubmit(onSubmit) }>
+                    <Box component="form" onSubmit={handleSubmit(onSubmit)}>
                         <TextField
-                            { ...register('email') }
-                            margin={ "normal" } required fullWidth id="email" label="Email Address"
-                            name="email" autoComplete="email" autoFocus
-                            error={ !!errors.email } helperText={ errors.email?.message }
-                            disabled={ isLoading }
+                            {...register('email')}
+                            margin="normal"
+                            required
+                            fullWidth
+                            id="email"
+                            label="Email Address"
+                            name="email"
+                            autoComplete="email"
+                            autoFocus
+                            error={!!errors.email}
+                            helperText={errors.email?.message}
+                            disabled={isLoading}
                         />
                         <TextField
-                            { ...register('password') }
-                            margin="normal" required fullWidth id="password" label="Password"
-                            name="password" type="password" autoComplete="current-password"
-                            error={ !!errors.password } helperText={ errors.password?.message }
-                            disabled={ isLoading }
+                            {...register('password')}
+                            margin="normal"
+                            required
+                            fullWidth
+                            id="password"
+                            label="Password"
+                            name="password"
+                            type="password"
+                            autoComplete="current-password"
+                            error={!!errors.password}
+                            helperText={errors.password?.message}
+                            disabled={isLoading}
                         />
 
-                        <Button type="submit" fullWidth variant="contained" sx={ { mt: 3, mb: 2 } }
-                                disabled={ isLoading } startIcon={ isLoading ? <CircularProgress size={ 20 }/> : null }
+                        <Button
+                            type="submit"
+                            fullWidth
+                            variant="contained"
+                            size="large"
+                            sx={{ mt: 3, mb: 2 }}
+                            disabled={isLoading}
                         >
-                            { isLoading ? 'Signing In...' : 'Sign In' }
+                            {isLoading ? (
+                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                    <CircularProgress size={20} color="inherit" />
+                                    Signing In...
+                                </Box>
+                            ) : (
+                                'Sign In'
+                            )}
                         </Button>
 
-                        <Box sx={ { textAlign: 'center' } }>
-                            <Link to="/auth/forgot-password" style={ { textDecoration: 'none' } }>
-                                <Typography variant="body2" sx={ { mt: 2 } } color={ "primary" }>
-                                    Forgot your password?
-                                </Typography>
-                            </Link>
-
-                            <Typography variant={ "body2" } sx={ { mt: 2 } }>
-                                Don't have an account?{ ' ' }
-                                <Link to="/auth/register" style={ { textDecoration: 'none' } }>
-                                    <Typography component={ "span" } variant="body2" color={ "primary" }>
+                        <Box sx={{ textAlign: 'center', mt: 2 }}>
+                            <Typography variant="body2" color="text.secondary">
+                                Don't have an account?{' '}
+                                <Link
+                                    to="/auth/register"
+                                    style={{
+                                        textDecoration: 'none',
+                                        color: 'inherit',
+                                        fontWeight: 600,
+                                    }}
+                                >
+                                    <Typography
+                                        component="span"
+                                        variant="body2"
+                                        color="primary"
+                                        sx={{
+                                            '&:hover': { textDecoration: 'underline' }
+                                        }}
+                                    >
                                         Sign Up
                                     </Typography>
                                 </Link>
@@ -120,7 +165,5 @@ export default function LoginForm(): React.JSX.Element {
                     </Box>
                 </Paper>
             </Box>
-
         </Container>
-    );
-};
+    );};

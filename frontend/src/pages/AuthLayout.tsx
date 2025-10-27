@@ -1,8 +1,8 @@
 import { Navigate, Outlet } from "react-router-dom";
 import { useIsAuthenticated } from "../store/hook.ts";
-import Header from "../components/Header.tsx";
 import Footer from "../components/Footer.tsx";
-import { Box, Paper } from "@mui/material";
+import { Paper } from "@mui/material";
+import Navbar from "../components/Navbar.tsx";
 
 
 export default function AuthLayout() {
@@ -14,14 +14,14 @@ export default function AuthLayout() {
     }
 
     return (
-        <Paper elevation={0}
-               sx={{ display: 'flex', flexDirection: 'column',
-                   alignItems:'stretch', justifyContent: 'space-between', minHeight: '100vh' }} >
-            <Header portalName="Employee Portal" />
+        <Paper elevation={ 0 }
+               sx={ {
+                   display: 'flex', flexDirection: 'column',
+                   alignItems: 'stretch', justifyContent: 'space-between', minHeight: '100vh'
+               } }>
+            <Navbar/>
             <Outlet/>
-            <Box>
-                <Footer />
-            </Box>
+            <Footer/>
         </Paper>
     );
 };
