@@ -375,7 +375,9 @@ export default function TodaysSummary() {
                                     <Box
                                         sx={{
                                             color: item.isFlexTime
-                                                ? (flexTimeInfo.isPositive ? '#38a169' : '#e53e3e')
+                                                ? (currentStatus === 'Not Started' || flexTimeInfo.totalMinutes === 0
+                                                    ? '#718096'
+                                                    : flexTimeInfo.isPositive ? '#38a169' : '#e53e3e')
                                                 : item.isStatus
                                                     ? statusInfo.textColor
                                                     : '#4a5568',
@@ -418,7 +420,8 @@ export default function TodaysSummary() {
                                             variant="body2"
                                             sx={{
                                                 color: item.isFlexTime
-                                                    ? (flexTimeInfo.isPositive ? '#38a169' : '#e53e3e')
+                                                    ? ( currentStatus === 'Not Started' || flexTimeInfo.totalMinutes === 0 ? '#718096' :
+                                                        flexTimeInfo.isPositive ? '#38a169' : '#e53e3e')
                                                     : '#2d3748',
                                                 fontWeight: item.isFlexTime ? 700 : 600,
                                                 fontSize: '0.95rem',
@@ -485,7 +488,7 @@ export default function TodaysSummary() {
                                         ? 'Current work session in progress...'
                                         : currentStatus === 'Break'
                                             ? 'Taking a well-deserved break'
-                                            : 'Work day completed!'
+                                            : 'Work day is completed!'
                             }
                         </Typography>
                     </Box>

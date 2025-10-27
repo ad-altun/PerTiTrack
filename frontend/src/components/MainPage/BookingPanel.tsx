@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useAppSelector } from "../../store/hook.ts";
 import ActionButton from "./ActionButton.tsx";
 import Typography from '@mui/material/Typography';
-import Divider from '@mui/material/Divider';
 import { Alert, Box, Paper } from "@mui/material";
 import { selectIsStatusLoading } from "../../store/selectors/timeTrackSelectors.ts";
 import Snackbar from "@mui/material/Snackbar";
@@ -199,7 +198,7 @@ const BookingPanel: React.FC = () => {
                     } }>
                         <ActionButton onActionComplete={ handleActionComplete }/>
 
-                        <Divider sx={ { margin: '10px 0' } }/>
+                        {/*<Divider sx={ { margin: '10px 0' } }/>*/}
 
                         {/* Workflow Actions */ }
                         {/*<Typography*/}
