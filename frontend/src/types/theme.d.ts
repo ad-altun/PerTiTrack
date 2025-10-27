@@ -1,4 +1,4 @@
-import "@mui/material/styles"
+import "@mui/material/styles";
 
 declare module '@mui/material/styles' {
 
@@ -54,11 +54,25 @@ declare module '@mui/material/styles' {
         border: PaletteColor;
         shadow: PaletteColor;
         navItem: PaletteColor;
+        navbar: {
+            background: string;
+            text: string;
+            hover: string;
+            active: string;
+            border: string;
+        };
     }
+
     interface PaletteOptions {
         border?: PaletteColorOptions;
         shadow?: PaletteColorOptions;
         navItem?: PaletteColorOptions;
+        navbar?: {
+            background?: string;
+            text?: string;
+            hover?: string;
+            active?: string;
+            border?: string;
+        };
     }
-
 }

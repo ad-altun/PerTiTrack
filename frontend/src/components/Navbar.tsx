@@ -5,22 +5,30 @@ import MenuItem from "@mui/material/MenuItem";
 import IconButton from "@mui/material/IconButton";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import Avatar from "@mui/material/Avatar";
+import MenuIcon from "@mui/icons-material/Menu";
 import Typography from "@mui/material/Typography";
+import Tooltip from "@mui/material/Tooltip";
+import { LightMode, DarkMode, Computer } from "@mui/icons-material";
 import { useLogout } from "../hooks/useLogout.ts";
 import { useAppSelector } from "../store/hook.ts";
 import {
     selectActivePage,
     selectUserProfileName
 } from "../store/selectors/navbarSelectors.ts";
-import { Button, Container } from "@mui/material";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Button, Container, Divider, ListItemIcon, ListItemText } from "@mui/material";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useTheme } from "../contexts/UseTheme.tsx";
+
 
 const Navbar = () => {
     const [ anchorEl, setAnchorEl ] = React.useState<null | HTMLElement>(null);
     const navigate = useNavigate();
+    const [ mobileMenuAnchor, setMobileMenuAnchor ] = React.useState<null | HTMLElement>(null);
+    // const [ unauthMobileMenuAnchor, setUnauthMobileMenuAnchor ] = React.useState<null | HTMLElement>(null);
 
     const activePage = useAppSelector(selectActivePage);
     const userName = useAppSelector(selectUserProfileName);
+    const { mode, toggleMode, actualMode } = useTheme();
 
     const { isAuthenticated, token } = useAppSelector(( state ) => state.auth);
     const location = useLocation();
@@ -58,8 +66,60 @@ const Navbar = () => {
         return location.pathname === route || activePage?.toLowerCase() === route.replace('/', '');
     };
 
+    const isOnLandingPage: boolean = location.pathname === '/';
+
     const navigateTo = ( route: string ) => {
         navigate(route);
+    };
+
+    const handleMobileMenuOpen = ( event: React.MouseEvent<HTMLButtonElement> ) => {
+        setMobileMenuAnchor(event.currentTarget);
+    };
+    const handleMobileMenuClose = () => setMobileMenuAnchor(null);
+
+    // const handleUnauthMobileMenuOpen = ( event: React.MouseEvent<HTMLButtonElement> ) => {
+    //     setUnauthMobileMenuAnchor(event.currentTarget);
+    // };
+    // const handleUnauthMobileMenuClose = () => setUnauthMobileMenuAnchor(null);
+
+    // Get theme icon and tooltip text
+    const getThemeIcon = () => {
+        switch ( mode ) {
+            case 'light':
+                return <LightMode/>;
+            case 'dark':
+                return <DarkMode/>;
+            case 'system':
+                return <Computer/>;
+            default:
+                return <Computer/>;
+        }
+    };
+
+    const getThemeTooltip = () => {
+        switch ( mode ) {
+            case 'light':
+                return 'Light Mode (Click for Dark)';
+            case 'dark':
+                return 'Dark Mode (Click for System)';
+            case 'system':
+                return `System Mode (Currently ${ actualMode })`;
+            default:
+                return 'Toggle Theme';
+        }
+    };
+
+    const getThemeLabel = () => {
+        switch ( mode ) {
+            case 'light':
+                return 'Light Mode';
+            case 'dark':
+                return 'Dark Mode';
+            case 'system':
+                return 'System Mode';
+            default:
+                return 'Theme';
+        }
     };
 
     return (
@@ -69,24 +129,51 @@ const Navbar = () => {
                 justifyContent="space-between"
                 alignItems="center"
                 sx={ {
-                    bgcolor: "background.navBar",
-                    px: 2,
-                    py: 1,
+                    px: { xs: 2, md: 3 },
+                    py: 1.5,
+                    position: "sticky",
+                    top: 0,
+                    zIndex: 1000,
+                    // background: "linear-gradient(-90deg, #6E0CFB, #3C467B)",
+                    background: ( theme ) => theme.palette.navbar.background,
+                    boxShadow: ( theme ) => theme.palette.mode === 'dark'
+                        ? '0 2px 8px rgba(0,0,0,0.3)'
+                        : '0 1px 3px rgba(0,0,0,0.1)',
+                    borderBottom: '1px solid',
+                    borderColor: 'navbar.border',
                 } }
             >
                 {/* Left side - navigation */ }
-                <Box>
+                {/* Desktop Navigation */ }
+                <Box
+                    sx={ {
+                        display: { xs: 'none', md: 'flex' },
+                        gap: 1,
+                        alignItems: 'center',
+                    } }
+                >
+                    {/*<Link to="/" style={ { textDecoration: "none" } }>*/ }
+                    {/*    <Typography variant="h6"*/ }
+                    {/*                sx={ {*/ }
+                    {/*                    fontWeight: "bold",*/ }
+                    {/*                    color: "text.header"*/ }
+                    {/*                } }>*/ }
+                    {/*        PerTiTrack*/ }
+                    {/*    </Typography>*/ }
+                    {/*</Link>*/ }
                     <Button
                         onClick={ () => navigateTo('/dashboard') }
                         sx={ {
-                            mr: 1,
                             backgroundColor:
                                 isActiveRoute('/dashboard') ||
                                 isActiveRoute('/') ?
                                     "navItem.active" : "navItem.default",
-                            color: "text.header",
-                            "&:hover": { backgroundColor: "navItem.hover", fontWeight: "bold", },
+                            color: "navbar.text",
+                            "&:hover": {
+                                backgroundColor: "navItem.hover",
+                            },
                             textTransform: 'none',
+                            fontWeight: isActiveRoute('/dashboard') || isActiveRoute('/') ? 600 : 500,
                         } }
                     >
                         Home
@@ -96,30 +183,133 @@ const Navbar = () => {
                         sx={ {
                             backgroundColor:
                                 isActiveRoute('/timesheet') ? "navItem.active" : "navItem.default",
-                            color: "text.header",
+                            color: "navbar.text",
                             "&:hover": { backgroundColor: "navItem.hover" },
                             textTransform: 'none',
+                            fontWeight: isActiveRoute('/timesheet') ? 600 : 500,
                         } }
                     >
                         Timesheet
                     </Button>
+                    <Button
+                        onClick={ () => navigateTo('/absence-calendar') }
+                        sx={ {
+                            backgroundColor:
+                                isActiveRoute('/absence-calendar') ? "navItem.active" : "navItem.default",
+                            color: "navbar.text",
+                            "&:hover": { backgroundColor: "navItem.hover" },
+                            textTransform: 'none',
+                            fontWeight: isActiveRoute('/absence-calendar') ? 600 : 500,
+                        } }
+                    >
+                        Absence Calendar
+                    </Button>
                 </Box>
 
+                {/* Mobile Menu Button */ }
+                <IconButton
+                    onClick={ handleMobileMenuOpen }
+                    sx={ {
+                        display: { xs: 'flex', md: 'none' },
+                        color: "navbar.text",
+                    } }
+                >
+                    <MenuIcon/>
+                </IconButton>
+
+                {/* Mobile Navigation Menu */ }
+                <Menu
+                    anchorEl={ mobileMenuAnchor }
+                    open={ Boolean(mobileMenuAnchor) }
+                    onClose={ handleMobileMenuClose }
+                    sx={ { display: { xs: 'block', md: 'none' } } }
+                >
+                    <MenuItem
+                        onClick={ () => {
+                            navigateTo('/dashboard');
+                            handleMobileMenuClose();
+                        } }
+                        selected={ isActiveRoute('/dashboard') || isActiveRoute('/') }
+                    >
+                        Home
+                    </MenuItem>
+                    <MenuItem
+                        onClick={ () => {
+                            navigateTo('/timesheet');
+                            handleMobileMenuClose();
+                        } }
+                        selected={ isActiveRoute('/timesheet') }
+                    >
+                        Timesheet
+                    </MenuItem>
+                    <MenuItem
+                        onClick={ () => {
+                            navigateTo('/absence-calendar');
+                            handleMobileMenuClose();
+                        } }
+                        selected={ isActiveRoute('/absence-calendar') }
+                    >
+                        Absence Calendar
+                    </MenuItem>
+                    <Divider/>
+                    <MenuItem onClick={ toggleMode }>
+                        <ListItemIcon>
+                            { getThemeIcon() }
+                        </ListItemIcon>
+                        <ListItemText>{ getThemeLabel() }</ListItemText>
+                    </MenuItem>
+                </Menu>
+
                 {/* Right side - avatar */ }
-                <Box display="flex" alignItems="center">
-                    <IconButton onClick={ handleMenuOpen }
-                                sx={ {
-                                    textTransform: 'none', borderRadius: '9px', paddingInline: '20px',
-                                    "&:hover": { backgroundColor: "navItem.hover", color: "text.header" },
-                                } }>
-                        <Avatar sx={ { width: 28, height: 28, mr: 1, color: "text.header", } }>
-                            { userName.charAt(0) }
+                <Box display="flex" alignItems="center" gap={ 1 }>
+                    {/* Theme Toggle Button */ }
+                    <Tooltip title={ getThemeTooltip() } arrow>
+                        <IconButton
+                            onClick={ toggleMode }
+                            sx={ {
+                                display: { xs: 'none', md: 'flex' },
+                                color: "navbar.text",
+                                "&:hover": {
+                                    backgroundColor: "navbar.hover",
+                                },
+                            } }
+                        >
+                            { getThemeIcon() }
+                        </IconButton>
+                    </Tooltip>
+
+                    <IconButton
+                        onClick={ handleMenuOpen }
+                        sx={ {
+                            textTransform: 'none',
+                            borderRadius: '8px',
+                            px: { xs: 1, sm: 2 },
+                            "&:hover": {
+                                backgroundColor: "navbar.hover",
+                            },
+                        } }
+                    >
+                        <Avatar sx={ {
+                            width: 32,
+                            height: 32,
+                            mr: { xs: 0.5, sm: 1 },
+                            bgcolor: 'navItem.active',
+                            color: "navbar.text",
+                        } }>
+                            { userName.charAt(0).toUpperCase() }
                         </Avatar>
-                        <Typography variant="body2"
-                                    sx={ { color: "text.header", mr: 0.5 } }>
+                        <Typography
+                            variant="body2"
+                            sx={ {
+                                color: "navbar.text",
+                                mr: 0.5,
+                                display: { xs: 'none', sm: 'block' },
+                                fontWeight: 500,
+                            } }
+                        >
                             { userName }
                         </Typography>
-                        <ArrowDropDownIcon sx={ { color: "text.header" } }/>
+                        <ArrowDropDownIcon sx={ { color: "navbar.text" } }/>
                     </IconButton>
 
                     <Menu
@@ -127,42 +317,221 @@ const Navbar = () => {
                         open={ Boolean(anchorEl) }
                         onClose={ handleMenuClose }
                     >
-                        <MenuItem onClick={ handleSettingsClick }
-                        >Account settings</MenuItem>
-                        {/*<MenuItem onClick={ handleMenuClose }>Change account</MenuItem>*/ }
+                        <MenuItem onClick={ handleSettingsClick }>Account settings</MenuItem>
                         <MenuItem onClick={ handleLogout }>Logout</MenuItem>
                     </Menu>
                 </Box>
             </Box>
         ) : (
-            <Box
-                sx={ {
-                    position: "sticky",
-                    top: 0,
-                    zIndex: 1000,
-                    background: "linear-gradient(0deg, #6E8CFB, #3C467B)",
-                } }
-            >
-                <Container>
-                    <Box
-                        sx={ {
-                            display: "flex",
-                            justifyContent: { xs: "center", sm: "space-between" },
-                            alignItems: "flex-end",
-                            paddingTop: '.5rem',
-                            my: '.25rem',
-                        } }
-                    >
-                        {/* Left side - navigation */ }
-                        <Box>
-                            <Button
-                                onClick={ () => document.getElementById('hero-section')?.scrollIntoView({
-                                    behavior: 'smooth'
-                                }) }
+            // user is on the landing page
+            isOnLandingPage ? (
+                <Box
+                    sx={ {
+                        position: "sticky",
+                        top: 0,
+                        zIndex: 1000,
+                        background: ( theme ) => theme.palette.navbar.background,
+                        boxShadow: ( theme ) => theme.palette.mode === 'dark'
+                            ? '0 2px 8px rgba(0,0,0,0.3)'
+                            : '0 1px 3px rgba(0,0,0,0.1)',
+                        borderBottom: '1px solid',
+                        borderColor: 'navbar.border',
+                    } }
+                >
+                    <Container maxWidth="xl">
+                        <Box
+                            sx={ {
+                                display: "flex",
+                                justifyContent: "space-between",
+                                alignItems: "center",
+                                py: 1.5,
+                            } }
+                        >
+                            {/* Left side - Logo/Brand */ }
+                            <Box>
+                                <Button
+                                    onClick={ () => document.getElementById('hero-section')?.scrollIntoView({
+                                        behavior: 'smooth'
+                                    }) }
+                                    sx={ {
+                                        color: "navbar.text",
+                                        "&:hover": {
+                                            backgroundColor: "navbar.hover",
+                                        },
+                                        textTransform: 'none',
+                                        px: 2,
+                                    } }
+                                >
+                                    <Typography
+                                        sx={ {
+                                            typography: { xs: 'h6', sm: 'h5' },
+                                            fontWeight: 'bold',
+                                        } }
+                                    >
+                                        PerTiTrack
+                                    </Typography>
+                                </Button>
+                            </Box>
+
+                            {/* Desktop Navigation */ }
+                            <Box
                                 sx={ {
-                                    color: "text.header",
-                                    "&:hover": { backgroundColor: "#6E8CFB", fontWeight: "bold", },
+                                    display: { xs: 'none', md: 'flex' },
+                                    alignItems: "center",
+                                    gap: 1,
+                                } }
+                            >
+                                <Button
+                                    onClick={ () => document.getElementById('features-section')?.scrollIntoView({
+                                        behavior: 'smooth'
+                                    }) }
+                                    sx={ {
+                                        color: "navbar.text",
+                                        "&:hover": {
+                                            backgroundColor: "navbar.hover",
+                                        },
+                                        textTransform: 'none',
+                                        fontWeight: 500,
+                                    } }
+                                >
+                                    Features
+                                </Button>
+                                <Button
+                                    onClick={ () => document.getElementById('about-section')?.scrollIntoView({
+                                        behavior: 'smooth'
+                                    }) }
+                                    sx={ {
+                                        color: "navbar.text",
+                                        "&:hover": {
+                                            backgroundColor: "navbar.hover",
+                                        },
+                                        textTransform: 'none',
+                                        fontWeight: 500,
+                                    } }
+                                >
+                                    About
+                                </Button>
+                                <Button
+                                    onClick={ () => navigateTo('/auth/signin') }
+                                    sx={ {
+                                        color: "navbar.text",
+                                        "&:hover": {
+                                            backgroundColor: "navbar.hover",
+                                        },
+                                        textTransform: 'none',
+                                        fontWeight: 500,
+                                    } }
+                                >
+                                    Login
+                                </Button>
+                                {/* Theme Toggle Button */ }
+                                <Tooltip title={ getThemeTooltip() } arrow>
+                                    <IconButton
+                                        onClick={ toggleMode }
+                                        sx={ {
+                                            color: "navbar.text",
+                                            "&:hover": {
+                                                backgroundColor: "navbar.hover",
+                                            },
+                                        } }
+                                    >
+                                        { getThemeIcon() }
+                                    </IconButton>
+                                </Tooltip>
+                            </Box>
+
+                            {/* Mobile Menu Button */}
+                            <IconButton
+                                onClick={ handleMobileMenuOpen }
+                                sx={ {
+                                    display: { xs: 'flex', md: 'none' },
+                                    color: "navbar.text",
+                                } }
+                            >
+                                <MenuIcon/>
+                            </IconButton>
+
+                            {/* Mobile Navigation Menu */ }
+                            <Menu
+                                anchorEl={ mobileMenuAnchor }
+                                open={ Boolean(mobileMenuAnchor) }
+                                onClose={ handleMobileMenuClose }
+                                sx={ { display: { xs: 'block', md: 'none' } } }
+                            >
+                                <MenuItem
+                                    onClick={ () => {
+                                        document.getElementById('features-section')?.scrollIntoView({
+                                            behavior: 'smooth'
+                                        });
+                                        handleMobileMenuClose();
+                                    } }
+                                >
+                                    Features
+                                </MenuItem>
+                                <MenuItem
+                                    onClick={ () => {
+                                        document.getElementById('about-section')?.scrollIntoView({
+                                            behavior: 'smooth'
+                                        });
+                                        handleMobileMenuClose();
+                                    } }
+                                >
+                                    About
+                                </MenuItem>
+                                <MenuItem
+                                    onClick={ () => {
+                                        navigateTo('/auth/signin');
+                                        handleMobileMenuClose();
+                                    } }
+                                >
+                                    Login
+                                </MenuItem>
+                                <Divider/>
+                                <MenuItem onClick={ toggleMode }>
+                                    <ListItemIcon>
+                                        { getThemeIcon() }
+                                    </ListItemIcon>
+                                    <ListItemText>{ getThemeLabel() }</ListItemText>
+                                </MenuItem>
+                            </Menu>
+                        </Box>
+                    </Container>
+                </Box>
+
+            ) : (
+                // user is on login, signup page
+                <Box
+                    sx={ {
+                        position: "sticky",
+                        top: 0,
+                        zIndex: 1000,
+                        background: ( theme ) => theme.palette.navbar.background,
+                        boxShadow: ( theme ) => theme.palette.mode === 'dark'
+                            ? '0 2px 8px rgba(0,0,0,0.3)'
+                            : '0 1px 3px rgba(0,0,0,0.1)',
+                        borderBottom: '1px solid',
+                        borderColor: 'navbar.border',
+                    } }
+                >
+                    <Container maxWidth="lg">
+                        <Box
+                            sx={ {
+                                display: "flex",
+                                justifyContent: "space-between",
+                                alignItems: "center",
+                                py: 1.5,
+                            } }
+                        >
+                            {/* Left - Logo */ }
+                            <Button
+                                onClick={ () => navigateTo('/') }
+                                sx={ {
+                                    color: "navbar.text",
+                                    "&:hover": {
+                                        backgroundColor: "navbar.hover",
+                                    },
                                     textTransform: 'none',
+                                    px: 2,
                                 } }
                             >
                                 <Typography
@@ -174,77 +543,89 @@ const Navbar = () => {
                                     PerTiTrack
                                 </Typography>
                             </Button>
+
+                            {/* Right - Auth Links */ }
+                            <Box sx={ { display: 'flex', gap: 1, alignItems: 'center' } }>
+                                {/* Desktop Theme Toggle */ }
+                                <Tooltip title={ getThemeTooltip() } arrow>
+                                    <IconButton
+                                        onClick={ toggleMode }
+                                        sx={ {
+                                            display: { xs: 'none', sm: 'flex' },
+                                            color: "navbar.text",
+                                            "&:hover": {
+                                                backgroundColor: "navbar.hover",
+                                            },
+                                        } }
+                                    >
+                                        { getThemeIcon() }
+                                    </IconButton>
+                                </Tooltip>
+
+                                { location.pathname === '/auth/signin' ? (
+                                    <Button
+                                        onClick={ () => navigateTo('/auth/register') }
+                                        variant="outlined"
+                                        sx={ {
+                                            color: "navbar.text",
+                                            borderColor: 'navbar.border',
+                                            "&:hover": {
+                                                backgroundColor: "navbar.hover",
+                                                borderColor: 'navbar.text',
+                                            },
+                                            textTransform: 'none',
+                                        } }
+                                    >
+                                        Sign Up
+                                    </Button>
+                                ) : (
+                                    <Button
+                                        onClick={ () => navigateTo('/auth/signin') }
+                                        variant="outlined"
+                                        sx={ {
+                                            color: "navbar.text",
+                                            borderColor: 'navbar.border',
+                                            "&:hover": {
+                                                backgroundColor: "navbar.hover",
+                                                borderColor: 'navbar.text',
+                                            },
+                                            textTransform: 'none',
+                                        } }
+                                    >
+                                        Sign In
+                                    </Button>
+                                ) }
+
+                                {/* Mobile Menu Button with Theme Toggle */ }
+                                <IconButton
+                                    onClick={ handleMobileMenuOpen }
+                                    sx={ {
+                                        display: { xs: 'flex', sm: 'none' },
+                                        color: "navbar.text",
+                                    } }
+                                >
+                                    <MenuIcon/>
+                                </IconButton>
+
+                                {/* Mobile Menu */ }
+                                <Menu
+                                    anchorEl={ mobileMenuAnchor }
+                                    open={ Boolean(mobileMenuAnchor) }
+                                    onClose={ handleMobileMenuClose }
+                                    sx={ { display: { xs: 'block', sm: 'none' } } }
+                                >
+                                    <MenuItem onClick={ toggleMode }>
+                                        <ListItemIcon>
+                                            { getThemeIcon() }
+                                        </ListItemIcon>
+                                        <ListItemText>{ getThemeLabel() }</ListItemText>
+                                    </MenuItem>
+                                </Menu>
+                            </Box>
                         </Box>
-
-                        {/* Right side  */ }
-                        <Box
-                            sx={ {
-                                display: "flex",
-                                alignItems: "center",
-                                gap: { xs: '0', sm: '1rem' },
-                            } }
-                        >
-                            <Button
-                                onClick={ () => document.getElementById('features-section')?.scrollIntoView({
-                                    behavior: 'smooth'
-                                }) }
-                                sx={ {
-                                    color: "text.header",
-                                    "&:hover": { backgroundColor: "#6E8CFB", fontWeight: "bold", },
-                                    textTransform: 'none',
-                                } }
-                            >
-                                <Typography
-                                    sx={ {
-                                        typography: { xs: 'h6', sm: 'h5' },
-                                        fontWeight: 'bold',
-                                    } }
-                                >
-                                    Features
-                                </Typography>
-                            </Button>
-                            <Button
-                                onClick={ () => document.getElementById('about-section')?.scrollIntoView({
-                                    behavior: 'smooth'
-                                }) }
-                                sx={ {
-                                    color: "text.header",
-                                    "&:hover": { backgroundColor: "#6E8CFB", fontWeight: "bold", },
-                                    textTransform: 'none',
-                                } }
-                            >
-                                <Typography
-                                    sx={ {
-                                        typography: { xs: 'h6', sm: 'h5' },
-                                        fontWeight: 'bold',
-                                    } }
-                                >
-                                    About
-                                </Typography>
-                            </Button>
-                            <Button
-                                onClick={ () => navigateTo('/auth/signin') }
-                                sx={ {
-                                    color: "text.header",
-                                    "&:hover": { backgroundColor: "#6E8CFB", fontWeight: "bold", },
-                                    textTransform: 'none',
-                                } }
-                            >
-                                <Typography
-                                    sx={ {
-                                        typography: { xs: 'h6', sm: 'h5' },
-                                        fontWeight: 'bold',
-                                    } }
-                                >
-                                    Login
-                                </Typography>
-
-                            </Button>
-                        </Box>
-
-                    </Box>
-                </Container>
-            </Box>
+                    </Container>
+                </Box>
+            )
         )
     );
 };

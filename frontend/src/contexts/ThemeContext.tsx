@@ -1,7 +1,7 @@
 import { type ReactNode, useCallback, useEffect, useState } from "react";
-import { createTheme, ThemeProvider as MuiThemeProvider} from "@mui/material/styles";
+import { createTheme, ThemeProvider as MuiThemeProvider } from "@mui/material/styles";
 import { CssBaseline } from "@mui/material";
-import { ThemeContext} from "./UseTheme.tsx";
+import { ThemeContext } from "./UseTheme.tsx";
 
 export type ThemeMode = 'light' | 'dark' | 'system';
 
@@ -9,53 +9,58 @@ interface ThemeProviderProps {
     children: ReactNode;
 }
 
-export const CustomThemeProvider = ({ children }: ThemeProviderProps) => {
-    const [mode, setThemeMode] = useState<ThemeMode>(() => {
-        const localStorageMode = localStorage.getItem('theme-mode') as ThemeMode;
-        if (localStorageMode && ['light', 'dark'].includes(localStorageMode)) {
-            return localStorageMode;
-        }
-        return 'system';
-    });
-
+export const CustomThemeProvider = ( { children }: ThemeProviderProps ) => {
     const getSystemPreference = (): 'light' | 'dark' => {
-        if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        if ( window.matchMedia('(prefers-color-scheme: dark)').matches ) {
             return 'dark';
         }
         return 'light';
     };
 
+    const [ mode, setThemeMode ] = useState<ThemeMode>(() => {
+        const localStorageMode = localStorage.getItem('theme-mode') as ThemeMode;
+        if ( localStorageMode && [ 'light', 'dark', 'system' ].includes(localStorageMode) ) {
+            return localStorageMode;
+        }
+        return 'system';
+    });
+
     const resolveActualMode = useCallback((): 'light' | 'dark' => {
-        if (mode === 'system') {
+        if ( mode === 'system' ) {
             return getSystemPreference();
         }
         return mode as 'light' | 'dark';
-    }, [mode]);
+    }, [ mode ]);
 
-    const [actualMode, setActualMode] = useState<'light' | 'dark'>(resolveActualMode);
+    const [ actualMode, setActualMode ] = useState<'light' | 'dark'>(() => resolveActualMode());
 
     useEffect(() => {
         localStorage.setItem('theme-mode', mode);
         setActualMode(resolveActualMode());
-    }, [mode, resolveActualMode]);
+    }, [ mode, resolveActualMode ]);
 
     useEffect(() => {
-        if (mode === 'system') {
+        if ( mode === 'system' ) {
             const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
             const handleChange = () => setActualMode(getSystemPreference());
+
+            // set initial value
+            setActualMode(getSystemPreference());
+
+            // listen for changes
             mediaQuery.addEventListener('change', handleChange);
             return () => mediaQuery.removeEventListener('change', handleChange);
         }
-    }, [mode]);
+    }, [ mode ]);
 
     const toggleMode = () => {
-        const modes: ThemeMode[] = ['light', 'dark', 'system'];
+        const modes: ThemeMode[] = [ 'light', 'dark', 'system' ];
         const currentIndex = modes.indexOf(mode);
-        const nextIndex = (currentIndex + 1) % modes.length;
-        setThemeMode(modes[nextIndex]);
+        const nextIndex = ( currentIndex + 1 ) % modes.length;
+        setThemeMode(modes[ nextIndex ]);
     };
 
-    const setMode = (newMode: ThemeMode) => {
+    const setMode = ( newMode: ThemeMode ) => {
         setThemeMode(newMode);
     };
 
@@ -63,14 +68,20 @@ export const CustomThemeProvider = ({ children }: ThemeProviderProps) => {
     const theme = createTheme({
         palette: {
             mode: actualMode,
-            ...(actualMode === "light"
+            ...( actualMode === "light"
                 ? {
-                    primary: { main: "#4F46E5", light: "#6366F1", dark: "#3730A3" },
+                    // primary: { main: "#4F46E5", light: "#6366F1", dark: "#3730A3" },
+                    primary: {
+                        main: "#6366F1",    // Indigo
+                        light: "#818CF8",
+                        dark: "#4338CA"
+                    },
                     secondary: { main: "#10B981", light: "#34D399", dark: "#065F46" },
                     background: {
                         default: "#f8fafc", // body
                         paper: "white",
-                        appBar: "linear-gradient(0deg, #1e40af, #1e3a8a)",
+                        // appBar: "linear-gradient(0deg, #1e40af, #1e3a8a)",
+                        appBar: "linear-gradient(135deg, #4338CA 0%, #6366F1 100%)",
                         navBar: "#1e293b",
                         sectionHeader: '#e0e7ff',
                         cardItem: '#f7fafc',
@@ -81,7 +92,7 @@ export const CustomThemeProvider = ({ children }: ThemeProviderProps) => {
                         primary: "#2d3748",
                         secondary: "#4a5568",
                         muted: "#64748b",
-                        header: "white",
+                        header: "#FFFFFF",
                         hover: '#cbd5e1',
                     },
                     error: { main: "#EF4444", light: "#FCA5A5", dark: "#B91C1C" },
@@ -106,11 +117,23 @@ export const CustomThemeProvider = ({ children }: ThemeProviderProps) => {
                         main: '#9CA3AF',
                         dark: '#9CA3AF',
                     },
+                    // navItem: {
+                    //     default: "#334155",
+                    //     hover: "#475569",
+                    //     active: "#2563eb",
+                    // },
                     navItem: {
-                        default: "#334155",
-                        hover: "#475569",
-                        active: "#2563eb",
-                    }
+                        default: "rgba(255, 255, 255, 0.1)",
+                        hover: "rgba(255, 255, 255, 0.2)",
+                        active: "rgba(255, 255, 255, 0.25)",
+                    },
+                    navbar: {
+                        background: "linear-gradient(135deg, #4338CA 0%, #6366F1 100%)",
+                        text: "#FFFFFF",
+                        hover: "rgba(255, 255, 255, 0.15)",
+                        active: "rgba(255, 255, 255, 0.25)",
+                        border: "rgba(255, 255, 255, 0.1)",
+                    },
                 }
                 : {
                     // Dark mode colors
@@ -119,7 +142,8 @@ export const CustomThemeProvider = ({ children }: ThemeProviderProps) => {
                     background: {
                         default: "#0F172A",
                         paper: "#1E293B",
-                        appBar: "linear-gradient(0deg, #1e40af, #1e3a8a)",
+                        // appBar: "linear-gradient(0deg, #1e40af, #1e3a8a)",
+                        appBar: "linear-gradient(135deg, #312E81 0%, #4338CA 100%)",
                         // navBar: "#2d3748",
                         navBar: "#0f172a",
                         sectionHeader: "#334155",
@@ -155,13 +179,27 @@ export const CustomThemeProvider = ({ children }: ThemeProviderProps) => {
                         main: '#9CA3AF',
                         dark: '#9CA3AF',
                     },
+                    // navItem: {
+                    //     default: "#1e293b",
+                    //     hover: "#334155",
+                    //     active: "#3b82f6",
+                    //     text: '#e2e8f0',
+                    // },
+                    // Dark mode navbar colors
                     navItem: {
-                        default: "#1e293b",
-                        hover: "#334155",
-                        active: "#3b82f6",
-                        text: '#e2e8f0',
-                    }
-                }),
+                        default: "rgba(255, 255, 255, 0.08)",
+                        hover: "rgba(255, 255, 255, 0.15)",
+                        active: "rgba(129, 140, 248, 0.25)",
+                        text: '#F1F5F9',
+                    },
+                    navbar: {
+                        background: "linear-gradient(135deg, #312E81 0%, #4338CA 100%)",
+                        text: "#F1F5F9",
+                        hover: "rgba(255, 255, 255, 0.1)",
+                        active: "rgba(129, 140, 248, 0.2)",
+                        border: "rgba(255, 255, 255, 0.1)",
+                    },
+                } ),
 
         },
         typography: {
@@ -210,30 +248,35 @@ export const CustomThemeProvider = ({ children }: ThemeProviderProps) => {
                         minWidth: "240px",
                     },
                     indicator: {
-                        backgroundColor: actualMode === "light" ? "#4F46E5" : "#818CF8",
+                        backgroundColor: actualMode === "light" ? "#6366F1" : "#818CF8",
                     },
                 },
             },
             MuiTab: {
                 styleOverrides: {
-                    root: {
-                        alignItems: "flex-start",
-                        textAlign: "left",
+                    root: ( { theme } ) => ( {
+                        alignItems: "center",
+                        textAlign: "center",
                         fontWeight: 500,
-                        "&.Mui-selected": {
-                            color: actualMode === "light" ? "#4F46E5" : "#A5B4FC",
-                            backgroundColor:
-                                actualMode === "light" ? "rgba(79,70,229,0.05)" : "rgba(129,140,248,0.1)",
+                        minWidth: "60px", // Smaller minimum width for mobile
+                        padding: "12px 8px", // Reduce padding on mobile
+                        [ theme.breakpoints.up('sm') ]: {
+                            minWidth: "120px",
+                            padding: "12px 16px",
                         },
-                    },
+                        "&.Mui-selected": {
+                            color: actualMode === "light" ? "#6366F1" : "#A5B4FC",
+                            backgroundColor:
+                                actualMode === "light" ? "rgba(99, 102, 241, 0.08)" : "rgba(129,140,248,0.12)",
+                        },
+                    } ),
                 },
             },
             MuiMenuItem: {
                 styleOverrides: {
                     root: {
-                        borderRadius: "80px",
-                        boxShadow: "0 2px 6px rgba(0,0,0,0.05)",
-                        color: actualMode === "light" ? "text.secondary" : "#f1f5f9",
+                        borderRadius: "8px",
+                        margin: "4px 8px",
                         textTransform: 'none',
                     }
                 }
@@ -251,7 +294,6 @@ export const CustomThemeProvider = ({ children }: ThemeProviderProps) => {
                     root: {
                         borderRadius: "12px",
                         backgroundImage: "none",
-                        boxShadow: '2px 4px 6px rgba(0,0,0,0.15)',
                     },
                 },
             },
@@ -265,26 +307,7 @@ export const CustomThemeProvider = ({ children }: ThemeProviderProps) => {
             MuiTableCell: {
                 styleOverrides: {
                     head: {
-                        // backgroundColor: actualMode === "light" ? "#F3F4F6" : "#1E293B",
-                        // color: actualMode === "light" ? "#374151" : "#E5E7EB",
                         fontWeight: 600,
-                    },
-                    body: {
-                        // borderColor: actualMode === "light" ? "#E5E7EB" : "#334155",
-                    },
-                },
-            },
-            MuiTableRow: {
-                styleOverrides: {
-                    root: {
-                        "&:nth-of-type(even)": {
-                            // backgroundColor: actualMode === "light" ? "#F9FAFB" : "#4f5977",
-                            // color: actualMode === "light" ? "#EF4444" : "#EF4444",
-                        },
-                        "&:hover": {
-                            // backgroundColor: actualMode === "light" ? "#F3F4F6" : "#1E293B",
-                            // color: actualMode === "light" ? "#EF4444" : "#EF4444",
-                        },
                     },
                 },
             },
@@ -302,16 +325,25 @@ export const CustomThemeProvider = ({ children }: ThemeProviderProps) => {
                     },
                 },
             },
+            MuiSkeleton: {
+                styleOverrides: {
+                    root: {
+                        backgroundColor: actualMode === "light"
+                            ? "rgba(0, 0, 0, 0.11)"
+                            : "rgba(129, 140, 248, 0.2)",
+                    },
+                },
+            },
         },
     });
 
- return (
-     <ThemeContext.Provider value={{ mode, toggleMode, setMode, actualMode }}>
-         <MuiThemeProvider theme={theme}>
-             <CssBaseline />
-             {children}
-         </MuiThemeProvider>
-     </ThemeContext.Provider>
- );
-}
+    return (
+        <ThemeContext.Provider value={ { mode, toggleMode, setMode, actualMode } }>
+            <MuiThemeProvider theme={ theme }>
+                <CssBaseline/>
+                { children }
+            </MuiThemeProvider>
+        </ThemeContext.Provider>
+    );
+};
 
