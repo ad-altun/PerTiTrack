@@ -25,7 +25,7 @@ const RegisterForm = lazy(() => import("./components/auth/RegisterForm.tsx"));
 // const ForgotPasswordForm = lazy(() => import("./components/auth/ForgotPasswordForm.tsx"));
 const HomePage = lazy(() => import("./pages/HomePage.tsx"));
 const Dashboard = lazy(() => import("./components/MainPage/Dashboard.tsx"));
-const TimeSheetPage = lazy(() => import("./pages/TimeSheetPage.tsx"));
+// const TimeSheetPage = lazy(() => import("./pages/TimeSheetPage.tsx"));
 const NotFoundPage = lazy(() => import("./pages/NotFoundPage.tsx"));
 const UnauthorizedPage = lazy(() => import("./pages/UnauthorizedPage.tsx"));
 const SettingsPage = lazy(() => import("./pages/SettingsPage.tsx"));
@@ -77,14 +77,14 @@ function App() {
                         </Suspense>
                     ),
                 },
-                {
-                    path: 'timesheet',
-                    element: (
-                        <Suspense fallback={ <div><LoadingSpinner/></div> }>
-                            <TimeSheetPage/>
-                        </Suspense>
-                    )
-                },
+                // {
+                //     path: 'timesheet',
+                //     element: (
+                //         <Suspense fallback={ <div><LoadingSpinner/></div> }>
+                //             <TimeSheetPage/>
+                //         </Suspense>
+                //     )
+                // },
                 {
                     path: 'absence-calendar',
                     element: (

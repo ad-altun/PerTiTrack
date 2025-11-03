@@ -163,19 +163,19 @@ const Navbar = () => {
                     >
                         Home
                     </Button>
-                    <Button
-                        onClick={ () => navigateTo('/timesheet') }
-                        sx={ {
-                            backgroundColor:
-                                isActiveRoute('/timesheet') ? "navItem.active" : "navItem.default",
-                            color: "navbar.text",
-                            "&:hover": { backgroundColor: "navItem.hover" },
-                            textTransform: 'none',
-                            fontWeight: isActiveRoute('/timesheet') ? 600 : 500,
-                        } }
-                    >
-                        Timesheet
-                    </Button>
+                    {/*<Button*/}
+                    {/*    onClick={ () => navigateTo('/timesheet') }*/}
+                    {/*    sx={ {*/}
+                    {/*        backgroundColor:*/}
+                    {/*            isActiveRoute('/timesheet') ? "navItem.active" : "navItem.default",*/}
+                    {/*        color: "navbar.text",*/}
+                    {/*        "&:hover": { backgroundColor: "navItem.hover" },*/}
+                    {/*        textTransform: 'none',*/}
+                    {/*        fontWeight: isActiveRoute('/timesheet') ? 600 : 500,*/}
+                    {/*    } }*/}
+                    {/*>*/}
+                    {/*    Timesheet*/}
+                    {/*</Button>*/}
                     <Button
                         onClick={ () => navigateTo('/absence-calendar') }
                         sx={ {

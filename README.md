@@ -61,24 +61,39 @@ A full-stack web application for employee time tracking, absence management, and
 
 ### Currently Available
 
-| Feature | Description | Status |
-|---------|-------------|--------|
-| **Time Tracking** | Clock in/out with automatic timestamp recording | ✅ Complete |
-| **Break Management** | Track break periods (start/end) | ✅ Complete |
-| **Location Tracking** | Office, home office, business trip | ✅ Complete |
-| **Today's Summary** | Real-time dashboard with working time, breaks, flex time | ✅ Complete |
-| **JWT Authentication** | Secure token-based authentication | ✅ Complete |
-| **Employee Role** | Basic employee access and time tracking | ✅ Complete |
+| Feature                | Description                                                     | Status |
+|------------------------|-----------------------------------------------------------------|--------|
+| **Time Tracking**      | Clock in/out with automatic timestamp recording                 | ✅ Complete |
+| **Break Management**   | Track break periods (start/end)                                 | ✅ Complete |
+| **Location Tracking**  | Office, home office, business trip                              | ✅ Complete |
+| **Today's Summary**    | Real-time dashboard with working time, breaks, flex time        | ✅ Complete |
+| **JWT Authentication** | Secure token-based authentication                               | ✅ Complete |
+| **Employee Role**      | Basic employee access and time tracking                         | ✅ Complete |
+| **Absence Tracking**   | Review yearly employee absence records with visual highlights | ✅ Complete |
 
 ### In Development
 
-| Feature | Description | Status |
-|---------|-------------|--------|
-| **Absence Management** | Vacation/sick leave requests and approvals | 🚧 In Progress |
-| **Manager Role** | Team oversight and approval workflows | 🚧 Planned |
-| **Admin Role** | User management and system configuration | 🚧 Planned |
-| **Reports & Analytics** | Timesheet exports and workforce analytics | 🚧 Planned |
-| **Calendar View** | Visual team availability calendar | 🚧 Planned |
+| Feature                 | Description                                             | Status |
+|-------------------------|---------------------------------------------------------|--------|
+| **Timesheet**           | Review daily work records for the entire month in a single page | 🚧 Planned |
+| **Absence Management**  | Vacation/sick leave requests and approvals              | 🚧 Planned |
+| **Manager Role**        | Team oversight and approval workflows                   | 🚧 Planned |
+| **Admin Role**          | User management and system configuration                | 🚧 Planned |
+| **Reports & Analytics** | Timesheet exports and workforce analytics               | 🚧 Planned |
+| **Calendar View**       | Visual team availability calendar                       | 🚧 Planned |
+
+---
+
+## Screenshots
+
+### Landing Page
+![Time Tracking](docs/screenshots/landing.png)
+
+### Dashboard & Time Tracking
+![Dashboard](docs/screenshots/dashboard.png)
+
+### Absence Calendar
+![Absence Calendar](docs/screenshots/absence.png)
 
 ---
 
@@ -363,35 +378,20 @@ curl -X POST -H "Authorization: Bearer $TOKEN" $COOLIFY_WEBHOOK_URL
 
 ---
 
-## Screenshots
+## Technical Highlights
 
-### Landing Page
-![Time Tracking](docs/screenshots/landing.png)
+### Production-Ready Features
+- ✅ Secure JWT authentication with 15-minute token rotation
+- ✅ Real-time time tracking with automatic overtime calculation
+- ✅ Comprehensive absence review with visual calendar
+- ✅ Role-based access control (RBAC) foundation
+- ✅ Zero-downtime deployment pipeline
 
-### Dashboard & Time Tracking
-![Dashboard](docs/screenshots/dashboard.png)
-
----
-
-## Future Roadmap
-
-### Q4 2025
-- [ ] Complete absence management module
-- [ ] Implement manager role and approval workflows
-- [ ] Complete TimeSheet page
-- [ ] Mobile-responsive improvements
-
-### Q1-Q2 2026
-- [ ] Admin panel for user management
-- [ ] Calendar view for team availability
-- [ ] Geolocation - GPS-based clock in/out verification
-
-### 2026+
-- [ ] Multi-language support (DE, EN)
-- [ ] Integration with Discord, Slack, Microsoft Teams
-- [ ] AI-powered insights
-- [ ] Email notifications for approvals
-- [ ] Integration with payroll systems
+### Architectural Decisions
+- **Chose PostgreSQL** over NoSQL for complex relational data integrity
+- **Implemented JWT** instead of sessions for stateless scalability
+- **Built monolithic first** - appropriate for the domain complexity
+- **15-minute token expiry** balances security with user experience
 
 ---
 
