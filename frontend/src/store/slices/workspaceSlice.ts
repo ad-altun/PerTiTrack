@@ -2,7 +2,8 @@ import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import type { LocationType } from "../../validation/timetrackSchemas.ts";
 
 // Types
-export type PageType = 'HomePage' | 'Timesheet';
+// export type PageType = 'HomePage' | 'Timesheet';
+export type PageType = 'HomePage' | 'AbsenceCalendar';
 
 interface WorkStatus {
     isClockedIn: boolean;
