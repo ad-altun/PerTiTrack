@@ -201,7 +201,7 @@ npm install && npm run dev
 
 ```env
 # Backend (.env or application-dev.properties)
-SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5431/pertitrack
+SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/pertitrack
 SPRING_DATASOURCE_USERNAME=admin
 SPRING_DATASOURCE_PASSWORD=admin
 JWT_SECRET=your-256-bit-secret-minimum-32-chars
@@ -228,19 +228,19 @@ VITE_API_BASE_URL=http://localhost:8080/api
 
 | Endpoint | Method | Auth | Description |
 |----------|--------|------|-------------|
-| `/api/time-records/quick-clock-in` | POST | ✓ | Clock in |
-| `/api/time-records/quick-clock-out` | POST | ✓ | Clock out |
-| `/api/time-records/quick-break-start` | POST | ✓ | Start break |
-| `/api/time-records/quick-break-end` | POST | ✓ | End break |
-| `/api/time-records/today` | GET | ✓ | Get today's summary |
-| `/api/time-records/current-status` | GET | ✓ | Get current work status |
+| `/timetrack/time-records/time-bookings/clock-in` | POST | ✓ | Clock in |
+| `/timetrack/time-records/time-bookings/clock-out` | POST | ✓ | Clock out |
+| `/timetrack/time-records/time-bookings/break-start` | POST | ✓ | Start break |
+| `/timetrack/time-records/time-bookings/break-end` | POST | ✓ | End break |
+| `/timetrack/time-records/today` | GET | ✓ | Get today's summary |
+| `/timetrack/status/current` | GET | ✓ | Get current work status |
 
 **Example Request:**
 
 ```bash
 curl -X POST http://localhost:8080/api/auth/signin \
   -H "Content-Type: application/json" \
-  -d '{"email": "user@example.com", "password": "password"}'
+  -d '{"username": "demo@pertitrack.denizaltun.de", "password": "Demo1234!"}'
 ```
 
 **Example Response:**
